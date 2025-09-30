@@ -4,3 +4,43 @@
 /.nx/cache
 /.nx/workspace-data
 .angular
+
+
+# Node
+node_modules
+package-lock.json
+
+# Nx / Angular / Nest
+dist
+coverage
+tmp
+.cache
+
+# Environment and build configs
+*.log
+*.lock
+*.tmp
+*.bak
+*.cache
+
+# Output folders inside apps
+apps/**/dist
+apps/**/build
+
+# Assets and static files
+**/assets/**
+**/*.png
+**/*.ico
+**/*.jpg
+**/*.jpeg
+**/*.svg
+
+# Ignore compiled and config outputs
+**/*.js.map
+**/*.d.ts
+
+
+# IDE and OS generated
+.DS_Store
+.idea
+.vscode
