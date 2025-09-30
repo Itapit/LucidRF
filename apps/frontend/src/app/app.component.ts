@@ -1,4 +1,3 @@
-/* eslint-disable @angular-eslint/prefer-standalone */
 import { Component } from '@angular/core';
 
 @Component({
