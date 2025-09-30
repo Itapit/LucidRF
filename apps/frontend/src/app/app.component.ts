@@ -5,7 +5,7 @@ import { Component } from '@angular/core';
   selector: 'app-root',
   standalone: false,
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss',
+  styleUrl: './app.component.css',
 })
 export class AppComponent {
   protected title = 'frontend';

@@ -30,12 +30,12 @@
     "@nx/angular:application": {
       "e2eTestRunner": "none",
       "linter": "eslint",
-      "style": "scss",
+      "style": "css",
       "unitTestRunner": "none",
       "standalone": false
     },
     "@nx/angular:component": {
-      "style": "scss",
+      "style": "css",
       "type": "component",
       "skipTests": true,
       "standalone": false
