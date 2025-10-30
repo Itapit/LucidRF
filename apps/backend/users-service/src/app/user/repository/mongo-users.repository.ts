@@ -5,7 +5,7 @@ import { CreateUserRepoDto } from '../dtos/create-user-repo.dto';
 import { UserSchema } from './user.schema';
 import { UsersRepository } from './users.repository';
 
-// This is the concrete Mongoose implementation of the UsersRepository.
+// This is the Mongoose implementation of the UsersRepository.
 @Injectable()
 export class MongoUsersRepository implements UsersRepository {
   constructor(@InjectModel(UserSchema.name) private userModel: Model<UserSchema>) {}
