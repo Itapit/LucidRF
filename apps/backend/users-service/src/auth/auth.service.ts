@@ -1,9 +1,8 @@
-import { UserRole, UserStatus } from '@limbo/common';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { UserDto, UserRole, UserStatus } from '@limbo/common';
 import {
   AuthLoginPayload,
   AuthLoginResponseDto,
-  AuthRefreshPayload,
-  AuthRefreshResponse,
   CompleteSetupPayload,
   PendingLoginResponseDto,
 } from '@limbo/users-contracts';
@@ -19,17 +18,19 @@ import { JwtService } from '@nestjs/jwt';
 import { RpcException } from '@nestjs/microservices';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
+import { HASH_ROUNDS } from '../constants';
+import { UserRepository } from '../user/repository/user.repository';
 import { UserSchema } from '../user/repository/user.schema';
-import { UsersRepository } from '../user/repository/users.repository';
-import { UserService } from '../user/user.service';
+import { RefreshTokenRepository } from './repository/refresh-token.repository';
+import ms = require('ms');
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly usersRepository: UsersRepository,
-    private readonly userService: UserService,
+    private readonly usersRepository: UserRepository,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    private readonly refreshTokenRepo: RefreshTokenRepository
   ) {}
 
   /**
@@ -41,17 +42,19 @@ export class AuthService {
       const error = new UnauthorizedException('Invalid credentials');
       throw new RpcException(error.getResponse());
     }
-    // Handle PENDING user flow
+
     if (user.status === UserStatus.PENDING) {
       return this.grantPendingToken(user);
     }
-    // Handle ACTIVE user flow
+
     return this.grantUserTokens(user);
   }
 
+  /**
+   * Activates a PENDING user and logs them in.
+   */
   async completeUserSetup(payload: CompleteSetupPayload): Promise<AuthLoginResponseDto> {
     const { userId, password } = payload;
-
     const user = await this.usersRepository.findById(userId);
 
     if (!user) {
@@ -61,7 +64,7 @@ export class AuthService {
       throw new RpcException(new ForbiddenException('User is already active').getResponse());
     }
 
-    const hashedPassword = await bcrypt.hash(password, this.userService.HASH_ROUNDS);
+    const hashedPassword = await bcrypt.hash(password, HASH_ROUNDS);
     const updatedUser = await this.usersRepository.update(user.id, {
       password: hashedPassword,
       status: UserStatus.ACTIVE,
@@ -75,30 +78,10 @@ export class AuthService {
   }
 
   /**
-   * Validates a refresh token and issues a new access token.
-   */
-  async refreshAccessToken(payload: AuthRefreshPayload): Promise<AuthRefreshResponse> {
-    const { userId, version } = payload;
-    const user = await this.usersRepository.findById(userId);
-
-    if (!user) {
-      throw new RpcException(new ForbiddenException('User not found').getResponse());
-    }
-
-    if (user.refreshTokenVersion !== version) {
-      throw new RpcException(new ForbiddenException('Invalid refresh token').getResponse());
-    }
-
-    const accessToken = await this.signAccessToken(user.id, user.role);
-    return { accessToken };
-  }
-
-  /**
    * Finds user and compares passwords.
    */
   async validateUser(email: string, pass: string): Promise<UserSchema | null> {
     const user = await this.usersRepository.findByEmailWithCredentials(email);
-
     if (user && (await bcrypt.compare(pass, user.password))) {
       return user;
     }
@@ -113,11 +96,9 @@ export class AuthService {
       sub: user.id,
       status: UserStatus.PENDING,
     };
-
     const expiresIn = this.configService.getOrThrow<string>('JWT_PENDING_EXPIRES_IN');
 
     const token = await this.jwtService.signAsync(payload, {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expiresIn: expiresIn as any,
     });
     return { pendingToken: token };
@@ -127,28 +108,33 @@ export class AuthService {
    * Issues full Access and Refresh tokens for an active user.
    */
   private async grantUserTokens(user: UserSchema): Promise<AuthLoginResponseDto> {
-    const refreshTokenVersion = uuidv4();
-
     try {
-      // Update the refresh token version in the DB
-      await this.userService.updateRefreshTokenVersion(user.id, refreshTokenVersion);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // Generate new token details
+      const jti = uuidv4();
+      const expiresInStr = this.configService.getOrThrow<string>('JWT_REFRESH_EXPIRES_IN');
+      const expiresInMs = ms(expiresInStr as any) as unknown as number;
+      const expiresAt = new Date(Date.now() + expiresInMs);
+
+      await this.refreshTokenRepo.create(user.id, jti, expiresAt);
+
+      const [accessToken, refreshToken] = await Promise.all([
+        this.signAccessToken(user.id, user.role),
+        this.signRefreshToken(user.id, jti),
+      ]);
+
+      return {
+        accessToken,
+        refreshToken,
+        user: this.mapToDto(user),
+      };
     } catch (e) {
-      const error = new InternalServerErrorException('Could not update user token');
+      console.error('Failed to grant user tokens:', e);
+      const error = new InternalServerErrorException('Could not grant tokens');
       throw new RpcException(error.getResponse());
     }
-
-    const [accessToken, refreshToken] = await Promise.all([
-      this.signAccessToken(user.id, user.role),
-      this.signRefreshToken(user.id, refreshTokenVersion),
-    ]);
-
-    return {
-      accessToken,
-      refreshToken,
-      user: this.userService['mapToDto'](user),
-    };
   }
+
+  // --- Token Signing Helpers ---
 
   private signAccessToken(userId: string, role: UserRole): Promise<string> {
     const payload = { sub: userId, role };
@@ -156,19 +142,30 @@ export class AuthService {
 
     return this.jwtService.signAsync(payload, {
       secret: this.configService.getOrThrow<string>('JWT_SECRET'),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expiresIn: expiresIn as any,
     });
   }
 
-  private signRefreshToken(userId: string, version: string): Promise<string> {
-    const payload = { sub: userId, version };
+  private signRefreshToken(userId: string, jti: string): Promise<string> {
+    const payload = { sub: userId, jti: jti };
     const expiresIn = this.configService.getOrThrow<string>('JWT_REFRESH_EXPIRES_IN');
 
     return this.jwtService.signAsync(payload, {
       secret: this.configService.getOrThrow<string>('JWT_SECRET'),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       expiresIn: expiresIn as any,
     });
+  }
+
+  /**
+   * Maps the internal UserSchema entity to the safe, public UserDto.
+   */
+  private mapToDto(user: UserSchema): UserDto {
+    return {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      role: user.role,
+      status: user.status,
+    };
   }
 }

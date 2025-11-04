@@ -2,12 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserRepoDto } from '../dtos/create-user-repo.dto';
+import { UserRepository } from './user.repository';
 import { UserSchema } from './user.schema';
-import { UsersRepository } from './users.repository';
 
 // This is the Mongoose implementation of the UsersRepository.
 @Injectable()
-export class MongoUsersRepository implements UsersRepository {
+export class MongoUserRepository implements UserRepository {
   constructor(@InjectModel(UserSchema.name) private userModel: Model<UserSchema>) {}
 
   async create(dto: CreateUserRepoDto): Promise<UserSchema> {
