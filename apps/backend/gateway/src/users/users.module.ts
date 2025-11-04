@@ -1,10 +1,11 @@
 import { UserClientModule } from '@limbo/users-contracts';
 import { Module } from '@nestjs/common';
+import { AuthModule } from '../auth/auth.module';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
 @Module({
-  imports: [UserClientModule],
+  imports: [AuthModule, UserClientModule],
   controllers: [UsersController],
   providers: [UsersService],
 })

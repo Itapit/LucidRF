@@ -1,8 +1,8 @@
 import { UserDto } from '@limbo/common'; // The public response DTO
 import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { AdminGuard } from '../auth/guards/admin.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AdminCreateUserDto } from './dtos/admin-create-user.dto';
-import { AdminGuard } from './guards/admin.guard';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { UsersService } from './users.service';
 
 @Controller('users')

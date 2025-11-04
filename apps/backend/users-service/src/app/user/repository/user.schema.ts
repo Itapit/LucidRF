@@ -12,7 +12,7 @@ export class UserSchema extends Document {
   @Prop({ type: String, required: true, select: false })
   password: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, required: true, unique: true })
   username: string;
 
   @Prop({ type: String, enum: UserRole, default: UserRole.USER })
