@@ -47,7 +47,7 @@ export class AuthService {
       return this.grantPendingToken(user);
     }
 
-    return this.grantUserTokens(user);
+    return this.grantUserTokens(user, payload.userAgent);
   }
 
   /**
@@ -74,7 +74,7 @@ export class AuthService {
       throw new RpcException(new InternalServerErrorException('Failed to activate user').getResponse());
     }
 
-    return this.grantUserTokens(updatedUser);
+    return this.grantUserTokens(updatedUser, payload.userAgent);
   }
 
   /**
@@ -107,7 +107,7 @@ export class AuthService {
   /**
    * Issues full Access and Refresh tokens for an active user.
    */
-  private async grantUserTokens(user: UserSchema): Promise<AuthLoginResponseDto> {
+  private async grantUserTokens(user: UserSchema, userAgent?: string): Promise<AuthLoginResponseDto> {
     try {
       // Generate new token details
       const jti = uuidv4();
@@ -115,7 +115,7 @@ export class AuthService {
       const expiresInMs = ms(expiresInStr as any) as unknown as number;
       const expiresAt = new Date(Date.now() + expiresInMs);
 
-      await this.refreshTokenRepo.create(user.id, jti, expiresAt);
+      await this.refreshTokenRepo.create(user.id, jti, expiresAt, userAgent);
 
       const [accessToken, refreshToken] = await Promise.all([
         this.signAccessToken(user.id, user.role),
