@@ -2,6 +2,8 @@ import { UserRole, UserStatus } from '@limbo/common';
 import {
   AuthLoginPayload,
   AuthLoginResponseDto,
+  AuthRefreshPayload,
+  AuthRefreshResponse,
   CompleteSetupPayload,
   PendingLoginResponseDto,
 } from '@limbo/users-contracts';
@@ -70,6 +72,25 @@ export class AuthService {
     }
 
     return this.grantUserTokens(updatedUser);
+  }
+
+  /**
+   * Validates a refresh token and issues a new access token.
+   */
+  async refreshAccessToken(payload: AuthRefreshPayload): Promise<AuthRefreshResponse> {
+    const { userId, version } = payload;
+    const user = await this.usersRepository.findById(userId);
+
+    if (!user) {
+      throw new RpcException(new ForbiddenException('User not found').getResponse());
+    }
+
+    if (user.refreshTokenVersion !== version) {
+      throw new RpcException(new ForbiddenException('Invalid refresh token').getResponse());
+    }
+
+    const accessToken = await this.signAccessToken(user.id, user.role);
+    return { accessToken };
   }
 
   /**

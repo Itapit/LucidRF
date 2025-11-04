@@ -11,4 +11,5 @@ export const USER_PATTERNS = {
   PING: 'cmd:ping',
   AUTH_LOGIN: 'cmd:auth_login',
   AUTH_COMPLETE_SETUP: 'cmd:auth_complete_setup',
+  AUTH_REFRESH: 'cmd:auth_refresh',
 };

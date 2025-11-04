@@ -1,4 +1,4 @@
-import { UserDto } from '@limbo/common'; // The public response DTO
+import { UserDto } from '@limbo/common';
 import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
 import { AdminGuard } from '../auth/guards/admin.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
