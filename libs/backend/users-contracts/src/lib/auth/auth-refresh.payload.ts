@@ -1,4 +1,4 @@
-import { IsMongoId, IsNotEmpty, IsString } from 'class-validator';
+import { IsMongoId, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class AuthRefreshPayload {
   @IsMongoId()
@@ -7,5 +7,9 @@ export class AuthRefreshPayload {
 
   @IsString()
   @IsNotEmpty()
-  version!: string;
+  jti!: string;
+
+  @IsString()
+  @IsOptional()
+  userAgent?: string;
 }

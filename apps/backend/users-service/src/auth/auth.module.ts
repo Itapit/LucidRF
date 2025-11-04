@@ -25,7 +25,7 @@ import { RefreshTokenSchema, RefreshTokenSchemaFactory } from './repository/refr
     MongooseModule.forFeature([{ name: RefreshTokenSchema.name, schema: RefreshTokenSchemaFactory }]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, { provide: RefreshTokenRepository, useClass: MongoRefreshTokenRepository }, ConfigService],
+  providers: [AuthService, { provide: RefreshTokenRepository, useClass: MongoRefreshTokenRepository }],
   exports: [],
 })
 export class AuthModule {}

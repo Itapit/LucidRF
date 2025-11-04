@@ -24,7 +24,7 @@ export class MongoUserRepository implements UserRepository {
   }
 
   async findByEmailWithCredentials(email: string): Promise<UserSchema | null> {
-    return this.userModel.findOne({ email }).select('+password +refreshTokenVersion').exec();
+    return this.userModel.findOne({ email }).select('+password').exec();
   }
 
   async update(id: string, updates: Partial<UserSchema>): Promise<UserSchema | null> {

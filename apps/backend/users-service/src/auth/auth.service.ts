@@ -3,6 +3,7 @@ import { UserDto, UserRole, UserStatus } from '@limbo/common';
 import {
   AuthLoginPayload,
   AuthLoginResponseDto,
+  AuthRefreshPayload,
   CompleteSetupPayload,
   PendingLoginResponseDto,
 } from '@limbo/users-contracts';
@@ -78,6 +79,20 @@ export class AuthService {
   }
 
   /**
+   * Main entry point for the refresh command.
+   */
+  async refreshAccessToken(payload: AuthRefreshPayload): Promise<AuthLoginResponseDto> {
+    const user = await this.validateAndRotateRefreshToken(payload);
+
+    try {
+      return this.grantUserTokens(user, payload.userAgent);
+    } catch (e) {
+      console.error('Error during token granting:', e);
+      throw new RpcException(new InternalServerErrorException('Could not grant tokens').getResponse());
+    }
+  }
+
+  /**
    * Finds user and compares passwords.
    */
   async validateUser(email: string, pass: string): Promise<UserSchema | null> {
@@ -86,6 +101,39 @@ export class AuthService {
       return user;
     }
     return null;
+  }
+
+  /**
+   * This handles all validation, theft detection, and the DB rotation.
+   * It returns the full UserSchema if successful.
+   */
+  private async validateAndRotateRefreshToken(payload: AuthRefreshPayload): Promise<UserSchema> {
+    const { userId, jti } = payload;
+    const token = await this.refreshTokenRepo.findByJti(jti);
+
+    if (!token) {
+      // Token not in DB. It's either invalid or has already been used.
+      const user = await this.usersRepository.findById(userId);
+      if (user) {
+        // High-risk security event: Nuke all sessions
+        await this.refreshTokenRepo.deleteAllForUser(userId);
+      }
+      throw new RpcException(new ForbiddenException('Refresh token reuse detected').getResponse());
+    }
+
+    if (token.userId.toString() !== userId) {
+      throw new RpcException(new UnauthorizedException('Invalid credentials').getResponse());
+    }
+
+    // Invalidate the token that was just used
+    await this.refreshTokenRepo.delete(jti);
+
+    const user = await this.usersRepository.findById(userId);
+    if (!user) {
+      throw new RpcException(new NotFoundException('User not found').getResponse());
+    }
+
+    return user;
   }
 
   /**
