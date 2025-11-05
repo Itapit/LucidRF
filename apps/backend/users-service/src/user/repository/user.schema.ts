@@ -20,9 +20,6 @@ export class UserSchema extends Document {
 
   @Prop({ type: String, enum: UserStatus, default: UserStatus.PENDING })
   status: UserStatus;
-
-  @Prop({ type: String, select: false })
-  refreshTokenVersion: string;
 }
 
 export const UserSchemaFactory = SchemaFactory.createForClass(UserSchema);

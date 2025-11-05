@@ -3,7 +3,7 @@ import { UserSchema } from './user.schema';
 
 //This abstract class defines the contract for our UsersRepository
 
-export abstract class UsersRepository {
+export abstract class UserRepository {
   abstract create(createUserRepoDto: CreateUserRepoDto): Promise<UserSchema>;
 
   abstract findByEmail(email: string): Promise<UserSchema | null>;

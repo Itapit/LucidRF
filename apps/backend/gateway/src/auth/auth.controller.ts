@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { LoginResponse, PendingLoginResponse } from '@limbo/common';
+import { AuthRefreshResponse, LoginResponse, PendingLoginResponse } from '@limbo/common';
 import { AuthLoginResponseDto } from '@limbo/users-contracts';
-import { Body, Controller, Post, Req, Res, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Headers, Post, Req, Res, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { CompleteSetupDto, LoginDto } from './dtos';
 import { PendingJwtGuard } from './guards/pending-jwt.guard';
+import { RefreshTokenGuard } from './guards/refresh-token.guard';
 import ms = require('ms');
 
 @Controller('auth')
@@ -17,9 +18,10 @@ export class AuthController {
   @UsePipes(new ValidationPipe())
   async login(
     @Body() loginDto: LoginDto,
-    @Res({ passthrough: true }) res: Response
+    @Res({ passthrough: true }) res: Response,
+    @Headers('user-agent') userAgent: string
   ): Promise<LoginResponse | PendingLoginResponse> {
-    const result = await this.authService.login(loginDto);
+    const result = await this.authService.login(loginDto, userAgent);
 
     if ('pendingToken' in result) {
       return { pendingToken: result.pendingToken };
@@ -48,11 +50,12 @@ export class AuthController {
   async completeSetup(
     @Req() req,
     @Body() dto: CompleteSetupDto,
-    @Res({ passthrough: true }) res: Response
+    @Res({ passthrough: true }) res: Response,
+    @Headers('user-agent') userAgent: string
   ): Promise<LoginResponse> {
     const userId = req.user.id;
 
-    const result = (await this.authService.completeSetup(userId, dto)) as AuthLoginResponseDto;
+    const result = (await this.authService.completeSetup(userId, dto, userAgent)) as AuthLoginResponseDto;
 
     const maxAgeString = this.configService.getOrThrow<string>('JWT_REFRESH_EXPIRES_IN');
     const maxAgeMs = ms(maxAgeString as any) as unknown as number;
@@ -67,6 +70,31 @@ export class AuthController {
     return {
       accessToken: result.accessToken,
       user: result.user,
+    };
+  }
+
+  @Post('refresh')
+  @UseGuards(RefreshTokenGuard)
+  async refresh(
+    @Req() req,
+    @Res({ passthrough: true }) res: Response,
+    @Headers('user-agent') userAgent: string
+  ): Promise<AuthRefreshResponse> {
+    const { id, jti } = req.user;
+    const result = await this.authService.refresh(id, jti, userAgent);
+
+    const maxAgeString = this.configService.getOrThrow<string>('JWT_REFRESH_EXPIRES_IN');
+    const maxAgeMs = ms(maxAgeString as any) as unknown as number;
+
+    res.cookie('refresh-token', result.refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      maxAge: maxAgeMs,
+    });
+
+    return {
+      accessToken: result.accessToken,
     };
   }
 }

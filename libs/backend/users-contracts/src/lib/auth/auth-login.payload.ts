@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class AuthLoginPayload {
   @IsEmail()
@@ -7,4 +7,8 @@ export class AuthLoginPayload {
   @IsString()
   @IsNotEmpty()
   password!: string;
+
+  @IsString()
+  @IsOptional()
+  userAgent?: string;
 }
