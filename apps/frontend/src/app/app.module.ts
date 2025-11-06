@@ -1,3 +1,4 @@
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -11,7 +12,14 @@ import { AppStoreModule } from './state/app-store.module';
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserModule, BrowserAnimationsModule, RouterModule.forRoot(appRoutes), AuthModule, AppStoreModule],
+  imports: [
+    BrowserModule,
+    HttpClientModule,
+    BrowserAnimationsModule,
+    RouterModule.forRoot(appRoutes),
+    AppStoreModule,
+    AuthModule,
+  ],
   bootstrap: [AppComponent],
   providers: [
     providePrimeNG({

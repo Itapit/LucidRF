@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
-import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { inject, Injectable } from '@angular/core';
+import { Actions, createEffect, ofType, ROOT_EFFECTS_INIT } from '@ngrx/effects';
 import { catchError, map, of, switchMap, tap, withLatestFrom } from 'rxjs';
 
 import { Router } from '@angular/router';
@@ -29,12 +29,12 @@ export class AuthEffects {
     return of(action({ error: errorMessage }));
   }
 
-  // =================================================================
-  // APP INIT FLOW (F5 REFRESH)
-  // =================================================================
-  appInit$ = createEffect(() =>
+  /**
+   * This effect runs exactly once when the NgRx store is initialized.
+   */
+  init$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(AuthActions.init),
+      ofType(ROOT_EFFECTS_INIT),
       map(() => AuthActions.refreshStart())
     )
   );

@@ -11,9 +11,6 @@ import { createActionGroup, emptyProps, props } from '@ngrx/store';
 export const AuthActions = createActionGroup({
   source: 'Auth',
   events: {
-    // App Init (F5 Refresh)
-    Init: emptyProps(),
-
     // Login
     'Login Start': props<{ request: LoginRequest }>(),
     'Login Success': props<{ response: LoginResponse | PendingLoginResponse }>(),

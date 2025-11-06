@@ -57,14 +57,6 @@ export class AuthFacade {
   // --- Action Dispatchers ---
 
   /**
-   * Dispatches the action to trigger the initial app-load
-   * (F5 refresh) flow.
-   */
-  appInit() {
-    this.store.dispatch(AuthActions.init());
-  }
-
-  /**
    * Dispatches the login action.
    * @param request The user's email and password.
    */

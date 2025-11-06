@@ -4,7 +4,9 @@ import { EffectsModule } from '@ngrx/effects';
 import { routerReducer, StoreRouterConnectingModule } from '@ngrx/router-store';
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { AuthEffects } from '../auth/store/auth.effects';
 import { authFeature } from '../auth/store/auth.reducer';
+import { environment } from '../environments/environment';
 import { AppInitEffects } from './app-init.effects';
 
 @NgModule({
@@ -15,19 +17,22 @@ import { AppInitEffects } from './app-init.effects';
     // router store
     StoreModule.forRoot({
       router: routerReducer,
+      [authFeature.name]: authFeature.reducer,
     }),
-    StoreRouterConnectingModule.forRoot({ stateKey: 'router' }),
 
     // init effects
-    EffectsModule.forRoot([AppInitEffects]),
+    EffectsModule.forRoot([AppInitEffects, AuthEffects]),
+
+    StoreRouterConnectingModule.forRoot({ stateKey: 'router' }),
 
     // devtool
     StoreDevtoolsModule.instrument({
+      name: 'Limbo',
       maxAge: 25,
+      logOnly: environment.production,
+      trace: true,
+      traceLimit: 75,
     }),
-
-    // Auth store
-    StoreModule.forFeature(authFeature),
   ],
 })
 export class AppStoreModule {}

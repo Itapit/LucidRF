@@ -10,7 +10,6 @@ export const authReducer = createReducer(
 
   // --- API Calls Start ---
   on(
-    AuthActions.init,
     AuthActions.loginStart,
     AuthActions.completeSetupStart,
     AuthActions.refreshStart,
