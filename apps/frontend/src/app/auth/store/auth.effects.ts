@@ -30,6 +30,16 @@ export class AuthEffects {
   }
 
   // =================================================================
+  // APP INIT FLOW (F5 REFRESH)
+  // =================================================================
+  appInit$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.init),
+      map(() => AuthActions.refreshStart())
+    )
+  );
+
+  // =================================================================
   // LOGIN & COMPLETE SETUP FLOWS
   // =================================================================
   login$ = createEffect(() =>

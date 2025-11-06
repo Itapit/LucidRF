@@ -1,5 +1,5 @@
-import { Injectable, inject } from '@angular/core';
-import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { inject, Injectable } from '@angular/core';
+import { Actions, createEffect, ofType, ROOT_EFFECTS_INIT } from '@ngrx/effects';
 import { map } from 'rxjs';
 import { AuthActions } from '../auth/store/auth.actions';
 
@@ -7,15 +7,13 @@ import { AuthActions } from '../auth/store/auth.actions';
 export class AppInitEffects {
   private actions$ = inject(Actions);
 
-  // =================================================================
-  // APP INIT FLOW (F5 REFRESH)
-  // =================================================================
-  // This effect should be in your `app-init.effects.ts`
-  // We'll put it here for now to show the flow.
+  /**
+   * This effect runs exactly once when the NgRx store is initialized.
+   */
   init$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(AuthActions.init),
-      map(() => AuthActions.refreshStart())
+      ofType(ROOT_EFFECTS_INIT),
+      map(() => AuthActions.init())
     )
   );
 }
