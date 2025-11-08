@@ -47,14 +47,10 @@ export class AuthInterceptor implements HttpInterceptor {
     }
 
     // This was a 401 on a normal API call. Handle refresh.
-    return this.handleRefreshFlow(req, next, error);
+    return this.handleRefreshFlow(req, next);
   }
 
-  private handleRefreshFlow(
-    req: HttpRequest<unknown>,
-    next: HttpHandler,
-    error: HttpErrorResponse
-  ): Observable<HttpEvent<unknown>> {
+  private handleRefreshFlow(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     if (this.isRefreshing) {
       return this.refreshTokenSubject.pipe(
         filter((token) => token !== null),
@@ -71,10 +67,8 @@ export class AuthInterceptor implements HttpInterceptor {
       this.isRefreshing = true;
       this.refreshTokenSubject.next(null);
 
-      // Tell the "brain" (NgRx) to start the refresh logic
       this.store.dispatch(AuthActions.refreshStart());
 
-      // Now we wait for the "brain" to tell us the result
       return this.actions$.pipe(
         ofType(AuthActions.refreshSuccess, AuthActions.refreshFailure),
         take(1),

@@ -1,5 +1,5 @@
 import { UserDto } from '@limbo/common';
-import { AdminCreateUserPayload, USER_PATTERNS, USER_SERVICE } from '@limbo/users-contracts';
+import { AdminCreateUserPayload, GetUserByIdPayload, USER_PATTERNS, USER_SERVICE } from '@limbo/users-contracts';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
@@ -23,5 +23,10 @@ export class UsersService {
     };
 
     return this.usersClient.send<UserDto>(USER_PATTERNS.CREATE_USER, payload).toPromise();
+  }
+
+  async getMe(userId: string): Promise<UserDto> {
+    const payload: GetUserByIdPayload = { userId };
+    return this.usersClient.send<UserDto>(USER_PATTERNS.GET_USER_BY_ID, payload).toPromise();
   }
 }
