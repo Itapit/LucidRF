@@ -1,2 +1,53 @@
-<p>login works!</p>
-<p-button label="hello" icon="pi pi-home"></p-button>
+<div class="flex justify-content-center align-items-center h-screen">
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <p-card header="Login" [style]="{ width: '400px' }">
+      <div class="field mt-3">
+        <label for="email" class="block mb-2">Email</label>
+        <p-inputGroup>
+          <p-inputGroupAddon>
+            <i class="pi pi-envelope"></i>
+          </p-inputGroupAddon>
+          <input
+            id="email"
+            type="email"
+            pInputText
+            formControlName="email"
+            placeholder="your@email.com"
+            class="w-full"
+          />
+        </p-inputGroup>
+      </div>
+
+      <div class="field mt-4">
+        <label for="password" class="block mb-2">Password</label>
+        <p-inputGroup>
+          <p-inputGroupAddon>
+            <i class="pi pi-lock"></i>
+          </p-inputGroupAddon>
+          <input
+            id="password"
+            type="password"
+            pInputText
+            formControlName="password"
+            placeholder="Password"
+            class="w-full"
+          />
+        </p-inputGroup>
+      </div>
+
+      <ng-container *ngIf="error$ | async as error">
+        <p-message severity="error" [text]="error" styleClass="mt-4 w-full"></p-message>
+      </ng-container>
+
+      <div class="field mt-5">
+        <p-button
+          label="Login"
+          type="submit"
+          styleClass="w-full"
+          [loading]="isLoading$ | async"
+          [disabled]="loginForm.invalid"
+        ></p-button>
+      </div>
+    </p-card>
+  </form>
+</div>

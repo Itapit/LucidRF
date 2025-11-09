@@ -1,15 +1,41 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { AuthFacade } from '../store/auth.facade';
 
 @Component({
   selector: 'app-login',
   standalone: false,
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css',
+  styleUrls: ['./login.component.css'],
 })
-export class LoginComponent {
-  readonly authStore = inject(AuthFacade);
+export class LoginComponent implements OnInit {
+  private fb = inject(FormBuilder);
+  private authFacade = inject(AuthFacade);
 
-  loading$ = this.authStore.loading$;
-  error$ = this.authStore.error$;
+  loginForm!: FormGroup;
+  isLoading$: Observable<boolean>;
+  error$: Observable<string | null>;
+
+  constructor() {
+    this.isLoading$ = this.authFacade.loading$;
+    this.error$ = this.authFacade.error$;
+  }
+
+  ngOnInit(): void {
+    this.authFacade.clearError();
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required]],
+    });
+  }
+
+  onSubmit(): void {
+    if (this.loginForm.invalid) {
+      return;
+    }
+
+    // Dispatch the login action using the form's value
+    this.authFacade.login(this.loginForm.value);
+  }
 }

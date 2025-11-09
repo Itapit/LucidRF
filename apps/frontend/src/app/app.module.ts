@@ -7,7 +7,7 @@ import Lara from '@primeuix/themes/lara';
 import { providePrimeNG } from 'primeng/config';
 import { AppComponent } from './app.component';
 import { appRoutes } from './app.routes';
-import { AuthModule } from './auth/auth-module';
+import { AuthModule } from './auth/auth.module';
 import { CredentialsInterceptor } from './auth/infrastructure/credentials.interceptors';
 import { AuthInterceptor } from './auth/infrastructure/refresh.interceptor';
 import { AppStoreModule } from './state/app-store.module';
