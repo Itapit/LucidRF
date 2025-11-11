@@ -7,21 +7,13 @@ import Lara from '@primeuix/themes/lara';
 import { providePrimeNG } from 'primeng/config';
 import { AppComponent } from './app.component';
 import { appRoutes } from './app.routes';
-import { AuthModule } from './auth/auth.module';
 import { CredentialsInterceptor } from './auth/infrastructure/credentials.interceptors';
 import { AuthInterceptor } from './auth/infrastructure/refresh.interceptor';
 import { AppStoreModule } from './state/app-store.module';
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [
-    BrowserModule,
-    HttpClientModule,
-    BrowserAnimationsModule,
-    RouterModule.forRoot(appRoutes),
-    AppStoreModule,
-    AuthModule,
-  ],
+  imports: [BrowserModule, HttpClientModule, BrowserAnimationsModule, RouterModule.forRoot(appRoutes), AppStoreModule],
   bootstrap: [AppComponent],
   providers: [
     providePrimeNG({
