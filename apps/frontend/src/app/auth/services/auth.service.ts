@@ -27,7 +27,7 @@ export class AuthService {
   }
 
   adminCreateUser(dto: AdminCreateUserRequest): Observable<UserDto> {
-    return this.http.post<UserDto>(`${this.baseUrl}/auth`, dto);
+    return this.http.post<UserDto>(`${this.baseUrl}/users`, dto);
   }
 
   completeSetup(dto: CompleteSetupRequest): Observable<LoginResponse> {

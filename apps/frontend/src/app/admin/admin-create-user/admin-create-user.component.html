@@ -1,1 +1,58 @@
-<p>admin-create-user works!</p>
+<div class="flex justify-content-center align-items-center h-screen">
+  <form [formGroup]="adminCreateForm" (ngSubmit)="onSubmit()">
+    <p-card header="Create New User" [style]="{ width: '400px' }">
+      <div class="field mt-3">
+        <label for="username" class="block mb-2">Username</label>
+        <p-inputGroup>
+          <p-inputGroupAddon>
+            <i class="pi pi-user"></i>
+          </p-inputGroupAddon>
+          <input
+            id="username"
+            type="text"
+            pInputText
+            formControlName="username"
+            placeholder="john.doe"
+            class="w-full"
+          />
+        </p-inputGroup>
+      </div>
+
+      <div class="field mt-4">
+        <label for="email" class="block mb-2">Email</label>
+        <p-inputGroup>
+          <p-inputGroupAddon>
+            <i class="pi pi-envelope"></i>
+          </p-inputGroupAddon>
+          <input
+            id="email"
+            type="email"
+            pInputText
+            formControlName="email"
+            placeholder="your@email.com"
+            class="w-full"
+          />
+        </p-inputGroup>
+      </div>
+
+      <div class="field mt-4">
+        <label for="role" class="block mb-2">Role</label>
+        <p-select id="role" [options]="roles" formControlName="role" styleClass="w-full"></p-select>
+      </div>
+
+      <ng-container *ngIf="error$ | async as error">
+        <p-message severity="error" [text]="error" styleClass="mt-4 w-full"></p-message>
+      </ng-container>
+
+      <div class="field mt-5">
+        <p-button
+          label="Create User"
+          type="submit"
+          styleClass="w-full"
+          [loading]="(isLoading$ | async) ?? false"
+          [disabled]="adminCreateForm.invalid || ((isLoading$ | async) ?? false)"
+        ></p-button>
+      </div>
+    </p-card>
+  </form>
+</div>
