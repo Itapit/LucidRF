@@ -54,6 +54,24 @@ export class AuthEffects {
     )
   );
 
+  loginSuccess$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(AuthActions.loginSuccess),
+        tap(({ response }) => {
+          if (isPendingLoginResponse(response)) {
+            this.tokenService.setToken(response.pendingToken);
+            this.router.navigate(['auth/complete-setup']);
+            return;
+          }
+          // It's a LoginResponse
+          this.tokenService.setToken(response.accessToken);
+          this.router.navigate(['/']);
+        })
+      ),
+    { dispatch: false }
+  );
+
   completeSetup$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AuthActions.completeSetupStart),
@@ -71,24 +89,6 @@ export class AuthEffects {
         )
       )
     )
-  );
-
-  loginSuccess$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(AuthActions.loginSuccess),
-        tap(({ response }) => {
-          if (isPendingLoginResponse(response)) {
-            this.tokenService.setToken(response.pendingToken);
-            this.router.navigate(['/complete-setup']);
-            return;
-          }
-          // It's a LoginResponse
-          this.tokenService.setToken(response.accessToken);
-          this.router.navigate(['/']);
-        })
-      ),
-    { dispatch: false }
   );
 
   // =================================================================

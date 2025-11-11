@@ -1,0 +1,39 @@
+<div class="flex justify-content-center align-items-center h-screen">
+  <form [formGroup]="setupForm" (ngSubmit)="onSubmit()">
+    <p-card header="Set Your Password" [style]="{ width: '400px' }">
+      <p class="text-center mb-4">Welcome! Please set a new password to activate your account.</p>
+
+      <div class="field">
+        <label for="password" class="block mb-2">New Password</label>
+        <p-password
+          inputId="password"
+          formControlName="password"
+          placeholder="Enter new password"
+          [feedback]="true"
+          [toggleMask]="true"
+          styleClass="w-full"
+        ></p-password>
+        <div *ngIf="setupForm.get('password')?.invalid && setupForm.get('password')?.touched" class="p-error mt-1">
+          <small *ngIf="setupForm.get('password')?.errors?.['required']"> Password is required. </small>
+          <small *ngIf="setupForm.get('password')?.errors?.['minlength']">
+            Password must be at least 8 characters.
+          </small>
+        </div>
+      </div>
+
+      <ng-container *ngIf="error$ | async as err">
+        <p-message severity="error" [text]="err" styleClass="mt-4 w-full"></p-message>
+      </ng-container>
+
+      <div class="field mt-5">
+        <p-button
+          label="Activate Account"
+          type="submit"
+          styleClass="w-full"
+          [loading]="(isLoading$ | async) ?? false"
+          [disabled]="setupForm.invalid || ((isLoading$ | async) ?? false)"
+        ></p-button>
+      </div>
+    </p-card>
+  </form>
+</div>
