@@ -6,6 +6,7 @@ import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { AuthEffects } from '../auth/store/auth.effects';
 import { authFeature } from '../auth/store/auth.reducer';
+import { coreFeature } from '../core/core.reducer';
 import { environment } from '../environments/environment';
 import { AppInitEffects } from './app-init.effects';
 
@@ -17,6 +18,7 @@ import { AppInitEffects } from './app-init.effects';
     // router store
     StoreModule.forRoot({
       router: routerReducer,
+      [coreFeature.name]: coreFeature.reducer,
       [authFeature.name]: authFeature.reducer,
     }),
 
