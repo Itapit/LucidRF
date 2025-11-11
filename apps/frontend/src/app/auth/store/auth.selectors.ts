@@ -62,3 +62,24 @@ export const selectLoginError = createSelector(selectAuthError, (error) =>
 export const selectCompleteSetupError = createSelector(selectAuthError, (error) =>
   error?.source === AuthErrorSource.COMPLETE_SETUP ? error.message : null
 );
+
+/**
+ * Selects the error message *only if* it came from the 'register' flow.
+ */
+export const selectRegisterError = createSelector(selectAuthError, (error) =>
+  error?.source === AuthErrorSource.REGISTER ? error.message : null
+);
+
+/**
+ * Selects the error message *only if* it came from the 'load me' flow.
+ */
+export const selectLoadMeError = createSelector(selectAuthError, (error) =>
+  error?.source === AuthErrorSource.LOAD_ME ? error.message : null
+);
+
+/**
+ * Selects the error message *only if* it came from the 'refresh' flow.
+ */
+export const selectRefreshError = createSelector(selectAuthError, (error) =>
+  error?.source === AuthErrorSource.REFRESH ? error.message : null
+);

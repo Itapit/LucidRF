@@ -5,11 +5,15 @@ import { AuthActions } from './auth.actions';
 import {
   selectAuthError,
   selectAuthLoading,
+  selectCompleteSetupError,
   selectEmail,
   selectIsLoggedIn,
   selectIsLoggedOut,
   selectIsPending,
+  selectLoadMeError,
   selectLoginError,
+  selectRefreshError,
+  selectRegisterError,
   selectRole,
   selectSessionStatus,
   selectUser,
@@ -28,7 +32,21 @@ export class AuthFacade {
 
   /** Emits the last known auth error */
   error$ = this.store.select(selectAuthError);
+
+  /** Emits the last known login error */
   loginError$ = this.store.select(selectLoginError);
+
+  /** Emits the last known register error */
+  registerError$ = this.store.select(selectRegisterError);
+
+  /** Emits the last known refresh error */
+  refreshError$ = this.store.select(selectRefreshError);
+
+  /** Emits the last known loadMe error */
+  loadMeError$ = this.store.select(selectLoadMeError);
+
+  /** Emits the last known completeSetup error */
+  completeSetupError$ = this.store.select(selectCompleteSetupError);
 
   /** Emits the full UserDto object if logged in */
   user$ = this.store.select(selectUser);
