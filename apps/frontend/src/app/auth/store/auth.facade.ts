@@ -9,6 +9,7 @@ import {
   selectIsLoggedIn,
   selectIsLoggedOut,
   selectIsPending,
+  selectLoginError,
   selectRole,
   selectSessionStatus,
   selectUser,
@@ -27,6 +28,7 @@ export class AuthFacade {
 
   /** Emits the last known auth error */
   error$ = this.store.select(selectAuthError);
+  loginError$ = this.store.select(selectLoginError);
 
   /** Emits the full UserDto object if logged in */
   user$ = this.store.select(selectUser);

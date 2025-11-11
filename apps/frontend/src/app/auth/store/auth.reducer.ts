@@ -28,10 +28,10 @@ export const authReducer = createReducer(
     AuthActions.completeSetupFailure,
     AuthActions.refreshFailure,
     AuthActions.loadMeFailure,
-    (state, { error }) => ({
+    (state, { error, source }) => ({
       ...state,
       loading: false,
-      error,
+      error: { message: error, source: source },
     })
   ),
 

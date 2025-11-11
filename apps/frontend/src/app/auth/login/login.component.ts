@@ -19,7 +19,7 @@ export class LoginComponent implements OnInit {
 
   constructor() {
     this.isLoading$ = this.authFacade.loading$;
-    this.error$ = this.authFacade.error$;
+    this.error$ = this.authFacade.loginError$;
   }
 
   ngOnInit(): void {

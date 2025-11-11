@@ -43,10 +43,28 @@ export class ErrorHandlerService {
     if (error.status >= 400 && error.status < 500) {
       // --- 2. Expected Error ---
       // This is a feature-level error. We return the specific message from the backend.
-      return error.error?.message || GENERIC_EXPECTED_ERROR;
+      return this.extractExpectedErrorMessage(error);
     }
 
     // Handle other unexpected HTTP errors
+    return GENERIC_EXPECTED_ERROR;
+  }
+
+  private extractExpectedErrorMessage(error: HttpErrorResponse): string {
+    const errorBody = error.error;
+
+    if (errorBody && errorBody.message) {
+      if (Array.isArray(errorBody.message)) {
+        // This is a ValidationPipe error. Take the first message.
+        return errorBody.message[0];
+      }
+      if (typeof errorBody.message === 'string') {
+        // This is a manual HttpException (e.g., "Invalid credentials").
+        return errorBody.message;
+      }
+    }
+
+    // Fallback
     return GENERIC_EXPECTED_ERROR;
   }
 

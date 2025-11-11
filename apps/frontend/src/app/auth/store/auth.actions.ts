@@ -7,6 +7,7 @@ import {
   UserDto,
 } from '@limbo/common';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
+import { AuthErrorSource } from '../dtos/auth-error-source.enum';
 
 export const AuthActions = createActionGroup({
   source: 'Auth',
@@ -14,21 +15,21 @@ export const AuthActions = createActionGroup({
     // Login
     'Login Start': props<{ request: LoginRequest }>(),
     'Login Success': props<{ response: LoginResponse | PendingLoginResponse }>(),
-    'Login Failure': props<{ error: string }>(),
+    'Login Failure': props<{ error: string; source: AuthErrorSource }>(),
 
     // Complete Setup
     'Complete Setup Start': props<{ request: CompleteSetupRequest }>(), // uses login success
-    'Complete Setup Failure': props<{ error: string }>(),
+    'Complete Setup Failure': props<{ error: string; source: AuthErrorSource }>(),
 
     // Refresh flow
     'Refresh Start': emptyProps(), // triggered on 401 or bootstrap , sends RT
     'Refresh Success': props<{ response: AuthRefreshResponse }>(),
-    'Refresh Failure': props<{ error: string }>(),
+    'Refresh Failure': props<{ error: string; source: AuthErrorSource }>(),
 
     // Current user profile (/me)
     'Load Me Start': emptyProps(),
     'Load Me Success': props<{ user: UserDto }>(),
-    'Load Me Failure': props<{ error: string }>(),
+    'Load Me Failure': props<{ error: string; source: AuthErrorSource }>(),
 
     // Logout
     'Logout Start': emptyProps(),

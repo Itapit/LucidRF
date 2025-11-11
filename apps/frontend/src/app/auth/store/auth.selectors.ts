@@ -1,4 +1,5 @@
 import { createSelector } from '@ngrx/store';
+import { AuthErrorSource } from '../dtos/auth-error-source.enum';
 import { SessionStatus } from '../dtos/session-status.enum';
 import { authFeature } from './auth.reducer';
 
@@ -47,3 +48,17 @@ export const selectUsername = createSelector(selectUser, (user) => user?.usernam
  * Selects the user's email.
  */
 export const selectEmail = createSelector(selectUser, (user) => user?.email ?? null);
+
+/**
+ * Selects the error message *only if* it came from the 'login' flow.
+ */
+export const selectLoginError = createSelector(selectAuthError, (error) =>
+  error?.source === AuthErrorSource.LOGIN ? error.message : null
+);
+
+/**
+ * Selects the error message *only if* it came from the 'completeSetup' flow.
+ */
+export const selectCompleteSetupError = createSelector(selectAuthError, (error) =>
+  error?.source === AuthErrorSource.COMPLETE_SETUP ? error.message : null
+);

@@ -1,19 +1,17 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType, ROOT_EFFECTS_INIT } from '@ngrx/effects';
 import { catchError, EMPTY, map, of, switchMap, tap, withLatestFrom } from 'rxjs';
 
 import { Router } from '@angular/router';
 import { isPendingLoginResponse } from '@limbo/common';
-import { Action, ActionCreator, Store } from '@ngrx/store';
+import { Store } from '@ngrx/store';
+import { ErrorHandlerService } from '../../core/error-handler.service';
+import { AuthErrorSource } from '../dtos/auth-error-source.enum';
 import { AccessTokenService } from '../services/accessToken.service';
 import { AuthService } from '../services/auth.service';
 import { AuthActions } from './auth.actions';
 import { selectUser } from './auth.selectors';
 import { AuthState } from './auth.state';
-
-// Define a type for the action creators that take an error string
-type AuthFailureActionCreator = ActionCreator<string, (props: { error: string }) => { error: string } & Action>;
 
 @Injectable()
 export class AuthEffects {
@@ -22,12 +20,7 @@ export class AuthEffects {
   private tokenService = inject(AccessTokenService);
   private router = inject(Router);
   private store = inject(Store<AuthState>);
-
-  // Helper function to map HTTP errors to an Ngrx failure action.
-  private handleApiError(error: HttpErrorResponse, action: AuthFailureActionCreator) {
-    const errorMessage = error.error?.message || error.message || 'An unknown error occurred';
-    return of(action({ error: errorMessage }));
-  }
+  private errorHandler = inject(ErrorHandlerService);
 
   /**
    * This effect runs exactly once when the NgRx store is initialized.
@@ -48,7 +41,14 @@ export class AuthEffects {
       switchMap(({ request }) =>
         this.authService.login(request).pipe(
           map((response) => AuthActions.loginSuccess({ response })),
-          catchError((error: HttpErrorResponse) => this.handleApiError(error, AuthActions.loginFailure))
+          catchError((error) => {
+            return of(
+              AuthActions.loginFailure({
+                error: this.errorHandler.classifyError(error),
+                source: AuthErrorSource.LOGIN,
+              })
+            );
+          })
         )
       )
     )
@@ -59,8 +59,15 @@ export class AuthEffects {
       ofType(AuthActions.completeSetupStart),
       switchMap(({ request }) =>
         this.authService.completeSetup(request).pipe(
-          map((response) => AuthActions.loginSuccess({ response })), // Dispatches LoginSuccess
-          catchError((error: HttpErrorResponse) => this.handleApiError(error, AuthActions.completeSetupFailure))
+          map((response) => AuthActions.loginSuccess({ response })),
+          catchError((error) => {
+            return of(
+              AuthActions.completeSetupFailure({
+                error: this.errorHandler.classifyError(error),
+                source: AuthErrorSource.COMPLETE_SETUP,
+              })
+            );
+          })
         )
       )
     )
@@ -93,7 +100,14 @@ export class AuthEffects {
       switchMap(() =>
         this.authService.refresh().pipe(
           map((response) => AuthActions.refreshSuccess({ response })),
-          catchError((error: HttpErrorResponse) => this.handleApiError(error, AuthActions.refreshFailure))
+          catchError((error) => {
+            return of(
+              AuthActions.refreshFailure({
+                error: this.errorHandler.classifyError(error),
+                source: AuthErrorSource.REFRESH,
+              })
+            );
+          })
         )
       )
     )
@@ -125,7 +139,14 @@ export class AuthEffects {
       switchMap(() =>
         this.authService.getMe().pipe(
           map((user) => AuthActions.loadMeSuccess({ user })),
-          catchError((error: HttpErrorResponse) => this.handleApiError(error, AuthActions.loadMeFailure))
+          catchError((error) => {
+            return of(
+              AuthActions.loadMeFailure({
+                error: this.errorHandler.classifyError(error),
+                source: AuthErrorSource.LOAD_ME,
+              })
+            );
+          })
         )
       )
     )
