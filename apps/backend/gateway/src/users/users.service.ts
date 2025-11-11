@@ -14,7 +14,7 @@ export class UsersService {
     const result = await firstValueFrom(this.usersClient.send(USER_PATTERNS.PING, payload));
     return `${payload}: ${result}`;
   }
-  async adminInviteUser(adminId: string, dto: AdminCreateUserDto): Promise<UserDto> {
+  async adminCreateUser(adminId: string, dto: AdminCreateUserDto): Promise<UserDto> {
     const payload: AdminCreateUserPayload = {
       email: dto.email,
       username: dto.username,

@@ -1,8 +1,9 @@
 import { inject, Injectable } from '@angular/core';
-import { CompleteSetupRequest, LoginRequest } from '@limbo/common';
+import { AdminCreateUserRequest, CompleteSetupRequest, LoginRequest } from '@limbo/common';
 import { Store } from '@ngrx/store';
 import { AuthActions } from './auth.actions';
 import {
+  selectAdminCreateUserError,
   selectAuthError,
   selectAuthLoading,
   selectCompleteSetupError,
@@ -13,7 +14,6 @@ import {
   selectLoadMeError,
   selectLoginError,
   selectRefreshError,
-  selectRegisterError,
   selectRole,
   selectSessionStatus,
   selectUser,
@@ -36,8 +36,8 @@ export class AuthFacade {
   /** Emits the last known login error */
   loginError$ = this.store.select(selectLoginError);
 
-  /** Emits the last known register error */
-  registerError$ = this.store.select(selectRegisterError);
+  /** Emits the last known admin create user error */
+  adminCreateUserError$ = this.store.select(selectAdminCreateUserError);
 
   /** Emits the last known refresh error */
   refreshError$ = this.store.select(selectRefreshError);
@@ -82,6 +82,13 @@ export class AuthFacade {
    */
   login(request: LoginRequest) {
     this.store.dispatch(AuthActions.loginStart({ request }));
+  }
+
+  /**Dispatches the admin create user action
+   * @param request The new user's email password and role
+   */
+  adminCreateUser(request: AdminCreateUserRequest) {
+    this.store.dispatch(AuthActions.adminCreateUserStart({ request }));
   }
 
   /**

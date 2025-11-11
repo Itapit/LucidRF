@@ -23,9 +23,9 @@ export class UsersController {
 
   @Post()
   @UseGuards(JwtAuthGuard, AdminGuard)
-  async adminInviteUser(@Body() dto: AdminCreateUserDto, @Request() req): Promise<UserDto> {
+  async adminCreateUser(@Body() dto: AdminCreateUserDto, @Request() req): Promise<UserDto> {
     const adminId = req.user.id;
 
-    return this.usersService.adminInviteUser(adminId, dto);
+    return this.usersService.adminCreateUser(adminId, dto);
   }
 }

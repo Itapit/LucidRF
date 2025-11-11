@@ -15,7 +15,7 @@ export class UserService {
   /**
    * Creates a new user with a pending status and a temporary password.
    */
-  async adminInviteUser(payload: AdminCreateUserPayload): Promise<UserDto> {
+  async adminCreateUser(payload: AdminCreateUserPayload): Promise<UserDto> {
     const existingUser = await this.userRepository.findByEmail(payload.email);
     if (existingUser) {
       const error = new ConflictException('User with this email already exists');

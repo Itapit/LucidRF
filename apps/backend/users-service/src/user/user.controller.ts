@@ -10,8 +10,8 @@ export class UserController {
 
   @MessagePattern(USER_PATTERNS.CREATE_USER)
   @UsePipes(new ValidationPipe())
-  async adminInviteUser(@Payload() payload: AdminCreateUserPayload): Promise<UserDto> {
-    return this.userService.adminInviteUser(payload);
+  async adminCreateUser(@Payload() payload: AdminCreateUserPayload): Promise<UserDto> {
+    return this.userService.adminCreateUser(payload);
   }
 
   @MessagePattern(USER_PATTERNS.GET_USER_BY_ID)

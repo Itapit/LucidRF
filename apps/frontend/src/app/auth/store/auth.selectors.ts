@@ -64,13 +64,6 @@ export const selectCompleteSetupError = createSelector(selectAuthError, (error) 
 );
 
 /**
- * Selects the error message *only if* it came from the 'register' flow.
- */
-export const selectRegisterError = createSelector(selectAuthError, (error) =>
-  error?.source === AuthErrorSource.REGISTER ? error.message : null
-);
-
-/**
  * Selects the error message *only if* it came from the 'load me' flow.
  */
 export const selectLoadMeError = createSelector(selectAuthError, (error) =>
@@ -82,4 +75,11 @@ export const selectLoadMeError = createSelector(selectAuthError, (error) =>
  */
 export const selectRefreshError = createSelector(selectAuthError, (error) =>
   error?.source === AuthErrorSource.REFRESH ? error.message : null
+);
+
+/**
+ * Selects the error *only if* it came from the 'adminCreateUser' flow.
+ */
+export const selectAdminCreateUserError = createSelector(selectAuthError, (error) =>
+  error?.source === AuthErrorSource.ADMIN_CREATE_USER ? error.message : null
 );

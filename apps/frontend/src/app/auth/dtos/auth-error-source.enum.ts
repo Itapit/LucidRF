@@ -1,6 +1,6 @@
 export enum AuthErrorSource {
   LOGIN = 'login',
-  REGISTER = 'register',
+  ADMIN_CREATE_USER = 'adminCreateUser',
   REFRESH = 'refresh',
   LOAD_ME = 'loadMe',
   COMPLETE_SETUP = 'completeSetup',

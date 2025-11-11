@@ -15,6 +15,7 @@ export const authReducer = createReducer(
     AuthActions.refreshStart,
     AuthActions.loadMeStart,
     AuthActions.logoutStart,
+    AuthActions.adminCreateUserStart,
     (state) => ({
       ...state,
       loading: true,
@@ -28,6 +29,7 @@ export const authReducer = createReducer(
     AuthActions.completeSetupFailure,
     AuthActions.refreshFailure,
     AuthActions.loadMeFailure,
+    AuthActions.adminCreateUserFailure,
     (state, { error, source }) => ({
       ...state,
       loading: false,
@@ -38,7 +40,7 @@ export const authReducer = createReducer(
   // --- Specific Success Cases ---
 
   /**
-   * This is now the main action for populating state after a login.
+   * This is the main action for populating state after a login.
    * It handles both PENDING and ACTIVE users.
    */
   on(AuthActions.loginSuccess, (state, { response }) => {
@@ -62,6 +64,11 @@ export const authReducer = createReducer(
       sessionStatus: SessionStatus.ACTIVE,
     };
   }),
+
+  on(AuthActions.adminCreateUserSuccess, (state) => ({
+    ...state,
+    loading: false,
+  })),
 
   /**
    * This is only used by the App Init (F5 refresh) flow.
