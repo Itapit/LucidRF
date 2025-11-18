@@ -9,7 +9,7 @@ import {
 } from '@limbo/groups-contracts';
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { Types } from 'mongoose';
-import { CreateGroupRepoDto } from './dtos/create-group-repo.dto';
+import { CreateGroupRepoDto } from './repository/create-group-repo.dto';
 import { GroupRepository } from './repository/group.repository';
 import { GroupSchema } from './repository/group.schema';
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { CreateGroupRepoDto } from '../dtos/create-group-repo.dto';
+import { CreateGroupRepoDto } from './create-group-repo.dto';
 import { GroupRepository } from './group.repository';
 import { GroupSchema } from './group.schema';
 

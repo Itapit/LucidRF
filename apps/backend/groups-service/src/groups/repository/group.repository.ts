@@ -1,4 +1,4 @@
-import { CreateGroupRepoDto } from '../dtos/create-group-repo.dto';
+import { CreateGroupRepoDto } from './create-group-repo.dto';
 import { GroupSchema } from './group.schema';
 
 export abstract class GroupRepository {
