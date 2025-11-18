@@ -5,17 +5,16 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 import { UserService } from './users.service';
 
 @Controller('user')
+@UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @MessagePattern(USER_PATTERNS.CREATE_USER)
-  @UsePipes(new ValidationPipe())
   async adminCreateUser(@Payload() payload: AdminCreateUserPayload): Promise<UserDto> {
     return this.userService.adminCreateUser(payload);
   }
 
   @MessagePattern(USER_PATTERNS.GET_USER_BY_ID)
-  @UsePipes(new ValidationPipe())
   async getUserById(@Payload() payload: GetUserByIdPayload): Promise<UserDto> {
     return this.userService.getUserById(payload.userId);
   }

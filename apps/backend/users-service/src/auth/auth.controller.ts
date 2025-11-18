@@ -10,7 +10,8 @@ import { Controller, UsePipes, ValidationPipe } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
 
-@Controller()
+@Controller('auth')
+@UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
