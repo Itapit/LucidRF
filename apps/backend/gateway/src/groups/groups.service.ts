@@ -3,8 +3,8 @@ import {
   AddMemberPayload,
   CreateGroupPayload,
   DeleteGroupPayload,
-  GROUP_SERVICE,
   GROUPS_PATTERNS,
+  GROUPS_SERVICE,
   RemoveMemberPayload,
   UpdateGroupPayload,
 } from '@limbo/groups-contracts';
@@ -15,7 +15,7 @@ import { AddMemberDto, CreateGroupDto, UpdateGroupDto } from './dtos';
 
 @Injectable()
 export class GroupsService {
-  constructor(@Inject(GROUP_SERVICE) private readonly groupsClient: ClientProxy) {}
+  constructor(@Inject(GROUPS_SERVICE) private readonly groupsClient: ClientProxy) {}
 
   async create(dto: CreateGroupDto, ownerId: string): Promise<GroupDto> {
     const payload: CreateGroupPayload = {

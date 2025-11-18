@@ -1,6 +1,6 @@
-export const GROUP_SERVICE = 'GROUP_SERVICE';
+export const GROUPS_SERVICE = 'GROUPS_SERVICE';
 
-export const GROUP_CONFIG = {
+export const GROUPS_CONFIG = {
   PORT: 3002,
   HOST: 'localhost',
 };
