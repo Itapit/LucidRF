@@ -1,35 +1,28 @@
 import { GroupDto } from '@limbo/common';
-import { GROUP_SERVICE, GROUPS_PATTERNS } from '@limbo/groups-contracts';
-import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
-import { firstValueFrom } from 'rxjs';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AccessAuthenticatedRequest } from '../auth/types/access-jwt.types';
 import { AddMemberDto, CreateGroupDto, UpdateGroupDto } from './dtos';
+import { GroupsService } from './groups.service';
 
 @Controller('groups')
 @UseGuards(JwtAuthGuard)
 export class GroupsController {
-  constructor(@Inject(GROUP_SERVICE) private readonly groupsClient: ClientProxy) {}
+  constructor(private readonly groupsService: GroupsService) {}
 
   @Post()
   async create(@Body() dto: CreateGroupDto, @Req() req: AccessAuthenticatedRequest): Promise<GroupDto> {
-    const payload = {
-      ...dto,
-      ownerId: req.user.userId,
-    };
-
-    return firstValueFrom(this.groupsClient.send<GroupDto>(GROUPS_PATTERNS.CREATE, payload));
+    return this.groupsService.create(dto, req.user.userId);
   }
 
   @Get('my-groups')
   async findMyGroups(@Req() req: AccessAuthenticatedRequest): Promise<GroupDto[]> {
-    return firstValueFrom(this.groupsClient.send<GroupDto[]>(GROUPS_PATTERNS.FIND_MY_GROUPS, req.user.userId));
+    return this.groupsService.findByUser(req.user.userId);
   }
 
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<GroupDto> {
-    return firstValueFrom(this.groupsClient.send<GroupDto>(GROUPS_PATTERNS.FIND_ONE, id));
+    return this.groupsService.findOne(id);
   }
 
   @Patch(':id')
@@ -38,28 +31,16 @@ export class GroupsController {
     @Body() dto: UpdateGroupDto,
     @Req() req: AccessAuthenticatedRequest
   ): Promise<GroupDto> {
-    const payload = {
-      groupId,
-      actorId: req.user.userId,
-      ...dto,
-    };
-
-    return firstValueFrom(this.groupsClient.send<GroupDto>(GROUPS_PATTERNS.UPDATE, payload));
+    return this.groupsService.update(groupId, req.user.userId, dto);
   }
 
   @Post(':id/members')
   async addMember(
     @Param('id') groupId: string,
-    @Body() addMemberDto: AddMemberDto,
+    @Body() dto: AddMemberDto,
     @Req() req: AccessAuthenticatedRequest
   ): Promise<GroupDto> {
-    const payload = {
-      groupId,
-      actorId: req.user.userId,
-      targetUserId: addMemberDto.targetUserId,
-    };
-
-    return firstValueFrom(this.groupsClient.send<GroupDto>(GROUPS_PATTERNS.ADD_MEMBER, payload));
+    return this.groupsService.addMember(groupId, req.user.userId, dto);
   }
 
   @Delete(':id/members/:userId')
@@ -68,22 +49,11 @@ export class GroupsController {
     @Param('userId') targetUserId: string,
     @Req() req: AccessAuthenticatedRequest
   ): Promise<GroupDto> {
-    const payload = {
-      groupId,
-      actorId: req.user.userId,
-      targetUserId,
-    };
-
-    return firstValueFrom(this.groupsClient.send<GroupDto>(GROUPS_PATTERNS.REMOVE_MEMBER, payload));
+    return this.groupsService.removeMember(groupId, req.user.userId, targetUserId);
   }
 
   @Delete(':id')
   async delete(@Param('id') groupId: string, @Req() req: AccessAuthenticatedRequest): Promise<boolean> {
-    const payload = {
-      groupId,
-      actorId: req.user.userId,
-    };
-
-    return firstValueFrom(this.groupsClient.send<boolean>(GROUPS_PATTERNS.DELETE, payload));
+    return this.groupsService.delete(groupId, req.user.userId);
   }
 }

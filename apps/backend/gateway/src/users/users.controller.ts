@@ -18,8 +18,7 @@ export class UsersController {
   @Get('me')
   @UseGuards(JwtAuthGuard)
   async getMe(@Req() req: AccessAuthenticatedRequest): Promise<UserDto> {
-    const userId = req.user.userId;
-    return this.usersService.getMe(userId);
+    return this.usersService.getMe(req.user.userId);
   }
 
   @Post()
