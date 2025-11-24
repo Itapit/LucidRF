@@ -28,17 +28,17 @@ export const authReducer = createReducer(
     AuthActions.loginFailure,
     AuthActions.completeSetupFailure,
     AuthActions.adminCreateUserFailure,
-    (state, { error, source }) => ({
+    (state, { error }) => ({
       ...state,
       loading: false,
-      error: { message: error, source: source },
+      error: error,
     })
   ),
 
-  on(AuthActions.refreshFailure, AuthActions.loadMeFailure, (state, { error, source }) => ({
+  on(AuthActions.refreshFailure, AuthActions.loadMeFailure, (state, { error }) => ({
     ...state,
     loading: false,
-    error: { message: error, source: source },
+    error: error,
     sessionStatus: SessionStatus.LOGGED_OUT,
   })),
 

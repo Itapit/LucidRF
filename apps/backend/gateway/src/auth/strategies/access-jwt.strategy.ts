@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { AccessUser } from '../types/access-jwt.types';
 
 interface JwtPayload {
   sub: string;
@@ -26,9 +27,9 @@ export class AccessJwtStrategy extends PassportStrategy(Strategy) {
    *
    * What we return here is what NestJS attaches to `request.user`.
    */
-  async validate(payload: JwtPayload) {
+  async validate(payload: JwtPayload): Promise<AccessUser> {
     return {
-      id: payload.sub,
+      userId: payload.sub,
       role: payload.role,
     };
   }

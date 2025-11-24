@@ -1,3 +1,3 @@
 export * from './access-jwt.strategy';
 export * from './pending-jwt.strategy';
-export * from './refresh-token.strategy';
+export * from './refresh-jwt.strategy';

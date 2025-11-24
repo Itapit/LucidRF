@@ -17,6 +17,7 @@
     "paths": {
       "@limbo/api-clients": ["libs/backend/api-clients/src/index.ts"],
       "@limbo/common": ["libs/common/src/index.ts"],
+      "@limbo/groups-contracts": ["libs/backend/groups-contracts/src/index.ts"],
       "@limbo/users-contracts": ["libs/backend/users-contracts/src/index.ts"]
     }
   },

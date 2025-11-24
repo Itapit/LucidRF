@@ -107,7 +107,7 @@ export class AuthInterceptor implements HttpInterceptor {
           this.refreshTokenSubject.next(null);
 
           const failureAction = action as ReturnType<typeof AuthActions.refreshFailure>;
-          return throwError(() => new Error(failureAction.error));
+          return throwError(() => failureAction.error);
         })
       );
     }

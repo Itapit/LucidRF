@@ -1,7 +1,8 @@
 import { UserDto } from '@limbo/common';
-import { Body, Controller, Get, Post, Req, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AdminGuard } from '../auth/guards/admin.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { AccessAuthenticatedRequest } from '../auth/types/access-jwt.types';
 import { AdminCreateUserDto } from './dtos/admin-create-user.dto';
 import { UsersService } from './users.service';
 
@@ -16,16 +17,13 @@ export class UsersController {
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
-  async getMe(@Req() req): Promise<UserDto> {
-    const userId = req.user.id;
-    return this.usersService.getMe(userId);
+  async getMe(@Req() req: AccessAuthenticatedRequest): Promise<UserDto> {
+    return this.usersService.getMe(req.user.userId);
   }
 
   @Post()
   @UseGuards(JwtAuthGuard, AdminGuard)
-  async adminCreateUser(@Body() dto: AdminCreateUserDto, @Request() req): Promise<UserDto> {
-    const adminId = req.user.id;
-
-    return this.usersService.adminCreateUser(adminId, dto);
+  async adminCreateUser(@Body() dto: AdminCreateUserDto, @Req() req: AccessAuthenticatedRequest): Promise<UserDto> {
+    return this.usersService.adminCreateUser(req.user.userId, dto);
   }
 }

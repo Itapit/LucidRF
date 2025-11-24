@@ -3,11 +3,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-
-interface PendingJwtPayload {
-  sub: string;
-  status: UserStatus;
-}
+import { PendingJwtPayload, PendingUser } from '../types/pending-jwt.types';
 
 @Injectable()
 export class PendingJwtStrategy extends PassportStrategy(Strategy, 'pending-jwt') {
@@ -23,11 +19,11 @@ export class PendingJwtStrategy extends PassportStrategy(Strategy, 'pending-jwt'
    * This validate method runs only for the "pending" token.
    * It ensures the user's status is PENDING.
    */
-  async validate(payload: PendingJwtPayload) {
+  async validate(payload: PendingJwtPayload): Promise<PendingUser> {
     if (payload.status !== UserStatus.PENDING) {
       throw new UnauthorizedException('Invalid token for this action');
     }
 
-    return { id: payload.sub };
+    return { userId: payload.sub };
   }
 }

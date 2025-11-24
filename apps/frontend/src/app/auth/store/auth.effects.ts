@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { isPendingLoginResponse } from '@limbo/common';
 import { Store } from '@ngrx/store';
 import { ErrorHandlerService } from '../../core/error-handler.service';
+import { AuthError } from '../dtos/auth-error';
 import { AuthErrorSource } from '../dtos/auth-error-source.enum';
 import { AccessTokenService } from '../services/access-token.service';
 import { AuthService } from '../services/auth.service';
@@ -44,8 +45,7 @@ export class AuthEffects {
           catchError((error) => {
             return of(
               AuthActions.loginFailure({
-                error: this.errorHandler.classifyError(error),
-                source: AuthErrorSource.LOGIN,
+                error: this.createError(error, AuthErrorSource.LOGIN),
               })
             );
           })
@@ -81,8 +81,7 @@ export class AuthEffects {
           catchError((error) => {
             return of(
               AuthActions.completeSetupFailure({
-                error: this.errorHandler.classifyError(error),
-                source: AuthErrorSource.COMPLETE_SETUP,
+                error: this.createError(error, AuthErrorSource.COMPLETE_SETUP),
               })
             );
           })
@@ -103,8 +102,7 @@ export class AuthEffects {
           catchError((error) => {
             return of(
               AuthActions.refreshFailure({
-                error: this.errorHandler.classifyError(error),
-                source: AuthErrorSource.REFRESH,
+                error: this.createError(error, AuthErrorSource.REFRESH),
               })
             );
           })
@@ -142,8 +140,7 @@ export class AuthEffects {
           catchError((error) => {
             return of(
               AuthActions.loadMeFailure({
-                error: this.errorHandler.classifyError(error),
-                source: AuthErrorSource.LOAD_ME,
+                error: this.createError(error, AuthErrorSource.LOAD_ME),
               })
             );
           })
@@ -191,8 +188,7 @@ export class AuthEffects {
           catchError((error) => {
             return of(
               AuthActions.adminCreateUserFailure({
-                error: this.errorHandler.classifyError(error),
-                source: AuthErrorSource.ADMIN_CREATE_USER,
+                error: this.createError(error, AuthErrorSource.ADMIN_CREATE_USER),
               })
             );
           })
@@ -200,4 +196,14 @@ export class AuthEffects {
       )
     )
   );
+
+  /**
+   * Helper to construct the AuthError object using the ErrorHandlerService.
+   */
+  private createError(error: unknown, source: AuthErrorSource): AuthError {
+    return {
+      message: this.errorHandler.classifyError(error),
+      source,
+    };
+  }
 }
