@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, UrlTree } from '@angular/router';
 import { AppPaths } from './app-routes.enum';
 
 @Injectable({ providedIn: 'root' })
@@ -22,5 +22,20 @@ export class NavigationService {
 
   toRoot(): void {
     this.router.navigate(['/']);
+  }
+
+  // --- Guard Helpers (UrlTree) ---
+  // These are used by Guards to redirect without side effects
+
+  public createLoginUrlTree(): UrlTree {
+    return this.router.createUrlTree([AppPaths.auth.login]);
+  }
+
+  public createDashboardUrlTree(): UrlTree {
+    return this.router.createUrlTree([AppPaths.dashboard]);
+  }
+
+  public createRootUrlTree(): UrlTree {
+    return this.router.createUrlTree(['/']);
   }
 }

@@ -1,11 +1,11 @@
 import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
+import { CanActivateFn } from '@angular/router';
 import { filter, map, switchMap, take } from 'rxjs';
-import { AppPaths } from '../../../core/navigation/app-routes.enum';
+import { NavigationService } from '../../../core/navigation/navigation.service';
 import { AuthFacade } from '../../store/auth.facade';
 
 export const loggedOutGuard: CanActivateFn = () => {
-  const router = inject(Router);
+  const nav = inject(NavigationService);
   const authFacade = inject(AuthFacade);
 
   return authFacade.isInitialized$.pipe(
@@ -18,7 +18,7 @@ export const loggedOutGuard: CanActivateFn = () => {
     map((isLoggedIn) => {
       // If user IS logged in, they shouldn't be here. Send to Dashboard.
       if (isLoggedIn) {
-        return router.createUrlTree([AppPaths.dashboard]);
+        return nav.createDashboardUrlTree();
       }
 
       // If user is NOT logged in, they are allowed to view the Login page.

@@ -1,11 +1,11 @@
 import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
+import { CanActivateFn } from '@angular/router';
 import { filter, map, switchMap, take } from 'rxjs';
-import { AppPaths } from '../../../core/navigation/app-routes.enum';
+import { NavigationService } from '../../../core/navigation/navigation.service';
 import { AuthFacade } from '../../store/auth.facade';
 
 export const loggedInGuard: CanActivateFn = () => {
-  const router = inject(Router);
+  const nav = inject(NavigationService);
   const authFacade = inject(AuthFacade);
 
   return authFacade.isInitialized$.pipe(
@@ -24,7 +24,7 @@ export const loggedInGuard: CanActivateFn = () => {
         return true;
       }
       // Redirect to login if not authenticated
-      return router.createUrlTree([AppPaths.auth.login]);
+      return nav.createLoginUrlTree();
     })
   );
 };
