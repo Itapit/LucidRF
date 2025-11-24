@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { adminGuard } from './auth/infrastructure/guards/admin.guard';
-import { LoggedInGuard } from './auth/infrastructure/guards/logged-in.guard';
+import { loggedInGuard } from './auth/infrastructure/guards/logged-in.guard';
 import { AppRoute } from './core/navigation/app-routes.enum';
 import { DashboardComponent } from './dashboard/dashboard.component';
 
@@ -18,7 +18,7 @@ export const appRoutes: Routes = [
   {
     path: AppRoute.DASHBOARD,
     component: DashboardComponent,
-    canActivate: [LoggedInGuard],
+    canActivate: [loggedInGuard],
   },
   {
     path: AppRoute.ROOT,

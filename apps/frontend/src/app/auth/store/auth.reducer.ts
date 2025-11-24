@@ -40,6 +40,7 @@ export const authReducer = createReducer(
     loading: false,
     error: error,
     sessionStatus: SessionStatus.LOGGED_OUT,
+    isInitialized: true,
   })),
 
   // --- Specific Success Cases ---
@@ -56,6 +57,7 @@ export const authReducer = createReducer(
         loading: false,
         user: null,
         sessionStatus: SessionStatus.PENDING,
+        isInitialized: true,
       };
     }
 
@@ -67,6 +69,7 @@ export const authReducer = createReducer(
       error: null,
       user: loginResponse.user,
       sessionStatus: SessionStatus.ACTIVE,
+      isInitialized: true,
     };
   }),
 
@@ -84,6 +87,7 @@ export const authReducer = createReducer(
     error: null,
     user: user,
     sessionStatus: user.status as unknown as SessionStatus,
+    isInitialized: true,
   })),
 
   /**

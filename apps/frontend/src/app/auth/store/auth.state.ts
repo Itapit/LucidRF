@@ -9,6 +9,7 @@ export interface AuthState {
   sessionStatus: SessionStatus;
   loading: boolean;
   error: AuthError | null;
+  isInitialized: boolean;
 }
 
 export const initialAuthState: AuthState = {
@@ -16,4 +17,5 @@ export const initialAuthState: AuthState = {
   sessionStatus: SessionStatus.UNKNOWN,
   loading: false,
   error: null,
+  isInitialized: false,
 };
