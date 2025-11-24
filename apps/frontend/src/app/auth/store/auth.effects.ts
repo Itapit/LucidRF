@@ -2,10 +2,10 @@ import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType, ROOT_EFFECTS_INIT } from '@ngrx/effects';
 import { catchError, EMPTY, map, of, switchMap, tap, withLatestFrom } from 'rxjs';
 
-import { Router } from '@angular/router';
 import { isPendingLoginResponse } from '@limbo/common';
 import { Store } from '@ngrx/store';
 import { ErrorHandlerService } from '../../core/error-handler.service';
+import { NavigationService } from '../../core/navigation/navigation.service';
 import { AuthError } from '../dtos/auth-error';
 import { AuthErrorSource } from '../dtos/auth-error-source.enum';
 import { AccessTokenService } from '../services/access-token.service';
@@ -19,7 +19,7 @@ export class AuthEffects {
   private actions$ = inject(Actions);
   private authService = inject(AuthService);
   private tokenService = inject(AccessTokenService);
-  private router = inject(Router);
+  private navigationService = inject(NavigationService);
   private store = inject(Store<AuthState>);
   private errorHandler = inject(ErrorHandlerService);
 
@@ -61,12 +61,12 @@ export class AuthEffects {
         tap(({ response }) => {
           if (isPendingLoginResponse(response)) {
             this.tokenService.setToken(response.pendingToken);
-            this.router.navigate(['auth/complete-setup']);
+            this.navigationService.toCompleteSetup();
             return;
           }
           // It's a LoginResponse
           this.tokenService.setToken(response.accessToken);
-          this.router.navigate(['/']);
+          this.navigationService.toDashboard();
         })
       ),
     { dispatch: false }
@@ -170,7 +170,7 @@ export class AuthEffects {
         ofType(AuthActions.logoutSuccess, AuthActions.refreshFailure, AuthActions.loadMeFailure),
         tap(() => {
           this.tokenService.clear();
-          this.router.navigate(['/auth/login']);
+          this.navigationService.toLogin();
         })
       ),
     { dispatch: false }

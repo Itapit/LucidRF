@@ -9,6 +9,7 @@ import {
   selectCompleteSetupError,
   selectEmail,
   selectIsAppLoading,
+  selectIsInitialized,
   selectIsLoggedIn,
   selectIsLoggedOut,
   selectIsPending,
@@ -57,6 +58,11 @@ export class AuthFacade {
 
   /** Emits the raw AuthStatus enum (e.g., ACTIVE, PENDING) */
   status$ = this.store.select(selectSessionStatus);
+
+  /**
+   * True once the initial "Refresh Token" check has finished (success or fail).
+   */
+  readonly isInitialized$ = this.store.select(selectIsInitialized);
 
   // --- Derived Observables ---
 

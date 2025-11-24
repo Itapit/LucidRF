@@ -85,3 +85,8 @@ export const selectRefreshError = createSelector(selectAuthError, (error) =>
 export const selectAdminCreateUserError = createSelector(selectAuthError, (error) =>
   error?.source === AuthErrorSource.ADMIN_CREATE_USER ? error.message : null
 );
+
+/**
+ * Selects if the auth state has been initialized.
+ */
+export const selectIsInitialized = createSelector(authFeature.selectIsInitialized, (isInitialized) => isInitialized);

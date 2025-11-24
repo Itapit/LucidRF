@@ -1,26 +1,29 @@
 import { inject } from '@angular/core';
-import { CanMatchFn, Router } from '@angular/router';
+import { CanMatchFn } from '@angular/router';
 import { UserRole } from '@limbo/common';
 import { filter, map, switchMap, take } from 'rxjs';
-import { SessionStatus } from '../../dtos/session-status.enum';
+import { NavigationService } from '../../../core/navigation/navigation.service';
 import { AuthFacade } from '../../store/auth.facade';
 
 export const adminGuard: CanMatchFn = () => {
   const authFacade = inject(AuthFacade);
-  const router = inject(Router);
+  const nav = inject(NavigationService);
 
-  return authFacade.status$.pipe(
-    filter((status) => status !== SessionStatus.UNKNOWN),
+  return authFacade.isInitialized$.pipe(
+    //  Wait for Auth Check
+    filter((isInitialized) => isInitialized),
     take(1),
 
+    // Check Role
     switchMap(() => authFacade.role$),
-    take(1),
+
+    // Decide
     map((role) => {
       if (role === UserRole.ADMIN) {
         return true;
       }
-
-      return router.createUrlTree(['/']);
+      // Not an admin? Redirect to root.
+      return nav.createRootUrlTree();
     })
   );
 };
