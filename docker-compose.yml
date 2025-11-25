@@ -1,0 +1,14 @@
+services:
+  # MinIO Service (S3 Compatible Storage)
+  minio:
+    image: minio/minio:latest
+    container_name: limbo-minio
+    ports:
+      - '9000:9000' # API Port (Use this for code)
+      - '9001:9001' # Console Port (Use this for browser)
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - ./minio_data:/data # Persist data to a local folder
