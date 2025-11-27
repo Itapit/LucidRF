@@ -1,4 +1,4 @@
-import { FileStatus } from '@limbo/common'; // Imported from shared lib
+import { FileStatus } from '@limbo/common';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 
@@ -20,7 +20,12 @@ export class FileSchema {
   @Prop({ required: true })
   ownerId: string;
 
-  @Prop({ required: true, enum: FileStatus, default: FileStatus.PENDING })
+  @Prop({
+    required: true,
+    type: String,
+    enum: FileStatus,
+    default: FileStatus.PENDING,
+  })
   status: FileStatus;
 
   @Prop()
@@ -50,9 +55,8 @@ export class FileSchema {
 
 export const FileSchemaFactory = SchemaFactory.createForClass(FileSchema);
 
-// Create indexes for common queries:
-// 1. "Get all files in this folder for this user"
+//  "Get all files in this folder for this user"
 FileSchemaFactory.index({ ownerId: 1, parentId: 1 });
-// 2. "Get files shared with me"
+// "Get files shared with me"
 FileSchemaFactory.index({ sharedWithUsers: 1 });
 FileSchemaFactory.index({ sharedWithGroups: 1 });
