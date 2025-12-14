@@ -1,6 +1,6 @@
 import { PermissionType } from '@limbo/common';
 import { CreateFileRepoDto } from './dtos/create-file-repo.dto';
-import { FileEntity } from './entities/file.entity';
+import { FileEntity } from './file.entity';
 import { Permission } from './permission.entity';
 
 export abstract class FileRepository {

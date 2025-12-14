@@ -3,9 +3,9 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateFileRepoDto } from '../domain/dtos/create-file-repo.dto';
+import { FileEntity } from '../domain/file.entity';
 import { FileRepository } from '../domain/file.repository';
 import { Permission } from '../domain/permission.entity';
-import { FileEntity } from './entities/file.entity';
 import { FileSchema, toFileEntity } from './schemas/file.schema';
 
 @Injectable()

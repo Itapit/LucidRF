@@ -20,7 +20,7 @@ export class FileSchema extends Document {
   @Prop({ required: true })
   mimeType: string;
 
-  @Prop({ required: true, enum: FileStatus, default: FileStatus.PENDING })
+  @Prop({ required: true, enum: FileStatus, type: String, default: FileStatus.PENDING })
   status: FileStatus;
 
   // Infrastructure

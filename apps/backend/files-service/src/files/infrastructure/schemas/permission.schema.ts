@@ -6,10 +6,10 @@ export class PermissionSchema {
   @Prop({ required: true })
   subjectId: string;
 
-  @Prop({ required: true, enum: PermissionType })
+  @Prop({ required: true, enum: PermissionType, type: String })
   subjectType: PermissionType;
 
-  @Prop({ required: true, enum: PermissionRole })
+  @Prop({ required: true, enum: PermissionRole, type: String })
   role: PermissionRole;
 }
 
