@@ -1,5 +1,5 @@
-import { PermissionRole } from '@limbo/common';
-import { ShareResourcePayload, UnshareResourcePayload } from '@limbo/files-contracts';
+import { PermissionRole } from '@LucidRF/common';
+import { ShareResourcePayload, UnshareResourcePayload } from '@LucidRF/files-contracts';
 import { Injectable } from '@nestjs/common';
 
 import { FileRepository } from './domain/file.repository';

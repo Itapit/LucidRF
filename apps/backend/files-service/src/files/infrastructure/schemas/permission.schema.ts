@@ -1,4 +1,4 @@
-import { PermissionRole, PermissionType } from '@limbo/common';
+import { PermissionRole, PermissionType } from '@LucidRF/common';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 @Schema({ _id: false })

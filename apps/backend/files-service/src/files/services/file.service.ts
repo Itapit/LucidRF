@@ -1,5 +1,5 @@
-import { FileStatus } from '@limbo/common';
-import { ConfirmUploadPayload, DeleteResourcePayload, InitializeUploadPayload } from '@limbo/files-contracts';
+import { FileStatus } from '@LucidRF/common';
+import { ConfirmUploadPayload, DeleteResourcePayload, InitializeUploadPayload } from '@LucidRF/files-contracts';
 import { Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { v4 as uuidv4 } from 'uuid';

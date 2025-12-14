@@ -1,4 +1,4 @@
-import { PermissionRole } from '@limbo/common';
+import { PermissionRole } from '@LucidRF/common';
 import { Injectable, Logger } from '@nestjs/common';
 import { FileRepository } from '../domain/file.repository';
 import { FolderRepository } from '../domain/folder.repository';

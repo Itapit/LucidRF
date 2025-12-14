@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType, ROOT_EFFECTS_INIT } from '@ngrx/effects';
 import { catchError, EMPTY, map, of, switchMap, tap, withLatestFrom } from 'rxjs';
 
-import { isPendingLoginResponse } from '@limbo/common';
+import { isPendingLoginResponse } from '@LucidRF/common';
 import { Store } from '@ngrx/store';
 import { ErrorHandlerService } from '../../core/error-handler.service';
 import { NavigationService } from '../../core/navigation/navigation.service';

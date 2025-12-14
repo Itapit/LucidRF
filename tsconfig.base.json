@@ -15,11 +15,11 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@limbo/api-clients": ["libs/backend/api-clients/src/index.ts"],
-      "@limbo/common": ["libs/common/src/index.ts"],
-      "@limbo/files-contracts": ["libs/backend/files-contracts/src/index.ts"],
-      "@limbo/groups-contracts": ["libs/backend/groups-contracts/src/index.ts"],
-      "@limbo/users-contracts": ["libs/backend/users-contracts/src/index.ts"]
+      "@LucidRF/api-clients": ["libs/backend/api-clients/src/index.ts"],
+      "@LucidRF/common": ["libs/common/src/index.ts"],
+      "@LucidRF/files-contracts": ["libs/backend/files-contracts/src/index.ts"],
+      "@LucidRF/groups-contracts": ["libs/backend/groups-contracts/src/index.ts"],
+      "@LucidRF/users-contracts": ["libs/backend/users-contracts/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

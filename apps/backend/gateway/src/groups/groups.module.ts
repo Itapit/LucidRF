@@ -1,4 +1,4 @@
-import { GroupClientModule } from '@limbo/groups-contracts';
+import { GroupClientModule } from '@LucidRF/groups-contracts';
 import { Module } from '@nestjs/common';
 import { GroupsController } from './groups.controller';
 import { GroupsService } from './groups.service';

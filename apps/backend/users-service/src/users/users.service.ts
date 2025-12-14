@@ -1,5 +1,5 @@
-import { UserDto, UserStatus } from '@limbo/common';
-import { AdminCreateUserPayload } from '@limbo/users-contracts';
+import { UserDto, UserStatus } from '@LucidRF/common';
+import { AdminCreateUserPayload } from '@LucidRF/users-contracts';
 import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices'; // <-- 1. Import RpcException
 import * as bcrypt from 'bcrypt';

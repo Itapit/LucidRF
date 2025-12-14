@@ -7,7 +7,7 @@ import {
   InitializeUploadPayload,
   ShareResourcePayload,
   UnshareResourcePayload,
-} from '@limbo/files-contracts';
+} from '@LucidRF/files-contracts';
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { FilesService } from './files.service';

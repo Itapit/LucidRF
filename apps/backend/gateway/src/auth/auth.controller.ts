@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { AuthRefreshResponse, LoginResponse, PendingLoginResponse } from '@limbo/common';
-import { AuthLoginResponseDto } from '@limbo/users-contracts';
+import { AuthRefreshResponse, LoginResponse, PendingLoginResponse } from '@LucidRF/common';
+import { AuthLoginResponseDto } from '@LucidRF/users-contracts';
 import { Body, Controller, Headers, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';

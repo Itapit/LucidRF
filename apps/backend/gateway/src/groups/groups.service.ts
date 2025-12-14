@@ -1,4 +1,4 @@
-import { GroupDto } from '@limbo/common';
+import { GroupDto } from '@LucidRF/common';
 import {
   AddMemberPayload,
   CreateGroupPayload,
@@ -7,7 +7,7 @@ import {
   GROUPS_SERVICE,
   RemoveMemberPayload,
   UpdateGroupPayload,
-} from '@limbo/groups-contracts';
+} from '@LucidRF/groups-contracts';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';

@@ -1,4 +1,4 @@
-import { AddMemberRequest } from '@limbo/common';
+import { AddMemberRequest } from '@LucidRF/common';
 import { IsMongoId, IsNotEmpty } from 'class-validator';
 
 export class AddMemberDto implements AddMemberRequest {

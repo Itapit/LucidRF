@@ -1,4 +1,4 @@
-import { PermissionType } from '@limbo/common';
+import { PermissionType } from '@LucidRF/common';
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
 export class UnshareResourcePayload {

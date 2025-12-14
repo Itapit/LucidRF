@@ -1,4 +1,4 @@
-import { UserClientModule } from '@limbo/users-contracts';
+import { UserClientModule } from '@LucidRF/users-contracts';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';

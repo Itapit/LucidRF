@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { UserDto, UserRole, UserStatus } from '@limbo/common';
+import { UserDto, UserRole, UserStatus } from '@LucidRF/common';
 import {
   AuthLoginPayload,
   AuthLoginResponseDto,
@@ -8,7 +8,7 @@ import {
   AuthRefreshPayload,
   CompleteSetupPayload,
   PendingLoginResponseDto,
-} from '@limbo/users-contracts';
+} from '@LucidRF/users-contracts';
 import {
   ForbiddenException,
   Injectable,

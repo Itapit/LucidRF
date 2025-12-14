@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { AdminCreateUserRequest, CompleteSetupRequest, LoginRequest } from '@limbo/common';
+import { AdminCreateUserRequest, CompleteSetupRequest, LoginRequest } from '@LucidRF/common';
 import { Store } from '@ngrx/store';
 import { AuthActions } from './auth.actions';
 import {

@@ -29,7 +29,7 @@ import { AppInitEffects } from './app-init.effects';
 
     // devtool
     StoreDevtoolsModule.instrument({
-      name: 'Limbo',
+      name: 'LucidRF',
       maxAge: 25,
       logOnly: environment.production,
       trace: true,

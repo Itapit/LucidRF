@@ -1,4 +1,4 @@
-import { UserRole } from '@limbo/common';
+import { UserRole } from '@LucidRF/common';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 
 @Injectable()

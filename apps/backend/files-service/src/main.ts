@@ -3,7 +3,7 @@
  * This is only a minimal backend to get started.
  */
 
-import { FILES_CONFIG } from '@limbo/files-contracts';
+import { FILES_CONFIG } from '@LucidRF/files-contracts';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';

@@ -1,4 +1,4 @@
-import { PermissionRole, PermissionType } from '@limbo/common';
+import { PermissionRole, PermissionType } from '@LucidRF/common';
 import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
 export class ShareResourcePayload {

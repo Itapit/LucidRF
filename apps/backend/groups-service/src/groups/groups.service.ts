@@ -1,4 +1,4 @@
-import { GroupDto } from '@limbo/common';
+import { GroupDto } from '@LucidRF/common';
 import {
   AddMemberPayload,
   CheckGroupMembershipPayload,
@@ -6,7 +6,7 @@ import {
   DeleteGroupPayload,
   RemoveMemberPayload,
   UpdateGroupPayload,
-} from '@limbo/groups-contracts';
+} from '@LucidRF/groups-contracts';
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { CreateGroupRepoDto } from './repository/create-group-repo.dto';

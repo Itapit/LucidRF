@@ -1,4 +1,4 @@
-import { FileStatus } from '@limbo/common';
+import { FileStatus } from '@LucidRF/common';
 import { Permission } from './permission.entity';
 
 export class FileEntity {

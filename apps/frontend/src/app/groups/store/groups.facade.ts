@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { AddMemberRequest, CreateGroupRequest, RemoveMemberRequest, UpdateGroupRequest } from '@limbo/common';
+import { AddMemberRequest, CreateGroupRequest, RemoveMemberRequest, UpdateGroupRequest } from '@LucidRF/common';
 import { Store } from '@ngrx/store';
 import { GroupsActions } from './groups.actions';
 import {

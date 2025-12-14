@@ -2,7 +2,7 @@
  * This is not a production server yet!
  * This is only a minimal backend to get started.
  */
-import { GROUPS_CONFIG } from '@limbo/groups-contracts';
+import { GROUPS_CONFIG } from '@LucidRF/groups-contracts';
 import { Logger } from '@nestjs/common';
 
 import { ValidationPipe } from '@nestjs/common';

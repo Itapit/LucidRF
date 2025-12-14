@@ -1,4 +1,4 @@
-import { FileStatus } from '@limbo/common';
+import { FileStatus } from '@LucidRF/common';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 import { FileEntity } from '../../domain/file.entity';

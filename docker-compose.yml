@@ -2,7 +2,7 @@ services:
   # MinIO Service (S3 Compatible Storage)
   minio:
     image: minio/minio:latest
-    container_name: limbo-minio
+    container_name: LucidRF-minio
     ports:
       - '9000:9000' # API Port (Use this for code)
       - '9001:9001' # Console Port (Use this for browser)

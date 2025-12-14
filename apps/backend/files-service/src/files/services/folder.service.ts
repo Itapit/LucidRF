@@ -1,4 +1,4 @@
-import { CreateFolderPayload, DeleteResourcePayload, GetContentPayload } from '@limbo/files-contracts';
+import { CreateFolderPayload, DeleteResourcePayload, GetContentPayload } from '@LucidRF/files-contracts';
 import { Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateFolderRepoDto } from '../domain/dtos/create-folder-repository.dto';
 import { FileRepository } from '../domain/file.repository';

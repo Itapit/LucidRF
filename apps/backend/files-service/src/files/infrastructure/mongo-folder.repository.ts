@@ -1,4 +1,4 @@
-import { PermissionType } from '@limbo/common';
+import { PermissionType } from '@LucidRF/common';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';

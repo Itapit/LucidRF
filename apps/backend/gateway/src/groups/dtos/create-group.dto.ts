@@ -1,4 +1,4 @@
-import { CreateGroupRequest } from '@limbo/common';
+import { CreateGroupRequest } from '@LucidRF/common';
 import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class CreateGroupDto implements CreateGroupRequest {

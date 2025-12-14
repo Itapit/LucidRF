@@ -5,7 +5,7 @@ import {
   AuthRefreshPayload,
   CompleteSetupPayload,
   USER_PATTERNS,
-} from '@limbo/users-contracts';
+} from '@LucidRF/users-contracts';
 import { Controller, Logger } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthService } from './auth.service';

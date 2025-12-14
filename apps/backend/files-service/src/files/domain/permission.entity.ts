@@ -1,4 +1,4 @@
-import { PermissionRole, PermissionType } from '@limbo/common';
+import { PermissionRole, PermissionType } from '@LucidRF/common';
 
 export class Permission {
   subjectId: string;

@@ -1,4 +1,4 @@
-import { PermissionType } from '@limbo/common';
+import { PermissionType } from '@LucidRF/common';
 import { CreateFileRepoDto } from './dtos/create-file-repo.dto';
 import { FileEntity } from './file.entity';
 import { Permission } from './permission.entity';

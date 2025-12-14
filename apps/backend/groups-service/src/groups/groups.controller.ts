@@ -1,4 +1,4 @@
-import { GroupDto } from '@limbo/common';
+import { GroupDto } from '@LucidRF/common';
 import {
   AddMemberPayload,
   CheckGroupMembershipPayload,
@@ -7,7 +7,7 @@ import {
   GROUPS_PATTERNS,
   RemoveMemberPayload,
   UpdateGroupPayload,
-} from '@limbo/groups-contracts';
+} from '@LucidRF/groups-contracts';
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { GroupsService } from './groups.service';

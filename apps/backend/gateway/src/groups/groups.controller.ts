@@ -1,4 +1,4 @@
-import { GroupDto } from '@limbo/common';
+import { GroupDto } from '@LucidRF/common';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AccessAuthenticatedRequest } from '../auth/types/access-jwt.types';

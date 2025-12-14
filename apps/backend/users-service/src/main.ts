@@ -2,7 +2,7 @@
  * This is not a production server yet!
  * This is only a minimal backend to get started.
  */
-import { USER_CONFIG } from '@limbo/users-contracts';
+import { USER_CONFIG } from '@LucidRF/users-contracts';
 
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';

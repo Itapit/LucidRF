@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { UserRole } from '@limbo/common';
+import { UserRole } from '@LucidRF/common';
 import { Observable } from 'rxjs';
 import { AuthFacade } from '../../auth/store/auth.facade';
 

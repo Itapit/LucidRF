@@ -1,4 +1,4 @@
-import { UserDto } from '@limbo/common';
+import { UserDto } from '@LucidRF/common';
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AdminGuard } from '../auth/guards/admin.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';

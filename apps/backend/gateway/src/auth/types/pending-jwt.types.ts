@@ -1,4 +1,4 @@
-import { UserStatus } from '@limbo/common';
+import { UserStatus } from '@LucidRF/common';
 import { Request } from 'express';
 
 // The raw payload inside the token
