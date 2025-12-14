@@ -6,12 +6,12 @@ export const USER_CONFIG = {
 };
 
 export const USER_PATTERNS = {
-  CREATE_USER: 'cmd:create_user',
-  GET_USER_BY_ID: 'cmd:get_user_by_id',
-  PING: 'cmd:ping',
-  AUTH_LOGIN: 'cmd:auth_login',
-  AUTH_COMPLETE_SETUP: 'cmd:auth_complete_setup',
-  AUTH_REFRESH: 'cmd:auth_refresh',
-  AUTH_LOGOUT: 'cmd:auth_logout',
-  AUTH_LOGOUT_ALL: 'cmd:auth_logout_all',
+  CREATE_USER: 'user:create_user',
+  GET_USER_BY_ID: 'user:get_user_by_id',
+  PING: 'user:ping',
+  AUTH_LOGIN: 'user:auth_login',
+  AUTH_COMPLETE_SETUP: 'user:auth_complete_setup',
+  AUTH_REFRESH: 'user:auth_refresh',
+  AUTH_LOGOUT: 'user:auth_logout',
+  AUTH_LOGOUT_ALL: 'user:auth_logout_all',
 };
