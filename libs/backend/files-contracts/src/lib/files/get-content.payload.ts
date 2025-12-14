@@ -1,15 +1,11 @@
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class InitUploadPayload {
+export class GetContentPayload {
   @IsString()
   @IsNotEmpty()
-  filename!: string;
+  userId!: string;
 
   @IsString()
-  @IsNotEmpty()
-  mimetype!: string;
-
   @IsOptional()
-  @IsString()
-  parentId?: string;
+  folderId!: string | null;
 }

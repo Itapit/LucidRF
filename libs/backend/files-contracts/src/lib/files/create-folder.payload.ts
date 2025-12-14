@@ -3,9 +3,13 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 export class CreateFolderPayload {
   @IsString()
   @IsNotEmpty()
+  userId!: string;
+
+  @IsString()
+  @IsNotEmpty()
   name!: string;
 
-  @IsOptional()
   @IsString()
-  parentId?: string;
+  @IsOptional()
+  parentFolderId?: string | null;
 }
