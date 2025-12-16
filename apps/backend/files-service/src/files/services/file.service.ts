@@ -5,13 +5,16 @@ import {
   GetDownloadUrlPayload,
   InitializeUploadPayload,
 } from '@LucidRF/files-contracts';
-import { Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { v4 as uuidv4 } from 'uuid';
 import { StorageService } from '../../storage/storage.service';
 import { CreateFileRepoDto } from '../domain/dtos/create-file-repo.dto';
+import { AccessLevel, ResourceType } from '../domain/enums';
+import { FileEntity } from '../domain/file.entity';
 import { FileRepository } from '../domain/file.repository';
 import { FolderRepository } from '../domain/folder.repository';
+import { AclService } from './acl.service';
 
 @Injectable()
 export class FileService {
@@ -22,6 +25,7 @@ export class FileService {
     private readonly fileRepository: FileRepository,
     private readonly folderRepository: FolderRepository,
     private readonly storageService: StorageService,
+    private readonly aclService: AclService,
     private readonly configService: ConfigService
   ) {
     this.bucketName = this.configService.get<string>('MINIO_BUCKET_NAME');
@@ -33,6 +37,10 @@ export class FileService {
     if (parentFolderId) {
       const parent = await this.folderRepository.findById(parentFolderId);
       if (!parent || parent.ownerId !== userId) throw new NotFoundException('Parent folder invalid');
+    }
+
+    if (parentFolderId) {
+      await this.aclService.validateAccess(parentFolderId, userId, ResourceType.FOLDER, AccessLevel.OWNER);
     }
 
     const uniqueSuffix = uuidv4();
@@ -61,8 +69,8 @@ export class FileService {
   async confirmUpload(payload: ConfirmUploadPayload) {
     const { userId, fileId, success } = payload;
 
-    // Just verify ownership, no need to assign return value if unused
-    await this.verifyOwner(fileId, userId);
+    // Just verify ownership
+    await this.aclService.validateAccess(fileId, userId, ResourceType.FILE, AccessLevel.OWNER);
 
     if (success) {
       this.logger.log(`File ${fileId} confirmed successfully by user ${userId}`);
@@ -75,7 +83,7 @@ export class FileService {
   }
 
   async delete(payload: DeleteResourcePayload) {
-    await this.verifyOwner(payload.resourceId, payload.userId);
+    await this.aclService.validateAccess(payload.resourceId, payload.userId, ResourceType.FILE, AccessLevel.OWNER);
     await this.fileRepository.delete(payload.resourceId);
 
     this.logger.log(`Deleted file ${payload.resourceId} (User: ${payload.userId})`);
@@ -84,14 +92,12 @@ export class FileService {
   }
 
   async getDownloadUrl(payload: GetDownloadUrlPayload) {
-    const file = await this.verifyOwner(payload.resourceId, payload.userId);
+    const file = (await this.aclService.validateAccess(
+      payload.resourceId,
+      payload.userId,
+      ResourceType.FILE,
+      AccessLevel.VIEWER
+    )) as FileEntity;
     return this.storageService.getPresignedGetUrl(file.storageKey);
-  }
-
-  async verifyOwner(fileId: string, userId: string) {
-    const file = await this.fileRepository.findById(fileId);
-    if (!file) throw new NotFoundException('File not found');
-    if (file.ownerId !== userId) throw new UnauthorizedException('Access denied');
-    return file;
   }
 }

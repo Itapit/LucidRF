@@ -1,18 +1,29 @@
 import { CreateFolderPayload, DeleteResourcePayload, GetContentPayload } from '@LucidRF/files-contracts';
-import { Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CreateFolderRepoDto } from '../domain/dtos/create-folder-repository.dto';
+import { AccessLevel, ResourceType } from '../domain/enums';
 import { FileRepository } from '../domain/file.repository';
 import { FolderRepository } from '../domain/folder.repository';
+import { AclService } from './acl.service';
 
 @Injectable()
 export class FolderService {
   private readonly logger = new Logger(FolderService.name);
 
-  constructor(private readonly folderRepository: FolderRepository, private readonly fileRepository: FileRepository) {}
+  constructor(
+    private readonly folderRepository: FolderRepository,
+    private readonly fileRepository: FileRepository,
+    private readonly aclService: AclService
+  ) {}
 
   async create(payload: CreateFolderPayload) {
     if (payload.parentFolderId) {
-      await this.verifyOwner(payload.parentFolderId, payload.userId);
+      await this.aclService.validateAccess(
+        payload.parentFolderId,
+        payload.userId,
+        ResourceType.FOLDER,
+        AccessLevel.OWNER
+      );
     }
 
     const dto: CreateFolderRepoDto = {
@@ -31,7 +42,9 @@ export class FolderService {
     const { userId, folderId } = payload;
     const targetId = folderId || null;
 
-    if (targetId) await this.verifyOwner(targetId, userId);
+    if (targetId) {
+      await this.aclService.validateAccess(targetId, userId, ResourceType.FOLDER, AccessLevel.VIEWER);
+    }
 
     const [files, folders] = await Promise.all([
       this.fileRepository.findByFolder(targetId, userId),
@@ -43,7 +56,7 @@ export class FolderService {
 
   async delete(payload: DeleteResourcePayload) {
     const { userId, resourceId } = payload;
-    await this.verifyOwner(resourceId, userId);
+    await this.aclService.validateAccess(resourceId, userId, ResourceType.FOLDER, AccessLevel.OWNER);
     await this.recursiveDelete(resourceId, userId);
     return { success: true, resourceId };
   }
@@ -52,7 +65,7 @@ export class FolderService {
 
   private async recursiveDelete(folderId: string, userId: string) {
     const subFolders = await this.folderRepository.findSubFolders(folderId, userId);
-
+    //TODO add recursive delete that will ignore ownerId so no orphan folders/files uploaded by other users remain
     // Delete sub-folders first
     for (const sub of subFolders) {
       if (sub._id) await this.recursiveDelete(sub._id, userId);
@@ -65,12 +78,5 @@ export class FolderService {
     }
 
     await this.folderRepository.delete(folderId);
-  }
-
-  async verifyOwner(folderId: string, userId: string) {
-    const folder = await this.folderRepository.findById(folderId);
-    if (!folder) throw new NotFoundException(`Folder ${folderId} not found`);
-    if (folder.ownerId !== userId) throw new UnauthorizedException('Access denied');
-    return folder;
   }
 }
