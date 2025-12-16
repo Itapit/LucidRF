@@ -7,5 +7,5 @@ export class DeleteResourcePayload {
 
   @IsString()
   @IsNotEmpty()
-  id!: string; // File ID or Folder ID
+  resourceId!: string; // File ID or Folder ID
 }

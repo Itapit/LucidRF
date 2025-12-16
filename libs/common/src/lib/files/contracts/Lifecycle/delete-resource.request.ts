@@ -1,3 +1,3 @@
 export interface DeleteResourceRequest {
-  id: string;
+  resourceId: string;
 }
