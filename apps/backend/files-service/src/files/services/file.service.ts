@@ -24,7 +24,7 @@ export class FileService {
     private readonly storageService: StorageService,
     private readonly configService: ConfigService
   ) {
-    this.bucketName = this.configService.get<string>('FILES_BUCKET');
+    this.bucketName = this.configService.get<string>('MINIO_BUCKET_NAME');
   }
 
   async initializeUpload(payload: InitializeUploadPayload) {

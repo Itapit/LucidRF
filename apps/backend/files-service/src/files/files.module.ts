@@ -7,6 +7,7 @@ import { FolderRepository } from './domain/folder.repository';
 import { FilesController } from './files.controller';
 import { FilesService } from './files.service';
 import { MongoFileRepository } from './infrastructure/mongo-file.repository';
+import { MongoFolderRepository } from './infrastructure/mongo-folder.repository';
 import { FileSchema, FileSchemaFactory } from './infrastructure/schemas/file.schema';
 import { FolderSchema, FolderSchemaFactory } from './infrastructure/schemas/folder.schema';
 import { AclService } from './services/acl.service';
@@ -34,7 +35,7 @@ import { FolderService } from './services/folder.service';
     },
     {
       provide: FolderRepository,
-      useClass: MongoFileRepository,
+      useClass: MongoFolderRepository,
     },
   ],
 })

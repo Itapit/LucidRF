@@ -31,13 +31,13 @@ export class FilesController {
     return this.filesService.confirmUpload(dto, req.user.userId);
   }
 
-  @Get('download/:id')
-  async getDownloadUrl(@Param('id') params: GetDownloadUrlDto, @Req() req: AccessAuthenticatedRequest) {
+  @Get('download/:resourceId')
+  async getDownloadUrl(@Param() params: GetDownloadUrlDto, @Req() req: AccessAuthenticatedRequest) {
     return this.filesService.getDownloadUrl(params, req.user.userId);
   }
 
-  @Delete('file/:id')
-  async deleteFile(@Param('id') params: DeleteResourceDto, @Req() req: AccessAuthenticatedRequest) {
+  @Delete('file/:resourceId')
+  async deleteFile(@Param() params: DeleteResourceDto, @Req() req: AccessAuthenticatedRequest) {
     return this.filesService.deleteFile(params, req.user.userId);
   }
 
@@ -55,8 +55,8 @@ export class FilesController {
     return this.filesService.listContent(query.folderId, req.user.userId);
   }
 
-  @Delete('folder/:id')
-  async deleteFolder(@Param('id') params: DeleteResourceDto, @Req() req: AccessAuthenticatedRequest) {
+  @Delete('folder/:resourceId')
+  async deleteFolder(@Param() params: DeleteResourceDto, @Req() req: AccessAuthenticatedRequest) {
     return this.filesService.deleteFolder(params, req.user.userId);
   }
 
