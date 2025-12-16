@@ -23,12 +23,24 @@ export class MongoFolderRepository implements FolderRepository {
     return toFolderEntity(doc);
   }
 
-  async findSubFolders(parentFolderId: string | null, ownerId: string): Promise<FolderEntity[]> {
+  /**
+   * Returns folders where the user is the OWNER OR has PERMISSION.
+   */
+  async findSubFolders(parentFolderId: string | null, userId: string): Promise<FolderEntity[]> {
     const query = {
       parentFolderId: parentFolderId,
-      ownerId: ownerId,
+      $or: [{ ownerId: userId }, { 'permissions.subjectId': userId }],
     };
     const docs = await this.folderModel.find(query).exec();
+    return docs.map(toFolderEntity);
+  }
+
+  /**
+   * System Level Access (No Owner Filter)
+   * Used for Recursive Deletion and Permission Propagation.
+   */
+  async findSubFoldersByParentIdSystem(parentFolderId: string): Promise<FolderEntity[]> {
+    const docs = await this.folderModel.find({ parentFolderId: parentFolderId }).exec();
     return docs.map(toFolderEntity);
   }
 
@@ -43,14 +55,7 @@ export class MongoFolderRepository implements FolderRepository {
     await this.folderModel
       .updateOne(
         { _id: id },
-        {
-          $pull: {
-            permissions: {
-              subjectId: permission.subjectId,
-              subjectType: permission.subjectType,
-            },
-          },
-        }
+        { $pull: { permissions: { subjectId: permission.subjectId, subjectType: permission.subjectType } } }
       )
       .exec();
 
@@ -64,18 +69,7 @@ export class MongoFolderRepository implements FolderRepository {
 
   async removePermission(id: string, subjectId: string, subjectType: PermissionType): Promise<FolderEntity> {
     const doc = await this.folderModel
-      .findByIdAndUpdate(
-        id,
-        {
-          $pull: {
-            permissions: {
-              subjectId: subjectId,
-              subjectType: subjectType,
-            },
-          },
-        },
-        { new: true }
-      )
+      .findByIdAndUpdate(id, { $pull: { permissions: { subjectId, subjectType } } }, { new: true })
       .exec();
 
     if (!doc) throw new NotFoundException(`Folder ${id} not found`);

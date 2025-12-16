@@ -23,18 +23,32 @@ export class MongoFileRepository implements FileRepository {
     return toFileEntity(doc);
   }
 
-  async findByFolder(folderId: string | null, ownerId: string): Promise<FileEntity[]> {
+  /**
+   * Returns files where the user is the OWNER OR has PERMISSION.
+   */
+  async findByFolder(folderId: string | null, userId: string): Promise<FileEntity[]> {
     const query = {
       parentFolderId: folderId,
-      ownerId: ownerId,
+      $or: [
+        { ownerId: userId },
+        { 'permissions.subjectId': userId }, // Shared with the user
+      ],
     };
     const docs = await this.fileModel.find(query).exec();
     return docs.map(toFileEntity);
   }
 
+  /**
+   * System Level Access (No Owner Filter)
+   * Used for Permission Propagation to find all files in a folder.
+   */
+  async findByFolderIdSystem(folderId: string): Promise<FileEntity[]> {
+    const docs = await this.fileModel.find({ parentFolderId: folderId }).exec();
+    return docs.map(toFileEntity);
+  }
+
   async updateStatus(id: string, status: string): Promise<FileEntity> {
     const doc = await this.fileModel.findByIdAndUpdate(id, { status }, { new: true }).exec();
-
     if (!doc) throw new NotFoundException(`File ${id} not found`);
     return toFileEntity(doc);
   }
@@ -43,26 +57,26 @@ export class MongoFileRepository implements FileRepository {
     const result = await this.fileModel.findByIdAndDelete(id).exec();
     if (!result) throw new NotFoundException(`File ${id} not found`);
   }
+  /**
+   * Bulk Delete
+   * Used for Recursive Deletion to remove all files in a folder at once.
+   */
+  async deleteManyByFolderId(folderId: string): Promise<void> {
+    await this.fileModel.deleteMany({ parentFolderId: folderId }).exec();
+  }
 
   // --- Permission Logic ---
 
   async addPermission(id: string, permission: Permission): Promise<FileEntity> {
-    // 1. Remove existing permission for this subject (if any) to avoid duplicates
+    // Remove existing permission for this subject (if any) to avoid duplicates
     await this.fileModel
       .updateOne(
         { _id: id },
-        {
-          $pull: {
-            permissions: {
-              subjectId: permission.subjectId,
-              subjectType: permission.subjectType,
-            },
-          },
-        }
+        { $pull: { permissions: { subjectId: permission.subjectId, subjectType: permission.subjectType } } }
       )
       .exec();
 
-    // 2. Add the new permission
+    // Push new permission
     const doc = await this.fileModel
       .findByIdAndUpdate(id, { $push: { permissions: permission } }, { new: true })
       .exec();
@@ -73,18 +87,7 @@ export class MongoFileRepository implements FileRepository {
 
   async removePermission(id: string, subjectId: string, subjectType: PermissionType): Promise<FileEntity> {
     const doc = await this.fileModel
-      .findByIdAndUpdate(
-        id,
-        {
-          $pull: {
-            permissions: {
-              subjectId: subjectId,
-              subjectType: subjectType,
-            },
-          },
-        },
-        { new: true }
-      )
+      .findByIdAndUpdate(id, { $pull: { permissions: { subjectId, subjectType } } }, { new: true })
       .exec();
 
     if (!doc) throw new NotFoundException(`File ${id} not found`);
