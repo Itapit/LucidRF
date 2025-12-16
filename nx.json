@@ -69,6 +69,22 @@
     },
     "@nx/angular:interceptor": {
       "skipTests": true
+    },
+    "@nx/nest:application": {
+      "linter": "eslint",
+      "unitTestRunner": "none",
+      "e2eTestRunner": "none"
+    },
+    "@nx/nest:library": {
+      "linter": "eslint",
+      "unitTestRunner": "none",
+      "buildable": false
+    },
+    "@nx/nest:service": {
+      "unitTestRunner": "none"
+    },
+    "@nx/nest:controller": {
+      "unitTestRunner": "none"
     }
   },
   "plugins": [
