@@ -1,4 +1,4 @@
-import { Permission } from './permission.entity';
+import { PermissionEntity } from './permission.entity';
 
 export class FolderEntity {
   _id?: string;
@@ -9,7 +9,7 @@ export class FolderEntity {
   parentFolderId?: string | null;
 
   // Security
-  permissions: Permission[];
+  permissions: PermissionEntity[];
 
   createdAt?: Date;
   updatedAt?: Date;

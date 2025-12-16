@@ -25,7 +25,7 @@ async function bootstrap() {
     })
   );
   await app.listen();
-  Logger.log(`🚀 Application is running on: http://localhost:${FILES_CONFIG.PORT}}`);
+  Logger.log(`Files microservice is running on: http://localhost:${FILES_CONFIG.PORT}}`);
 }
 
 bootstrap();

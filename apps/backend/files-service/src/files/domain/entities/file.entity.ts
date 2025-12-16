@@ -1,5 +1,5 @@
 import { FileStatus } from '@LucidRF/common';
-import { Permission } from './permission.entity';
+import { PermissionEntity } from './permission.entity';
 
 export class FileEntity {
   _id?: string;
@@ -17,7 +17,7 @@ export class FileEntity {
   parentFolderId?: string | null;
 
   // Security
-  permissions: Permission[];
+  permissions: PermissionEntity[];
 
   createdAt?: Date;
   updatedAt?: Date;
