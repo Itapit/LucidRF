@@ -4,17 +4,45 @@ import { FolderEntity } from './folder.entity';
 import { Permission } from './permission.entity';
 
 export abstract class FolderRepository {
-  // --- CRUD ---
+  /**
+   * Persists a new folder metadata record to the database.
+   */
   abstract create(dto: CreateFolderRepoDto): Promise<FolderEntity>;
+
+  /**
+   * Retrieves a single folder entity by its unique identifier.
+   * Returns null if no folder is found.
+   */
   abstract findById(id: string): Promise<FolderEntity | null>;
 
-  abstract findSubFolders(parentFolderId: string | null, ownerId: string): Promise<FolderEntity[]>;
+  /**
+   * Retrieves all immediate sub-folders within a specific parent folder that are visible to the user.
+   * This includes folders owned by the user AND folders shared with them.
+   * @param parentFolderId The ID of the parent folder (or null for root).
+   * @param userId The ID of the user requesting the list.
+   */
+  abstract findSubFolders(parentFolderId: string | null, userId: string): Promise<FolderEntity[]>;
 
+  /**
+   * SYSTEM INTERNAL: Retrieves ALL sub-folders for a given parent regardless of ownership or permissions.
+   * Used for recursive operations (like delete propagation or permission cascading) where the system needs full visibility.
+   */
+  abstract findSubFoldersByParentIdSystem(parentFolderId: string): Promise<FolderEntity[]>;
+
+  /**
+   * Permanently deletes a single folder record by its ID.
+   * Throws an exception if the folder does not exist.
+   */
   abstract delete(id: string): Promise<void>;
 
-  // --- Sharing / ACL ---
-
+  /**
+   * Adds a new permission or updates an existing one for a specific subject (User/Group).
+   * This effectively shares the folder with that subject.
+   */
   abstract addPermission(id: string, permission: Permission): Promise<FolderEntity>;
 
+  /**
+   * Revokes access for a specific subject by removing their permission entry.
+   */
   abstract removePermission(id: string, subjectId: string, subjectType: PermissionType): Promise<FolderEntity>;
 }
