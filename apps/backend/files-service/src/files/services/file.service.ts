@@ -10,7 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import { v4 as uuidv4 } from 'uuid';
 import { StorageService } from '../../storage/storage.service';
 import { CreateFileRepoDto } from '../domain/dtos';
-import { FileEntity } from '../domain/entities';
+import { FileEntity, FolderEntity, PermissionEntity } from '../domain/entities';
 import { AccessLevel, ResourceType } from '../domain/enums';
 import { FileRepository } from '../domain/repositories';
 import { AclService } from './acl.service';
@@ -32,28 +32,14 @@ export class FileService {
   async initializeUpload(payload: InitializeUploadPayload) {
     const { userId, originalFileName, parentFolderId } = payload;
 
-    if (parentFolderId) {
-      await this.aclService.validateAccess(parentFolderId, userId, ResourceType.FOLDER, AccessLevel.OWNER);
-    }
+    const initialPermissions = await this.resolveInitialPermissions(parentFolderId, userId);
 
-    const uniqueSuffix = uuidv4();
-    const storageKey = `uploads/${userId}/${uniqueSuffix}-${originalFileName}`;
-    const uploadUrl = await this.storageService.getPresignedPutUrl(storageKey);
+    const { storageKey, uploadUrl } = await this.generateStorageDetails(userId, originalFileName);
 
-    const dto: CreateFileRepoDto = {
-      originalFileName,
-      ownerId: userId,
-      size: payload.size,
-      mimeType: payload.mimeType,
-      status: FileStatus.PENDING,
-      storageKey,
-      bucket: this.bucketName,
-      parentFolderId: parentFolderId || null,
-      permissions: [],
-    };
+    const file = await this.createFileRecord(payload, storageKey, initialPermissions);
 
-    const file = await this.fileRepository.create(dto);
     this.logger.log(`Initialized upload for file ${file._id} (User: ${userId})`);
+
     return { uploadUrl, file };
   }
 
@@ -90,5 +76,65 @@ export class FileService {
       AccessLevel.VIEWER
     )) as FileEntity;
     return this.storageService.getPresignedGetUrl(file.storageKey);
+  }
+
+  // =================================================================================================
+  //  Helpers
+  // =================================================================================================
+
+  /**
+   * Validates access to the parent folder and returns the permissions
+   * that the new file should inherit.
+   */
+  private async resolveInitialPermissions(
+    parentFolderId: string | undefined,
+    userId: string
+  ): Promise<PermissionEntity[]> {
+    if (!parentFolderId) return [];
+
+    // Validate Access (User must be OWNER/EDITOR of the parent)
+    const parentFolder = (await this.aclService.validateAccess(
+      parentFolderId,
+      userId,
+      ResourceType.FOLDER,
+      AccessLevel.OWNER
+    )) as FolderEntity;
+
+    // Inherit permissions (excluding ownership)
+    return parentFolder.permissions || [];
+  }
+
+  /**
+   * Handles the generation of unique storage keys and presigned URLs.
+   */
+  private async generateStorageDetails(userId: string, fileName: string) {
+    const uniqueSuffix = uuidv4();
+    const storageKey = `uploads/${userId}/${uniqueSuffix}-${fileName}`;
+    const uploadUrl = await this.storageService.getPresignedPutUrl(storageKey);
+
+    return { storageKey, uploadUrl };
+  }
+
+  /**
+   * Creates the database record.
+   */
+  private async createFileRecord(
+    payload: InitializeUploadPayload,
+    storageKey: string,
+    permissions: PermissionEntity[]
+  ) {
+    const dto: CreateFileRepoDto = {
+      originalFileName: payload.originalFileName,
+      ownerId: payload.userId,
+      size: payload.size,
+      mimeType: payload.mimeType,
+      status: FileStatus.PENDING,
+      storageKey,
+      bucket: this.bucketName,
+      parentFolderId: payload.parentFolderId || null,
+      permissions,
+    };
+
+    return this.fileRepository.create(dto);
   }
 }
