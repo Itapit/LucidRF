@@ -26,7 +26,7 @@ async function bootstrap() {
     credentials: true,
   });
   await app.listen(port);
-  Logger.log(`Files microservice is running on: http://localhost:${port}/${globalPrefix}`);
+  Logger.log(`gateway is running on: http://localhost:${port}/${globalPrefix}`);
 }
 
 bootstrap();

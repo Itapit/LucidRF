@@ -27,7 +27,7 @@ async function bootstrap() {
   );
 
   await app.listen();
-  Logger.log(`🚀 Application is running on: http://localhost:${GROUPS_CONFIG.PORT}`);
+  Logger.log(`Groups microservice is running on: http://localhost:${GROUPS_CONFIG.PORT}`);
 }
 
 bootstrap();
