@@ -1,19 +1,18 @@
-import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { BulkPermissionOperation } from '../domain/dtos';
-import { FileEntity, FolderEntity, PermissionEntity } from '../domain/entities';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { PermissionEntity } from '../domain/entities';
 import { AccessLevel, PermissionAction, ResourceType } from '../domain/enums';
-import { hasSufficientAccess, shouldUpgradePermission } from '../domain/logic';
+import { hasSufficientAccess } from '../domain/logic';
 import { FileRepository, FolderRepository } from '../domain/repositories';
 import { TransactionManager } from '../domain/transaction.manager';
+import { PermissionPropagationService } from './permission-propagation.service';
 
 @Injectable()
 export class AclService {
-  private readonly logger = new Logger(AclService.name);
-
   constructor(
     private readonly fileRepository: FileRepository,
     private readonly folderRepository: FolderRepository,
-    private readonly txManager: TransactionManager
+    private readonly txManager: TransactionManager,
+    private readonly propagationService: PermissionPropagationService
   ) {}
 
   /**
@@ -30,6 +29,10 @@ export class AclService {
     return resource;
   }
 
+  /**
+   * Recursive method to update permissions down the tree.
+   * Manages the Transaction Boundary and Recursion Loop.
+   */
   async propagatePermissionChange(
     folderId: string,
     ownerId: string,
@@ -37,75 +40,14 @@ export class AclService {
     action: PermissionAction
   ): Promise<void> {
     await this.txManager.run(async () => {
-      await this.executePropagation(folderId, ownerId, permission, action);
+      // Delegate "Heavy Lifting" to the Helper Service
+      // This fetches children, calculates upgrades (Domain Logic), and executes Bulk Writes (Infra)
+      const subFolders = await this.propagationService.processFolderLevel(folderId, permission, action);
+
+      for (const folder of subFolders) {
+        await this.propagatePermissionChange(folder._id.toString(), ownerId, permission, action);
+      }
     });
-  }
-
-  private async executePropagation(
-    folderId: string,
-    ownerId: string,
-    permission: PermissionEntity,
-    action: PermissionAction
-  ) {
-    this.logger.log(`Starting propagation (${action}) for folder ${folderId}`);
-
-    const subFolders = await this.folderRepository.findSubFoldersByParentIdSystem(folderId);
-    const files = await this.fileRepository.findByFolderIdSystem(folderId);
-
-    if (files.length > 0) {
-      await this.propagateToFiles(files, permission, action);
-    }
-    if (subFolders.length > 0) {
-      await this.propagateToFolders(subFolders, ownerId, permission, action);
-    }
-  }
-
-  /**
-   * Helper: Iterates over File Entities and applies updates via Repository.
-   */
-  private async propagateToFiles(
-    files: FileEntity[],
-    permission: PermissionEntity,
-    action: PermissionAction
-  ): Promise<void> {
-    const bulkOperations: BulkPermissionOperation[] = [];
-
-    for (const file of files) {
-      let shouldProcess = false;
-
-      if (action === PermissionAction.REMOVE) {
-        shouldProcess = true;
-      } else {
-        shouldProcess = shouldUpgradePermission(file.permissions, permission);
-      }
-
-      if (shouldProcess) {
-        bulkOperations.push({
-          resourceId: file._id.toString(),
-          action: action,
-          permission: permission,
-        });
-      }
-    }
-
-    if (bulkOperations.length > 0) {
-      this.logger.log(`Bulk updating permissions for ${bulkOperations.length} files`);
-      await this.fileRepository.updatePermissionsBulk(bulkOperations);
-    }
-  }
-
-  /**
-   * Iterates over Folder Entities, updates them, and Recurses.
-   */
-  private async propagateToFolders(
-    folders: FolderEntity[],
-    ownerId: string,
-    permission: PermissionEntity,
-    action: PermissionAction
-  ): Promise<void> {
-    await this.updateFoldersBulk(folders, permission, action);
-
-    await this.recurseIntoSubfolders(folders, ownerId, permission, action);
   }
 
   // =================================================================================================
@@ -124,47 +66,5 @@ export class AclService {
     }
 
     return resource;
-  }
-
-  private async updateFoldersBulk(
-    folders: FolderEntity[],
-    permission: PermissionEntity,
-    action: PermissionAction
-  ): Promise<void> {
-    const bulkOperations: BulkPermissionOperation[] = [];
-
-    for (const folder of folders) {
-      let shouldProcess = false;
-
-      if (action === PermissionAction.REMOVE) {
-        shouldProcess = true;
-      } else {
-        shouldProcess = shouldUpgradePermission(folder.permissions, permission);
-      }
-
-      if (shouldProcess) {
-        bulkOperations.push({
-          resourceId: folder._id.toString(),
-          action,
-          permission,
-        });
-      }
-    }
-
-    if (bulkOperations.length > 0) {
-      this.logger.log(`Bulk updating permissions for ${bulkOperations.length} folders`);
-      await this.folderRepository.updatePermissionsBulk(bulkOperations);
-    }
-  }
-
-  private async recurseIntoSubfolders(
-    folders: FolderEntity[],
-    ownerId: string,
-    permission: PermissionEntity,
-    action: PermissionAction
-  ): Promise<void> {
-    for (const folder of folders) {
-      await this.propagatePermissionChange(folder._id.toString(), ownerId, permission, action);
-    }
   }
 }

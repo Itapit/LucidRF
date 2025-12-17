@@ -9,7 +9,7 @@ import { DatabaseContext } from './infrastructure/persistence/database.context';
 import { MongoTransactionManager } from './infrastructure/persistence/mongo-transaction.manager';
 import { MongoFileRepository, MongoFolderRepository } from './infrastructure/repositories';
 import { FileSchema, FileSchemaFactory, FolderSchema, FolderSchemaFactory } from './infrastructure/schemas';
-import { AclService, FileService, FolderService, SharingService } from './services';
+import { AclService, FileService, FolderService, PermissionPropagationService, SharingService } from './services';
 
 @Module({
   imports: [
@@ -26,6 +26,7 @@ import { AclService, FileService, FolderService, SharingService } from './servic
     FileService,
     FolderService,
     AclService,
+    PermissionPropagationService,
     DatabaseContext,
     {
       provide: TransactionManager,

@@ -1,7 +1,9 @@
 import { PermissionRole, PermissionType } from '@LucidRF/common';
+import { BulkPermissionOperation } from '../dtos';
 import { PermissionEntity } from '../entities';
 import { FileEntity } from '../entities/file.entity';
 import { FolderEntity } from '../entities/folder.entity';
+import { PermissionAction } from '../enums';
 import { AccessLevel } from '../enums/access-level.enum';
 
 /**
@@ -68,4 +70,36 @@ export function hasSufficientAccess(
   if (!userPermission) return false;
 
   return getPermissionWeight(userPermission.role) >= getPermissionWeight(requiredLevel);
+}
+
+/**
+ * Takes a list of resources (Files/Folders) and determines exactly which ones
+ * need to be updated in the database.
+ */
+export function calculateBulkUpdates(
+  resources: (FileEntity | FolderEntity)[],
+  permission: PermissionEntity,
+  action: PermissionAction
+): BulkPermissionOperation[] {
+  const operations: BulkPermissionOperation[] = [];
+
+  for (const resource of resources) {
+    let shouldProcess = false;
+
+    if (action === PermissionAction.REMOVE) {
+      shouldProcess = true;
+    } else {
+      shouldProcess = shouldUpgradePermission(resource.permissions, permission);
+    }
+
+    if (shouldProcess) {
+      operations.push({
+        resourceId: resource._id.toString(),
+        action,
+        permission,
+      });
+    }
+  }
+
+  return operations;
 }
