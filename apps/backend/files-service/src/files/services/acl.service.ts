@@ -1,11 +1,10 @@
 import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BulkPermissionOperation } from '../domain/dtos';
 import { FileEntity, FolderEntity, PermissionEntity } from '../domain/entities';
 import { AccessLevel, PermissionAction, ResourceType } from '../domain/enums';
 import { hasSufficientAccess, shouldUpgradePermission } from '../domain/logic';
 import { FileRepository, FolderRepository } from '../domain/repositories';
 import { TransactionManager } from '../domain/transaction.manager';
-
-//TODO add p-limit
 
 @Injectable()
 export class AclService {
@@ -50,15 +49,15 @@ export class AclService {
   ) {
     this.logger.log(`Starting propagation (${action}) for folder ${folderId}`);
 
-    const [subFolders, files] = await Promise.all([
-      this.folderRepository.findSubFoldersByParentIdSystem(folderId),
-      this.fileRepository.findByFolderIdSystem(folderId),
-    ]);
+    const subFolders = await this.folderRepository.findSubFoldersByParentIdSystem(folderId);
+    const files = await this.fileRepository.findByFolderIdSystem(folderId);
 
-    await Promise.all([
-      this.propagateToFiles(files, permission, action),
-      this.propagateToFolders(subFolders, ownerId, permission, action),
-    ]);
+    if (files.length > 0) {
+      await this.propagateToFiles(files, permission, action);
+    }
+    if (subFolders.length > 0) {
+      await this.propagateToFolders(subFolders, ownerId, permission, action);
+    }
   }
 
   /**
@@ -69,19 +68,30 @@ export class AclService {
     permission: PermissionEntity,
     action: PermissionAction
   ): Promise<void> {
-    const operations = files.map((file) => {
-      const fileId = file._id.toString();
+    const bulkOperations: BulkPermissionOperation[] = [];
 
-      if (action === PermissionAction.ADD) {
-        return shouldUpgradePermission(file.permissions, permission)
-          ? this.fileRepository.addPermission(fileId, permission)
-          : Promise.resolve();
+    for (const file of files) {
+      let shouldProcess = false;
+
+      if (action === PermissionAction.REMOVE) {
+        shouldProcess = true;
       } else {
-        return this.fileRepository.removePermission(fileId, permission.subjectId, permission.subjectType);
+        shouldProcess = shouldUpgradePermission(file.permissions, permission);
       }
-    });
 
-    await Promise.all(operations);
+      if (shouldProcess) {
+        bulkOperations.push({
+          resourceId: file._id.toString(),
+          action: action,
+          permission: permission,
+        });
+      }
+    }
+
+    if (bulkOperations.length > 0) {
+      this.logger.log(`Bulk updating permissions for ${bulkOperations.length} files`);
+      await this.fileRepository.updatePermissionsBulk(bulkOperations);
+    }
   }
 
   /**
@@ -93,9 +103,10 @@ export class AclService {
     permission: PermissionEntity,
     action: PermissionAction
   ): Promise<void> {
-    const operations = folders.map(async (folder) => {
+    for (const folder of folders) {
       const folderId = folder._id.toString();
 
+      // Step A: Update the folder itself
       if (action === PermissionAction.ADD) {
         if (shouldUpgradePermission(folder.permissions, permission)) {
           await this.folderRepository.addPermission(folderId, permission);
@@ -105,9 +116,7 @@ export class AclService {
       }
 
       await this.propagatePermissionChange(folderId, ownerId, permission, action);
-    });
-
-    await Promise.all(operations);
+    }
   }
 
   // =================================================================================================

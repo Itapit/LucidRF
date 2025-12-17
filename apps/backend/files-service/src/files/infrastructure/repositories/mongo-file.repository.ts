@@ -1,9 +1,10 @@
 import { PermissionType } from '@LucidRF/common';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { CreateFileRepoDto } from '../../domain/dtos';
+import { AnyBulkWriteOperation, Model } from 'mongoose';
+import { BulkPermissionOperation, CreateFileRepoDto } from '../../domain/dtos';
 import { FileEntity, PermissionEntity } from '../../domain/entities';
+import { PermissionAction } from '../../domain/enums';
 import { FileRepository } from '../../domain/repositories';
 import { DatabaseContext } from '../persistence/database.context';
 import { FileSchema, toFileEntity } from '../schemas';
@@ -107,5 +108,65 @@ export class MongoFileRepository implements FileRepository {
 
     if (!doc) throw new NotFoundException(`File ${id} not found`);
     return toFileEntity(doc);
+  }
+
+  async updatePermissionsBulk(operations: BulkPermissionOperation[]): Promise<void> {
+    const session = this.dbContext.getSession();
+    if (operations.length === 0) return;
+
+    const bulkOps: AnyBulkWriteOperation<FileSchema>[] = [];
+
+    for (const op of operations) {
+      if (op.action === PermissionAction.ADD) {
+        bulkOps.push(...this.createAddOperations(op));
+      } else {
+        bulkOps.push(this.createRemoveOperation(op));
+      }
+    }
+
+    await this.fileModel.bulkWrite(bulkOps, { session, ordered: true });
+  }
+
+  // --- Private Helpers ---
+
+  private createAddOperations(op: BulkPermissionOperation): AnyBulkWriteOperation<FileSchema>[] {
+    const filter = { _id: op.resourceId };
+    const permissionQuery = {
+      subjectId: op.permission.subjectId,
+      subjectType: op.permission.subjectType,
+    };
+
+    return [
+      // Clean old permission
+      {
+        updateOne: {
+          filter,
+          update: { $pull: { permissions: permissionQuery } },
+        },
+      },
+      // Add new permission
+      {
+        updateOne: {
+          filter,
+          update: { $push: { permissions: op.permission } },
+        },
+      },
+    ];
+  }
+
+  private createRemoveOperation(op: BulkPermissionOperation): AnyBulkWriteOperation<FileSchema> {
+    return {
+      updateOne: {
+        filter: { _id: op.resourceId },
+        update: {
+          $pull: {
+            permissions: {
+              subjectId: op.permission.subjectId,
+              subjectType: op.permission.subjectType,
+            },
+          },
+        },
+      },
+    };
   }
 }

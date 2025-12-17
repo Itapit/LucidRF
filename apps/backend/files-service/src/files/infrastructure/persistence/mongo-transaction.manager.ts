@@ -12,13 +12,17 @@ export class MongoTransactionManager implements TransactionManager {
   ) {}
 
   async run<T>(fn: () => Promise<T>): Promise<T> {
+    const existingSession = this.dbContext.getSession();
+
+    if (existingSession) {
+      return fn();
+    }
+
     const session = await this.connection.startSession();
     session.startTransaction();
 
     try {
-      // Execute the function inside the AsyncLocalStorage context
       const result = await this.dbContext.runWithSession(session, fn);
-
       await session.commitTransaction();
       return result;
     } catch (error) {

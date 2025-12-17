@@ -1,4 +1,5 @@
 import { PermissionType } from '@LucidRF/common';
+import { BulkPermissionOperation } from '../dtos';
 import { CreateFileRepoDto } from '../dtos/create-file-repo.dto';
 import { FileEntity, PermissionEntity } from '../entities';
 
@@ -55,4 +56,9 @@ export abstract class FileRepository {
    * Revokes access for a specific subject by removing their permission entry.
    */
   abstract removePermission(id: string, subjectId: string, subjectType: PermissionType): Promise<FileEntity>;
+
+  /**
+   * Updates the permissions of multiple files in bulk.
+   */
+  abstract updatePermissionsBulk(operations: BulkPermissionOperation[]): Promise<void>;
 }
