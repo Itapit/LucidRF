@@ -1,59 +1,31 @@
-import { PermissionRole } from '@LucidRF/common';
 import { ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { FileEntity, FolderEntity, PermissionEntity } from '../domain/entities';
 import { AccessLevel, PermissionAction, ResourceType } from '../domain/enums';
+import { hasSufficientAccess, shouldUpgradePermission } from '../domain/logic';
 import { FileRepository, FolderRepository } from '../domain/repositories';
+import { TransactionManager } from '../domain/transaction.manager';
 
-//TODO add p-limit / bulk updates in the repo / Transaction support
+//TODO add p-limit
 
 @Injectable()
 export class AclService {
   private readonly logger = new Logger(AclService.name);
 
-  constructor(private readonly fileRepository: FileRepository, private readonly folderRepository: FolderRepository) {}
-
-  /**
-   * Fetches a resource by ID and Type.
-   */
-  async getResource(resourceId: string, type: ResourceType) {
-    const repo = type === ResourceType.FILE ? this.fileRepository : this.folderRepository;
-    const resource = await repo.findById(resourceId);
-
-    if (!resource) {
-      throw new NotFoundException(`${type} ${resourceId} not found`);
-    }
-
-    return resource;
-  }
+  constructor(
+    private readonly fileRepository: FileRepository,
+    private readonly folderRepository: FolderRepository,
+    private readonly txManager: TransactionManager
+  ) {}
 
   /**
    * Validates if a user has the required access level for a resource.
    * Returns the resource if successful.
    */
-  async validateAccess(
-    resourceId: string,
-    userId: string,
-    type: ResourceType,
-    requiredLevel: AccessLevel = AccessLevel.VIEWER
-  ) {
+  async validateAccess(resourceId: string, userId: string, type: ResourceType, level: AccessLevel) {
     const resource = await this.getResource(resourceId, type);
 
-    if (resource.ownerId === userId) {
-      return resource;
-    }
-
-    const userPerm = resource.permissions.find((p) => p.subjectId === userId);
-
-    if (!userPerm) {
-      throw new ForbiddenException('Access denied');
-    }
-
-    // Compare Weights (Role Validation)
-    const requiredWeight = this.getWeight(requiredLevel);
-    const userWeight = this.getWeight(userPerm.role);
-
-    if (userWeight < requiredWeight) {
-      throw new ForbiddenException(`Insufficient permissions: Required ${requiredLevel}, but you are ${userPerm.role}`);
+    if (!hasSufficientAccess(resource, userId, level)) {
+      throw new ForbiddenException(`User ${userId} lacks ${level} access to ${type} ${resourceId}`);
     }
 
     return resource;
@@ -64,20 +36,29 @@ export class AclService {
     ownerId: string,
     permission: PermissionEntity,
     action: PermissionAction
+  ): Promise<void> {
+    await this.txManager.run(async () => {
+      await this.executePropagation(folderId, ownerId, permission, action);
+    });
+  }
+
+  private async executePropagation(
+    folderId: string,
+    ownerId: string,
+    permission: PermissionEntity,
+    action: PermissionAction
   ) {
     this.logger.log(`Starting propagation (${action}) for folder ${folderId}`);
 
     const [subFolders, files] = await Promise.all([
-      this.folderRepository.findSubFolders(folderId, ownerId),
-      this.fileRepository.findByFolder(folderId, ownerId),
+      this.folderRepository.findSubFoldersByParentIdSystem(folderId),
+      this.fileRepository.findByFolderIdSystem(folderId),
     ]);
 
     await Promise.all([
       this.propagateToFiles(files, permission, action),
       this.propagateToFolders(subFolders, ownerId, permission, action),
     ]);
-
-    this.logger.debug(`Finished propagation for folder ${folderId}`);
   }
 
   /**
@@ -92,7 +73,7 @@ export class AclService {
       const fileId = file._id.toString();
 
       if (action === PermissionAction.ADD) {
-        return this.shouldUpgrade(file.permissions, permission)
+        return shouldUpgradePermission(file.permissions, permission)
           ? this.fileRepository.addPermission(fileId, permission)
           : Promise.resolve();
       } else {
@@ -116,7 +97,7 @@ export class AclService {
       const folderId = folder._id.toString();
 
       if (action === PermissionAction.ADD) {
-        if (this.shouldUpgrade(folder.permissions, permission)) {
+        if (shouldUpgradePermission(folder.permissions, permission)) {
           await this.folderRepository.addPermission(folderId, permission);
         }
       } else {
@@ -129,33 +110,21 @@ export class AclService {
     await Promise.all(operations);
   }
 
-  private shouldUpgrade(currentPermissions: PermissionEntity[], newPermission: PermissionEntity): boolean {
-    const existing = currentPermissions.find(
-      (p) => p.subjectId === newPermission.subjectId && p.subjectType === newPermission.subjectType
-    );
-    if (!existing) return true;
-
-    return this.getWeight(newPermission.role) > this.getWeight(existing.role);
-  }
+  // =================================================================================================
+  //  Helpers
+  // =================================================================================================
 
   /**
-   * Safe Accessor for Weights.
+   * Fetches a resource by ID and Type.
    */
-  private getWeight(role: AccessLevel | PermissionRole): number {
-    switch (role) {
-      case AccessLevel.OWNER:
-        return 3;
+  async getResource(resourceId: string, type: ResourceType) {
+    const repo = type === ResourceType.FILE ? this.fileRepository : this.folderRepository;
+    const resource = await repo.findById(resourceId);
 
-      case AccessLevel.EDITOR:
-      case PermissionRole.EDITOR:
-        return 2;
-
-      case AccessLevel.VIEWER:
-      case PermissionRole.VIEWER:
-        return 1;
-
-      default:
-        return 0;
+    if (!resource) {
+      throw new NotFoundException(`${type} ${resourceId} not found`);
     }
+
+    return resource;
   }
 }

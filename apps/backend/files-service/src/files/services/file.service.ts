@@ -12,6 +12,7 @@ import { StorageService } from '../../storage/storage.service';
 import { CreateFileRepoDto } from '../domain/dtos';
 import { FileEntity, FolderEntity, PermissionEntity, toFileDto } from '../domain/entities';
 import { AccessLevel, ResourceType } from '../domain/enums';
+import { calculateInheritedPermissions } from '../domain/logic/permission.logic';
 import { FileRepository } from '../domain/repositories';
 import { AclService } from './acl.service';
 
@@ -39,7 +40,6 @@ export class FileService {
     const file = await this.createFileRecord(payload, storageKey, initialPermissions);
 
     this.logger.log(`Initialized upload for file ${file._id} (User: ${userId})`);
-
     return {
       uploadUrl,
       file: toFileDto(file),
@@ -101,11 +101,10 @@ export class FileService {
       parentFolderId,
       userId,
       ResourceType.FOLDER,
-      AccessLevel.OWNER
+      AccessLevel.EDITOR
     )) as FolderEntity;
 
-    // Inherit permissions (excluding ownership)
-    return parentFolder.permissions || [];
+    return calculateInheritedPermissions(parentFolder, userId);
   }
 
   /**

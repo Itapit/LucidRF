@@ -1,8 +1,9 @@
 import { CreateFolderPayload, DeleteResourcePayload, GetContentPayload } from '@LucidRF/files-contracts';
 import { Injectable, Logger } from '@nestjs/common';
 import { CreateFolderRepoDto } from '../domain/dtos';
-import { toFileDto, toFolderDto } from '../domain/entities';
+import { FolderEntity, PermissionEntity, toFileDto, toFolderDto } from '../domain/entities';
 import { AccessLevel, ResourceType } from '../domain/enums';
+import { calculateInheritedPermissions } from '../domain/logic/permission.logic';
 import { FileRepository, FolderRepository } from '../domain/repositories';
 import { AclService } from './acl.service';
 
@@ -17,25 +18,29 @@ export class FolderService {
   ) {}
 
   async create(payload: CreateFolderPayload) {
+    let permissions: PermissionEntity[] = [];
+
     if (payload.parentFolderId) {
-      await this.aclService.validateAccess(
+      const parent = (await this.aclService.validateAccess(
         payload.parentFolderId,
         payload.userId,
         ResourceType.FOLDER,
-        AccessLevel.OWNER
-      );
+        AccessLevel.EDITOR
+      )) as FolderEntity;
+
+      permissions = calculateInheritedPermissions(parent, payload.userId);
     }
 
     const dto: CreateFolderRepoDto = {
       name: payload.name,
       ownerId: payload.userId,
       parentFolderId: payload.parentFolderId || null,
-      permissions: [],
+      permissions,
     };
 
     const folder = await this.folderRepository.create(dto);
     this.logger.log(`Created folder ${folder._id}`);
-    return folder;
+    return toFolderDto(folder);
   }
 
   async listContent(payload: GetContentPayload) {
