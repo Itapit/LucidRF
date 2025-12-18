@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { FolderEntity, PermissionEntity } from '../domain/entities';
 import { PermissionAction } from '../domain/enums';
+import { FileRepository, FolderRepository } from '../domain/interfaces';
 import { calculateBulkUpdates } from '../domain/logic/access-control.logic';
-import { FileRepository, FolderRepository } from '../domain/repositories';
 
 @Injectable()
 export class PermissionPropagationService {

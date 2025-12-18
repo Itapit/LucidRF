@@ -5,7 +5,7 @@ import { AnyBulkWriteOperation, Model } from 'mongoose';
 import { BulkPermissionOperation, CreateFolderRepoDto } from '../../domain/dtos';
 import { FolderEntity, PermissionEntity } from '../../domain/entities';
 import { PermissionAction } from '../../domain/enums';
-import { FolderRepository } from '../../domain/repositories';
+import { FolderRepository } from '../../domain/interfaces';
 import { DatabaseContext } from '../persistence/database.context';
 import { FolderSchema, toFolderEntity } from '../schemas';
 

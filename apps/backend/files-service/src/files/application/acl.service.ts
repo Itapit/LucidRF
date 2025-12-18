@@ -1,8 +1,8 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PermissionEntity } from '../domain/entities';
 import { AccessLevel, PermissionAction, ResourceType } from '../domain/enums';
+import { FileRepository, FolderRepository } from '../domain/interfaces';
 import { hasSufficientAccess } from '../domain/logic';
-import { FileRepository, FolderRepository } from '../domain/repositories';
 import { TransactionManager } from '../domain/transaction.manager';
 import { PermissionPropagationService } from './permission-propagation.service';
 

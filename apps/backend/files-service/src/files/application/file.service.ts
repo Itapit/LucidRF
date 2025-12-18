@@ -12,8 +12,8 @@ import { StorageService } from '../../storage/storage.service';
 import { CreateFileRepoDto } from '../domain/dtos';
 import { FileEntity, FolderEntity, PermissionEntity, toFileDto } from '../domain/entities';
 import { AccessLevel, ResourceType } from '../domain/enums';
+import { FileRepository } from '../domain/interfaces';
 import { calculateInheritedPermissions } from '../domain/logic/permission.logic';
-import { FileRepository } from '../domain/repositories';
 import { AclService } from './acl.service';
 
 @Injectable()

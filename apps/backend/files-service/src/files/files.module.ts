@@ -4,7 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { STORAGE_BUCKET_NAME } from '../storage/storage.constants';
 import { StorageModule } from '../storage/storage.module';
 import { AclService, FileService, FolderService, PermissionPropagationService, SharingService } from './application';
-import { FileRepository, FolderRepository } from './domain/repositories';
+import { FileRepository, FolderRepository } from './domain/interfaces';
 import { TransactionManager } from './domain/transaction.manager';
 import { FilesController } from './files.controller';
 import { DatabaseContext } from './infrastructure/persistence/database.context';

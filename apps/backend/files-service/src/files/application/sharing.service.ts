@@ -3,8 +3,8 @@ import { ShareResourcePayload, UnshareResourcePayload } from '@LucidRF/files-con
 import { Injectable } from '@nestjs/common';
 import { FolderEntity } from '../domain/entities';
 import { AccessLevel, PermissionAction, ResourceType } from '../domain/enums';
+import { FileRepository, FolderRepository } from '../domain/interfaces';
 import { determineSharingAction } from '../domain/logic';
-import { FileRepository, FolderRepository } from '../domain/repositories';
 import { AclService } from './acl.service';
 
 @Injectable()

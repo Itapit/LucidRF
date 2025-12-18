@@ -5,7 +5,7 @@ import { AnyBulkWriteOperation, Model } from 'mongoose';
 import { BulkPermissionOperation, CreateFileRepoDto } from '../../domain/dtos';
 import { FileEntity, PermissionEntity } from '../../domain/entities';
 import { PermissionAction } from '../../domain/enums';
-import { FileRepository } from '../../domain/repositories';
+import { FileRepository } from '../../domain/interfaces';
 import { DatabaseContext } from '../persistence/database.context';
 import { FileSchema, toFileEntity } from '../schemas';
 
