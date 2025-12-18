@@ -27,7 +27,7 @@ export class GroupsService {
   }
 
   async findByUser(userId: string): Promise<GroupDto[]> {
-    return firstValueFrom(this.groupsClient.send<GroupDto[]>(GROUPS_PATTERNS.FIND_MY_GROUPS, userId));
+    return firstValueFrom(this.groupsClient.send<GroupDto[]>(GROUPS_PATTERNS.GET_USER_GROUPS, userId));
   }
 
   async findOne(id: string): Promise<GroupDto> {
