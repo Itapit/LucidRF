@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AuthRefreshResponse, LoginResponse, PendingLoginResponse } from '@LucidRF/common';
-import { AuthLoginResponseDto } from '@LucidRF/users-contracts';
-import { Body, Controller, Headers, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { AuthLoginResponseDto, JWT_REFRESH_EXPIRES_IN } from '@LucidRF/users-contracts';
+import { Body, Controller, Headers, HttpStatus, Inject, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { CompleteSetupDto, LoginDto } from './dtos';
@@ -16,7 +15,10 @@ import ms = require('ms');
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService, private readonly configService: ConfigService) {}
+  constructor(
+    private readonly authService: AuthService,
+    @Inject(JWT_REFRESH_EXPIRES_IN) private readonly jwtRefreshExpiresIn: string
+  ) {}
 
   @Post('login')
   async login(
@@ -30,9 +32,7 @@ export class AuthController {
       return { pendingToken: result.pendingToken };
     }
 
-    const maxAgeString = this.configService.getOrThrow<string>('JWT_REFRESH_EXPIRES_IN');
-
-    const maxAgeMs = ms(maxAgeString as any) as unknown as number;
+    const maxAgeMs = ms(this.jwtRefreshExpiresIn as any) as unknown as number;
 
     res.cookie('refresh-token', result.refreshToken, {
       httpOnly: true,
@@ -59,8 +59,7 @@ export class AuthController {
 
     const result = (await this.authService.completeSetup(userId, dto, userAgent)) as AuthLoginResponseDto;
 
-    const maxAgeString = this.configService.getOrThrow<string>('JWT_REFRESH_EXPIRES_IN');
-    const maxAgeMs = ms(maxAgeString as any) as unknown as number;
+    const maxAgeMs = ms(this.jwtRefreshExpiresIn as any) as unknown as number;
 
     res.cookie('refresh-token', result.refreshToken, {
       httpOnly: true,
@@ -85,8 +84,7 @@ export class AuthController {
     const { userId, jti } = req.user;
     const result = await this.authService.refresh(userId, jti, userAgent);
 
-    const maxAgeString = this.configService.getOrThrow<string>('JWT_REFRESH_EXPIRES_IN');
-    const maxAgeMs = ms(maxAgeString as any) as unknown as number;
+    const maxAgeMs = ms(this.jwtRefreshExpiresIn as any) as unknown as number;
 
     res.cookie('refresh-token', result.refreshToken, {
       httpOnly: true,

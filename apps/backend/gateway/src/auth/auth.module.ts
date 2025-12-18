@@ -1,4 +1,9 @@
-import { UserClientModule } from '@LucidRF/users-contracts';
+import {
+  JWT_ACCESS_EXPIRES_IN,
+  JWT_PENDING_EXPIRES_IN,
+  JWT_REFRESH_EXPIRES_IN,
+  UserClientModule,
+} from '@LucidRF/users-contracts';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
@@ -21,7 +26,33 @@ import { AccessJwtStrategy, PendingJwtStrategy, RefreshTokenStrategy } from './s
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, AccessJwtStrategy, PendingJwtStrategy, RefreshTokenStrategy],
+  providers: [
+    AuthService,
+    AccessJwtStrategy,
+    PendingJwtStrategy,
+    RefreshTokenStrategy,
+    {
+      provide: JWT_ACCESS_EXPIRES_IN,
+      useFactory: (configService: ConfigService) => {
+        return configService.getOrThrow<string>('JWT_ACCESS_EXPIRES_IN');
+      },
+      inject: [ConfigService],
+    },
+    {
+      provide: JWT_REFRESH_EXPIRES_IN,
+      useFactory: (configService: ConfigService) => {
+        return configService.getOrThrow<string>('JWT_REFRESH_EXPIRES_IN');
+      },
+      inject: [ConfigService],
+    },
+    {
+      provide: JWT_PENDING_EXPIRES_IN,
+      useFactory: (configService: ConfigService) => {
+        return configService.getOrThrow<string>('JWT_PENDING_EXPIRES_IN');
+      },
+      inject: [ConfigService],
+    },
+  ],
   exports: [PassportModule],
 })
 export class AuthModule {}
