@@ -12,7 +12,8 @@ import { StorageService } from '../../storage/storage.service';
 import { CreateFileRepoDto } from '../domain/dtos';
 import { FileEntity, FolderEntity, PermissionEntity, toFileDto } from '../domain/entities';
 import { AccessLevel, ResourceType } from '../domain/enums';
-import { FileRepository } from '../domain/interfaces';
+import { FileRepository, FolderRepository, GroupsService } from '../domain/interfaces';
+import { filterTopLevelSharedItems } from '../domain/logic';
 import { calculateInheritedPermissions } from '../domain/logic/permission.logic';
 import { AclService } from './acl.service';
 
@@ -22,8 +23,10 @@ export class FileService {
 
   constructor(
     private readonly fileRepository: FileRepository,
+    private readonly folderRepository: FolderRepository,
     private readonly storageService: StorageService,
     private readonly aclService: AclService,
+    private readonly groupsService: GroupsService,
     @Inject(STORAGE_BUCKET_NAME) private readonly bucketName: string
   ) {}
 
@@ -77,6 +80,20 @@ export class FileService {
       AccessLevel.VIEWER
     )) as FileEntity;
     return this.storageService.getPresignedGetUrl(file.storageKey);
+  }
+
+  /**
+   * Returns "Shared With Me" items, showing only the highest-level shared roots.
+   */
+  async getSharedWithMe(userId: string): Promise<{ files: FileEntity[]; folders: FolderEntity[] }> {
+    const groupIds = await this.groupsService.getUserGroupIds(userId);
+
+    const [rawFiles, rawFolders] = await Promise.all([
+      this.fileRepository.findSharedWith(userId, groupIds),
+      this.folderRepository.findSharedWith(userId, groupIds),
+    ]);
+
+    return filterTopLevelSharedItems(rawFiles, rawFolders);
   }
 
   // =================================================================================================
