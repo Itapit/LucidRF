@@ -1,8 +1,9 @@
-import { IsMongoId, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsResourceId } from '@LucidRF/common';
+import { IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 
 export class CompleteSetupPayload {
-  @IsMongoId()
   @IsNotEmpty()
+  @IsResourceId()
   userId!: string;
 
   @IsString()
