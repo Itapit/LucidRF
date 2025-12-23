@@ -3,8 +3,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { CreateFolderRepoDto } from '../domain/dtos';
 import { FolderEntity, PermissionEntity, toFileDto, toFolderDto } from '../domain/entities';
 import { AccessLevel, ResourceType } from '../domain/enums';
+import { FileRepository, FolderRepository } from '../domain/interfaces';
 import { calculateInheritedPermissions } from '../domain/logic/permission.logic';
-import { FileRepository, FolderRepository } from '../domain/repositories';
 import { AclService } from './acl.service';
 
 @Injectable()

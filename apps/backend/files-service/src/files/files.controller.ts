@@ -11,8 +11,8 @@ import {
 } from '@LucidRF/files-contracts';
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { FileService, FolderService } from './services';
-import { SharingService } from './services/sharing.service';
+import { FileService, FolderService } from './application';
+import { SharingService } from './application/sharing.service';
 
 @Controller('files')
 export class FilesController {
@@ -52,6 +52,11 @@ export class FilesController {
   @MessagePattern(FILES_PATTERNS.LIST_CONTENT)
   async listContent(@Payload() payload: GetContentPayload) {
     return this.folderService.listContent(payload);
+  }
+
+  @MessagePattern(FILES_PATTERNS.GET_SHARED_FILES)
+  async getSharedWithMe(@Payload() userId: string) {
+    return this.fileService.getSharedWithMe(userId);
   }
 
   @MessagePattern(FILES_PATTERNS.DELETE_FOLDER)

@@ -61,4 +61,9 @@ export abstract class FileRepository {
    * Updates the permissions of multiple files in bulk.
    */
   abstract updatePermissionsBulk(operations: BulkPermissionOperation[]): Promise<void>;
+
+  /**
+   * Retrieves all files that are shared with a specific user or any of the groups they belong to.
+   */
+  abstract findSharedWith(userId: string, groupIds: string[]): Promise<FileEntity[]>;
 }

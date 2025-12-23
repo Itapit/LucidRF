@@ -95,6 +95,10 @@ export class FilesService {
   //  Sharing / ACL
   // =================================================================================================
 
+  async getSharedWithMe(userId: string) {
+    return this.filesClient.send(FILES_PATTERNS.GET_SHARED_FILES, userId);
+  }
+
   shareFile(dto: ShareResourceDto, userId: string) {
     const payload: ShareResourcePayload = {
       resourceId: dto.resourceId,

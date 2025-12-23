@@ -1,4 +1,3 @@
-import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TerminusModule } from '@nestjs/terminus';
@@ -15,7 +14,6 @@ import { HealthMonitor } from './health.monitor';
       },
     }),
     TerminusModule,
-    HttpModule,
     ScheduleModule.forRoot(),
   ],
   providers: [

@@ -27,7 +27,7 @@ export class GroupsController {
     return this.groupsService.findOne(id);
   }
 
-  @MessagePattern(GROUPS_PATTERNS.FIND_MY_GROUPS)
+  @MessagePattern(GROUPS_PATTERNS.GET_USER_GROUPS)
   findMyGroups(@Payload() userId: string): Promise<GroupDto[]> {
     return this.groupsService.findMyGroups(userId);
   }

@@ -5,8 +5,9 @@ import { AnyBulkWriteOperation, Model } from 'mongoose';
 import { BulkPermissionOperation, CreateFileRepoDto } from '../../domain/dtos';
 import { FileEntity, PermissionEntity } from '../../domain/entities';
 import { PermissionAction } from '../../domain/enums';
-import { FileRepository } from '../../domain/repositories';
+import { FileRepository } from '../../domain/interfaces';
 import { DatabaseContext } from '../persistence/database.context';
+import { PERMISSIONS_SUBJECT_PATH } from '../persistence/persistence.constants';
 import { FileSchema, toFileEntity } from '../schemas';
 
 @Injectable()
@@ -168,5 +169,20 @@ export class MongoFileRepository implements FileRepository {
         },
       },
     };
+  }
+
+  async findSharedWith(userId: string, groupIds: string[]): Promise<FileEntity[]> {
+    const subjects = [userId, ...groupIds];
+
+    const docs = await this.fileModel
+      .find({
+        // Exclude files User own
+        owner: { $ne: userId },
+
+        [PERMISSIONS_SUBJECT_PATH]: { $in: subjects },
+      })
+      .exec();
+
+    return docs.map((doc) => toFileEntity(doc));
   }
 }

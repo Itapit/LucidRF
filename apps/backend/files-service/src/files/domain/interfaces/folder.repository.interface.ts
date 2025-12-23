@@ -50,4 +50,9 @@ export abstract class FolderRepository {
    * Update permission in bulk for multiple folders.
    */
   abstract updatePermissionsBulk(operations: BulkPermissionOperation[]): Promise<void>;
+
+  /**
+   * Retrieves all folders that are shared with a specific user or any of the groups they belong to.
+   */
+  abstract findSharedWith(userId: string, groupIds: string[]): Promise<FolderEntity[]>;
 }

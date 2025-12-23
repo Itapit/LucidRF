@@ -55,6 +55,11 @@ export class FilesController {
     return this.filesService.listContent(query.folderId, req.user.userId);
   }
 
+  @Get('shared')
+  async getSharedWithMe(@Req() req: AccessAuthenticatedRequest) {
+    return this.filesService.getSharedWithMe(req.user.userId);
+  }
+
   @Delete('folder/:resourceId')
   async deleteFolder(@Param() params: DeleteResourceDto, @Req() req: AccessAuthenticatedRequest) {
     return this.filesService.deleteFolder(params, req.user.userId);

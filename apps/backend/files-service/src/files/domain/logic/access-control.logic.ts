@@ -27,6 +27,17 @@ export function shouldUpgradePermission(
 }
 
 /**
+ * Helper to get the specific weight of a subject (User or Group) on a resource.
+ * Returns 0 if not found.
+ */
+function getSubjectWeight(permissions: PermissionEntity[], subjectId: string, subjectType: PermissionType): number {
+  const permission = permissions?.find((p) => p.subjectId === subjectId && p.subjectType === subjectType);
+
+  if (!permission) return 0;
+  return getPermissionWeight(permission.role);
+}
+
+/**
  * Safe Accessor for Weights.
  */
 export function getPermissionWeight(role: AccessLevel | PermissionRole): number {
@@ -53,23 +64,24 @@ export function getPermissionWeight(role: AccessLevel | PermissionRole): number 
 export function hasSufficientAccess(
   resource: FileEntity | FolderEntity,
   userId: string,
-  requiredLevel: AccessLevel
+  requiredLevel: AccessLevel,
+  userGroupsIds: string[] = []
 ): boolean {
   // Resource Owner always has full access
   if (resource.ownerId === userId) return true;
 
-  // If Strict Ownership is required (e.g. Delete Folder), fail if not owner
-  if (requiredLevel === AccessLevel.OWNER) return false;
+  let maxWeight = getSubjectWeight(resource.permissions, userId, PermissionType.USER);
 
-  // Find User's Permission Entry
-  // TODO: (Add Group logic here)
-  const userPermission = resource.permissions?.find(
-    (p) => p.subjectId === userId && p.subjectType === PermissionType.USER
-  );
+  if (userGroupsIds.length > 0) {
+    for (const groupId of userGroupsIds) {
+      const groupWeight = getSubjectWeight(resource.permissions, groupId, PermissionType.GROUP);
 
-  if (!userPermission) return false;
-
-  return getPermissionWeight(userPermission.role) >= getPermissionWeight(requiredLevel);
+      if (groupWeight > maxWeight) {
+        maxWeight = groupWeight;
+      }
+    }
+  }
+  return maxWeight >= getPermissionWeight(requiredLevel);
 }
 
 /**
@@ -93,12 +105,11 @@ export function calculateBulkUpdates(
 
       case PermissionAction.UPDATE:
         // Force Update: We don't care about weights.
-        // If the user is an EDITOR and we say VIEWER, they become VIEWER.
         shouldProcess = true;
         break;
 
       case PermissionAction.ADD:
-        // Safe Add: Only process if it upgrades access (prevents accidental downgrades)
+        // Safe Add: Only process if it upgrades access
         shouldProcess = shouldUpgradePermission(resource.permissions, permission);
         break;
     }

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { FilesModule } from './files/files.module';
+import { GroupsIntegrationModule } from './integrations/groups/groups-integration.module';
 import { StorageModule } from './storage/storage.module';
 
 @Module({
@@ -21,6 +22,8 @@ import { StorageModule } from './storage/storage.module';
     }),
 
     FilesModule,
+
+    GroupsIntegrationModule,
   ],
   controllers: [],
   providers: [],

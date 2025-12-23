@@ -1,16 +1,18 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { GroupsIntegrationModule } from '../integrations/groups/groups-integration.module';
+import { TcpGroupsService } from '../integrations/groups/tcp-groups.service';
 import { STORAGE_BUCKET_NAME } from '../storage/storage.constants';
 import { StorageModule } from '../storage/storage.module';
-import { FileRepository, FolderRepository } from './domain/repositories';
+import { AclService, FileService, FolderService, PermissionPropagationService, SharingService } from './application';
+import { FileRepository, FolderRepository, GroupsService } from './domain/interfaces';
 import { TransactionManager } from './domain/transaction.manager';
 import { FilesController } from './files.controller';
 import { DatabaseContext } from './infrastructure/persistence/database.context';
 import { MongoTransactionManager } from './infrastructure/persistence/mongo-transaction.manager';
 import { MongoFileRepository, MongoFolderRepository } from './infrastructure/repositories';
 import { FileSchema, FileSchemaFactory, FolderSchema, FolderSchemaFactory } from './infrastructure/schemas';
-import { AclService, FileService, FolderService, PermissionPropagationService, SharingService } from './services';
 
 @Module({
   imports: [
@@ -20,6 +22,7 @@ import { AclService, FileService, FolderService, PermissionPropagationService, S
       { name: FileSchema.name, schema: FileSchemaFactory },
       { name: FolderSchema.name, schema: FolderSchemaFactory },
     ]),
+    GroupsIntegrationModule,
   ],
   controllers: [FilesController],
   providers: [
@@ -40,6 +43,10 @@ import { AclService, FileService, FolderService, PermissionPropagationService, S
     {
       provide: FolderRepository,
       useClass: MongoFolderRepository,
+    },
+    {
+      provide: GroupsService,
+      useExisting: TcpGroupsService,
     },
     {
       provide: STORAGE_BUCKET_NAME,

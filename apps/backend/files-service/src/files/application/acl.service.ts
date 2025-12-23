@@ -1,8 +1,8 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { PermissionEntity } from '../domain/entities';
+import { FileEntity, FolderEntity, PermissionEntity } from '../domain/entities';
 import { AccessLevel, PermissionAction, ResourceType } from '../domain/enums';
+import { FileRepository, FolderRepository, GroupsService } from '../domain/interfaces';
 import { hasSufficientAccess } from '../domain/logic';
-import { FileRepository, FolderRepository } from '../domain/repositories';
 import { TransactionManager } from '../domain/transaction.manager';
 import { PermissionPropagationService } from './permission-propagation.service';
 
@@ -12,21 +12,32 @@ export class AclService {
     private readonly fileRepository: FileRepository,
     private readonly folderRepository: FolderRepository,
     private readonly txManager: TransactionManager,
-    private readonly propagationService: PermissionPropagationService
+    private readonly propagationService: PermissionPropagationService,
+    private readonly groupsService: GroupsService
   ) {}
 
   /**
    * Validates if a user has the required access level for a resource.
    * Returns the resource if successful.
    */
-  async validateAccess(resourceId: string, userId: string, type: ResourceType, level: AccessLevel) {
+  async validateAccess(
+    resourceId: string,
+    userId: string,
+    type: ResourceType,
+    requiredLevel: AccessLevel
+  ): Promise<FileEntity | FolderEntity> {
     const resource = await this.getResource(resourceId, type);
 
-    if (!hasSufficientAccess(resource, userId, level)) {
-      throw new ForbiddenException(`User ${userId} lacks ${level} access to ${type} ${resourceId}`);
+    if (hasSufficientAccess(resource, userId, requiredLevel)) {
+      return resource;
+    }
+    const userGroupIds = await this.groupsService.getUserGroupIds(userId);
+
+    if (hasSufficientAccess(resource, userId, requiredLevel, userGroupIds)) {
+      return resource;
     }
 
-    return resource;
+    throw new ForbiddenException(`User ${userId} lacks ${requiredLevel} access to ${type} ${resourceId}`);
   }
 
   /**
