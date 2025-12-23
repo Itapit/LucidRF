@@ -1,4 +1,4 @@
-import { UserRole, UserStatus } from '@limbo/common';
+import { UserRole, UserStatus } from '@LucidRF/common';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 

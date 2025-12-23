@@ -1,4 +1,10 @@
-import { AddMemberRequest, CreateGroupRequest, GroupDto, RemoveMemberRequest, UpdateGroupRequest } from '@limbo/common';
+import {
+  AddMemberRequest,
+  CreateGroupRequest,
+  GroupDto,
+  RemoveMemberRequest,
+  UpdateGroupRequest,
+} from '@LucidRF/common';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 import { GroupsError } from '../dto/groups-error';
 

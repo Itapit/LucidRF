@@ -1,4 +1,4 @@
-import { UserDto } from '@limbo/common';
+import { UserDto } from '@LucidRF/common';
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AdminGuard } from '../auth/guards/admin.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -9,11 +9,6 @@ import { UsersService } from './users.service';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-
-  @Get('ping')
-  async checkComms(): Promise<string> {
-    return this.usersService.ping();
-  }
 
   @Get('me')
   @UseGuards(JwtAuthGuard)

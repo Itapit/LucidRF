@@ -8,7 +8,7 @@ export const GROUPS_CONFIG = {
 export const GROUPS_PATTERNS = {
   CREATE: 'groups.create',
   FIND_ONE: 'groups.find_one',
-  FIND_MY_GROUPS: 'groups.find_my_groups',
+  GET_USER_GROUPS: 'groups.get_user_groups',
   UPDATE: 'groups.update',
   ADD_MEMBER: 'groups.add_member',
   REMOVE_MEMBER: 'groups.remove_member',

@@ -3,17 +3,29 @@
  * This is only a minimal backend to get started.
  */
 
-import { Logger } from '@nestjs/common';
+import { FILES_CONFIG } from '@LucidRF/files-contracts';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app/app.module';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  const globalPrefix = 'api';
-  app.setGlobalPrefix(globalPrefix);
-  const port = process.env.PORT || 3000;
-  await app.listen(port);
-  Logger.log(`🚀 Application is running on: http://localhost:${port}/${globalPrefix}`);
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
+    transport: Transport.TCP,
+    options: {
+      port: FILES_CONFIG.PORT,
+    },
+  });
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true, // Converts plain objects to DTO instances so validation runs
+      whitelist: true, // Strips away properties not defined in the DTO
+      forbidNonWhitelisted: true, // Throws an error if extra properties are sent
+    })
+  );
+  await app.listen();
+  Logger.log(`Files microservice is running on: http://localhost:${FILES_CONFIG.PORT}}`);
 }
 
 bootstrap();

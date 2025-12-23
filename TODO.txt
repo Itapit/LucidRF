@@ -1,0 +1,10 @@
+maybe use the following things??:
+    configCat
+    simple analytics
+    Doppler
+    Imgbot
+    codeScene
+
+
+actuator?
+eureka equivalent?

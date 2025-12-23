@@ -50,3 +50,5 @@ vite.config.*.timestamp*
 vitest.config.*.timestamp*
 
 .env
+minio_data
+mongo_data

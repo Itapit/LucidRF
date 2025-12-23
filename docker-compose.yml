@@ -1,0 +1,63 @@
+services:
+  mongo:
+    image: mongo:8.0
+    container_name: LucidRF-mongo
+    restart: always
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    volumes:
+      - ./mongo_data:/data/db # Persist data
+    networks:
+      - lucid-network
+
+  minio:
+    image: minio/minio:latest
+    container_name: LucidRF-minio
+    ports:
+      - '9000:9000' # API Port
+      - '9001:9001' # Console Port
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - ./minio_data:/data
+    networks:
+      - lucid-network
+
+  # Prometheus (The Metrics Database)
+  prometheus:
+    image: prom/prometheus
+    container_name: LucidRF-prometheus
+    ports:
+      - '9090:9090'
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml # Mounts the config file
+    # 'extra_hosts' allows Prometheus (inside Docker) to talk to NestJS (on your laptop)
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    networks:
+      - lucid-network
+
+  # Grafana (The Dashboard)
+  grafana:
+    image: grafana/grafana
+    container_name: LucidRF-grafana
+    ports:
+      - '3100:3000'
+    depends_on:
+      - prometheus
+    volumes:
+      # 1. Mount the provisioning config
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      # 2. Mount the actual dashboard JSON files
+      - ./grafana/dashboards:/etc/grafana/dashboards
+    networks:
+      - lucid-network
+
+networks:
+  lucid-network:
+    driver: bridge

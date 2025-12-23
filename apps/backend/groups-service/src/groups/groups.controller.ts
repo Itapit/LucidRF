@@ -1,4 +1,4 @@
-import { GroupDto } from '@limbo/common';
+import { GroupDto } from '@LucidRF/common';
 import {
   AddMemberPayload,
   CheckGroupMembershipPayload,
@@ -7,7 +7,7 @@ import {
   GROUPS_PATTERNS,
   RemoveMemberPayload,
   UpdateGroupPayload,
-} from '@limbo/groups-contracts';
+} from '@LucidRF/groups-contracts';
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { GroupsService } from './groups.service';
@@ -27,7 +27,7 @@ export class GroupsController {
     return this.groupsService.findOne(id);
   }
 
-  @MessagePattern(GROUPS_PATTERNS.FIND_MY_GROUPS)
+  @MessagePattern(GROUPS_PATTERNS.GET_USER_GROUPS)
   findMyGroups(@Payload() userId: string): Promise<GroupDto[]> {
     return this.groupsService.findMyGroups(userId);
   }

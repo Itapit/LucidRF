@@ -8,7 +8,7 @@ import {
   LoginResponse,
   PendingLoginResponse,
   UserDto,
-} from '@limbo/common';
+} from '@LucidRF/common';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 

@@ -1,4 +1,4 @@
-import { UserDto } from '@limbo/common';
+import { UserDto } from '@LucidRF/common';
 import { AuthError } from '../dtos/auth-error';
 import { SessionStatus } from '../dtos/session-status.enum';
 

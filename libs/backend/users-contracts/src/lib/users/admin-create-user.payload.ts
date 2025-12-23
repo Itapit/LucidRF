@@ -1,4 +1,4 @@
-import { UserRole } from '@limbo/common';
+import { UserRole } from '@LucidRF/common';
 import { IsEmail, IsEnum, IsMongoId, IsNotEmpty, IsString } from 'class-validator';
 
 export class AdminCreateUserPayload {

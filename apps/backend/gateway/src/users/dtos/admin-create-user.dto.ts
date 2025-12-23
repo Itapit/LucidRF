@@ -1,4 +1,4 @@
-import { AdminCreateUserRequest, UserRole } from '@limbo/common';
+import { AdminCreateUserRequest, UserRole } from '@LucidRF/common';
 import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
 export class AdminCreateUserDto implements AdminCreateUserRequest {

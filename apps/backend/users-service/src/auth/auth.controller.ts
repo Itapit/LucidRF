@@ -5,7 +5,7 @@ import {
   AuthRefreshPayload,
   CompleteSetupPayload,
   USER_PATTERNS,
-} from '@limbo/users-contracts';
+} from '@LucidRF/users-contracts';
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
@@ -13,12 +13,6 @@ import { AuthService } from './auth.service';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-
-  @MessagePattern(USER_PATTERNS.PING)
-  handlePing(data: string): string {
-    console.log(`Received PING from Gateway: ${data}`);
-    return 'PONG from Users Service!';
-  }
 
   @MessagePattern(USER_PATTERNS.AUTH_LOGIN)
   handleLogin(@Payload() payload: AuthLoginPayload) {

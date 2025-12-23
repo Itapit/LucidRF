@@ -1,6 +1,6 @@
 import { createFeature, createReducer, on } from '@ngrx/store';
 
-import { isPendingLoginResponse, LoginResponse } from '@limbo/common';
+import { isPendingLoginResponse, LoginResponse } from '@LucidRF/common';
 import { SessionStatus } from '../dtos/session-status.enum';
 import { AuthActions } from './auth.actions';
 import { AUTH_FEATURE_KEY, initialAuthState } from './auth.state';

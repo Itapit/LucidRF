@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { CreateGroupRequest, GroupDto, UpdateGroupRequest } from '@limbo/common';
+import { CreateGroupRequest, GroupDto, UpdateGroupRequest } from '@LucidRF/common';
 import { Observable } from 'rxjs';
 import { ApiEndpoint } from '../../core/http/api-endpoints.enum';
 import { environment } from '../../environments/environment';

@@ -1,4 +1,4 @@
-import { GroupDto } from '@limbo/common';
+import { GroupDto } from '@LucidRF/common';
 import { GroupsError } from '../dto/groups-error';
 
 export const GROUPS_FEATURE_KEY = 'groups';

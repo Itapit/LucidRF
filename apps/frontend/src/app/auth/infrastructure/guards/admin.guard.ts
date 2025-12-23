@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { CanMatchFn } from '@angular/router';
-import { UserRole } from '@limbo/common';
+import { UserRole } from '@LucidRF/common';
 import { filter, map, switchMap, take } from 'rxjs';
 import { NavigationService } from '../../../core/navigation/navigation.service';
 import { AuthFacade } from '../../store/auth.facade';

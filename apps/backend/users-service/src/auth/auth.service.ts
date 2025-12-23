@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { UserDto, UserRole, UserStatus } from '@limbo/common';
+import { UserDto, UserRole, UserStatus } from '@LucidRF/common';
 import {
   AuthLoginPayload,
   AuthLoginResponseDto,
@@ -7,16 +7,21 @@ import {
   AuthLogoutPayload,
   AuthRefreshPayload,
   CompleteSetupPayload,
+  JWT_ACCESS_EXPIRES_IN,
+  JWT_PENDING_EXPIRES_IN,
+  JWT_REFRESH_EXPIRES_IN,
+  JWT_SECRET,
   PendingLoginResponseDto,
-} from '@limbo/users-contracts';
+} from '@LucidRF/users-contracts';
 import {
   ForbiddenException,
+  Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { RpcException } from '@nestjs/microservices';
 import * as bcrypt from 'bcrypt';
@@ -32,8 +37,11 @@ export class AuthService {
   constructor(
     private readonly usersRepository: UserRepository,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
-    private readonly refreshTokenRepo: RefreshTokenRepository
+    private readonly refreshTokenRepo: RefreshTokenRepository,
+    @Inject(JWT_REFRESH_EXPIRES_IN) private readonly jwtRefreshExpiresIn: string,
+    @Inject(JWT_PENDING_EXPIRES_IN) private readonly jwtPendingExpiresIn: string,
+    @Inject(JWT_ACCESS_EXPIRES_IN) private readonly jwtAccessExpiresIn: string,
+    @Inject(JWT_SECRET) private readonly jwtSecret: string
   ) {}
 
   /**
@@ -89,7 +97,7 @@ export class AuthService {
     try {
       return this.grantUserTokens(user, payload.userAgent);
     } catch (e) {
-      console.error('Error during token granting:', e);
+      Logger.error('Error during token granting:', e);
       throw new RpcException(new InternalServerErrorException('Could not grant tokens').getResponse());
     }
   }
@@ -102,7 +110,7 @@ export class AuthService {
       await this.refreshTokenRepo.delete(payload.jti);
       return { success: true };
     } catch (e) {
-      console.error('Error during logout:', e);
+      Logger.error('Error during logout:', e);
       return { success: true };
     }
   }
@@ -115,7 +123,7 @@ export class AuthService {
       await this.refreshTokenRepo.deleteAllForUser(payload.userId);
       return { success: true };
     } catch (e) {
-      console.error('Error during logout-all:', e);
+      Logger.error('Error during logout-all:', e);
       return { success: true };
     }
   }
@@ -172,10 +180,9 @@ export class AuthService {
       sub: user.id,
       status: UserStatus.PENDING,
     };
-    const expiresIn = this.configService.getOrThrow<string>('JWT_PENDING_EXPIRES_IN');
 
     const token = await this.jwtService.signAsync(payload, {
-      expiresIn: expiresIn as any,
+      expiresIn: this.jwtPendingExpiresIn as any,
     });
     return { pendingToken: token };
   }
@@ -187,8 +194,7 @@ export class AuthService {
     try {
       // Generate new token details
       const jti = uuidv4();
-      const expiresInStr = this.configService.getOrThrow<string>('JWT_REFRESH_EXPIRES_IN');
-      const expiresInMs = ms(expiresInStr as any) as unknown as number;
+      const expiresInMs = ms(this.jwtRefreshExpiresIn as any) as unknown as number;
       const expiresAt = new Date(Date.now() + expiresInMs);
 
       await this.refreshTokenRepo.create(user.id, jti, expiresAt, userAgent);
@@ -204,7 +210,7 @@ export class AuthService {
         user: this.mapToDto(user),
       };
     } catch (e) {
-      console.error('Failed to grant user tokens:', e);
+      Logger.error('Failed to grant user tokens:', e);
       const error = new InternalServerErrorException('Could not grant tokens');
       throw new RpcException(error.getResponse());
     }
@@ -214,21 +220,19 @@ export class AuthService {
 
   private signAccessToken(userId: string, role: UserRole): Promise<string> {
     const payload = { sub: userId, role };
-    const expiresIn = this.configService.getOrThrow<string>('JWT_ACCESS_EXPIRES_IN');
 
     return this.jwtService.signAsync(payload, {
-      secret: this.configService.getOrThrow<string>('JWT_SECRET'),
-      expiresIn: expiresIn as any,
+      secret: this.jwtSecret,
+      expiresIn: this.jwtAccessExpiresIn as any,
     });
   }
 
   private signRefreshToken(userId: string, jti: string): Promise<string> {
     const payload = { sub: userId, jti: jti };
-    const expiresIn = this.configService.getOrThrow<string>('JWT_REFRESH_EXPIRES_IN');
 
     return this.jwtService.signAsync(payload, {
-      secret: this.configService.getOrThrow<string>('JWT_SECRET'),
-      expiresIn: expiresIn as any,
+      secret: this.jwtSecret,
+      expiresIn: this.jwtRefreshExpiresIn as any,
     });
   }
 

@@ -1,4 +1,4 @@
-import { GroupDto } from '@limbo/common';
+import { GroupDto } from '@LucidRF/common';
 import {
   AddMemberPayload,
   CreateGroupPayload,
@@ -7,7 +7,7 @@ import {
   GROUPS_SERVICE,
   RemoveMemberPayload,
   UpdateGroupPayload,
-} from '@limbo/groups-contracts';
+} from '@LucidRF/groups-contracts';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
@@ -27,7 +27,7 @@ export class GroupsService {
   }
 
   async findByUser(userId: string): Promise<GroupDto[]> {
-    return firstValueFrom(this.groupsClient.send<GroupDto[]>(GROUPS_PATTERNS.FIND_MY_GROUPS, userId));
+    return firstValueFrom(this.groupsClient.send<GroupDto[]>(GROUPS_PATTERNS.GET_USER_GROUPS, userId));
   }
 
   async findOne(id: string): Promise<GroupDto> {

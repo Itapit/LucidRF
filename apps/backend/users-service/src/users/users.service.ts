@@ -1,6 +1,6 @@
-import { UserDto, UserStatus } from '@limbo/common';
-import { AdminCreateUserPayload } from '@limbo/users-contracts';
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { UserDto, UserStatus } from '@LucidRF/common';
+import { AdminCreateUserPayload } from '@LucidRF/users-contracts';
+import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices'; // <-- 1. Import RpcException
 import * as bcrypt from 'bcrypt';
 import { HASH_ROUNDS } from '../constants';
@@ -34,7 +34,7 @@ export class UserService {
     };
     const newUserEntity = await this.userRepository.create(repoDto);
     // TODO: add email or smthing
-    console.log(`Temp password for ${payload.email}: ${tempPassword}`);
+    Logger.log(`Temp password for ${payload.email}: ${tempPassword}`);
 
     return this.mapToDto(newUserEntity);
   }

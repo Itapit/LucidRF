@@ -1,4 +1,4 @@
-import { UpdateGroupRequest } from '@limbo/common';
+import { UpdateGroupRequest } from '@LucidRF/common';
 import { IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class UpdateGroupDto implements UpdateGroupRequest {

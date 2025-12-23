@@ -6,7 +6,7 @@ import {
   LoginResponse,
   PendingLoginResponse,
   UserDto,
-} from '@limbo/common';
+} from '@LucidRF/common';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 import { AuthError } from '../dtos/auth-error';
 

@@ -1,4 +1,4 @@
-import { UserStatus } from '@limbo/common';
+import { UserStatus } from '@LucidRF/common';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';

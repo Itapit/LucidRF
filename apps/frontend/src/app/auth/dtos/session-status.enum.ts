@@ -1,4 +1,4 @@
-import { UserStatus } from '@limbo/common';
+import { UserStatus } from '@LucidRF/common';
 
 /**
  * This enum defines the authentication states that are

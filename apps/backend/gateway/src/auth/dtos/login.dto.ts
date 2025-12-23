@@ -1,4 +1,4 @@
-import { LoginRequest } from '@limbo/common';
+import { LoginRequest } from '@LucidRF/common';
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 export class LoginDto implements LoginRequest {

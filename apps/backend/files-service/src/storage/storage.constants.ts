@@ -1,0 +1,2 @@
+export const MINIO_CLIENT = 'MINIO_CLIENT';
+export const STORAGE_BUCKET_NAME = 'STORAGE_BUCKET_NAME';
