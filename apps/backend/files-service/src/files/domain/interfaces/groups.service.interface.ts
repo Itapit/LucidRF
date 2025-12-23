@@ -1,7 +1,7 @@
-export interface GroupsService {
+export abstract class GroupsService {
   /**
    * Retrieves the list of Group IDs that a specific user belongs to.
    * This is used to calculate inherited permissions.
    */
-  getUserGroupIds(userId: string): Promise<string[]>;
+  abstract getUserGroupIds(userId: string): Promise<string[]>;
 }
