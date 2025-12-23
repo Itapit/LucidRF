@@ -1,4 +1,5 @@
-import { IsMongoId, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsResourceId } from '@LucidRF/common';
+import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class CreateGroupPayload {
   @IsString()
@@ -12,6 +13,6 @@ export class CreateGroupPayload {
   description?: string;
 
   @IsNotEmpty()
-  @IsMongoId()
+  @IsResourceId()
   ownerId!: string;
 }

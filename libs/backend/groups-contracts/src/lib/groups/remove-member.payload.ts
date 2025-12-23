@@ -1,15 +1,16 @@
-import { IsMongoId, IsNotEmpty } from 'class-validator';
+import { IsResourceId } from '@LucidRF/common';
+import { IsNotEmpty } from 'class-validator';
 
 export class RemoveMemberPayload {
   @IsNotEmpty()
-  @IsMongoId()
+  @IsResourceId()
   groupId!: string;
 
   @IsNotEmpty()
-  @IsMongoId()
+  @IsResourceId()
   targetUserId!: string; // The user being removed
 
   @IsNotEmpty()
-  @IsMongoId()
+  @IsResourceId()
   actorId!: string; // The user performing the action
 }

@@ -1,12 +1,13 @@
-import { IsMongoId, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsResourceId } from '@LucidRF/common';
+import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class UpdateGroupPayload {
   @IsNotEmpty()
-  @IsMongoId()
+  @IsResourceId()
   groupId!: string;
 
   @IsNotEmpty()
-  @IsMongoId()
+  @IsResourceId()
   actorId!: string; // The user performing the update
 
   @IsString()

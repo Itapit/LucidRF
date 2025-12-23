@@ -1,11 +1,12 @@
-import { IsMongoId, IsNotEmpty } from 'class-validator';
+import { IsResourceId } from '@LucidRF/common';
+import { IsNotEmpty } from 'class-validator';
 
 export class CheckGroupMembershipPayload {
   @IsNotEmpty()
-  @IsMongoId()
+  @IsResourceId()
   userId!: string;
 
   @IsNotEmpty()
-  @IsMongoId()
+  @IsResourceId()
   groupId!: string;
 }
