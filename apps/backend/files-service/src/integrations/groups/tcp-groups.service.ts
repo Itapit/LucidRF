@@ -4,7 +4,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Cache } from 'cache-manager';
 import { firstValueFrom, timeout } from 'rxjs';
-import { GroupsService } from '../../files/domain/interfaces/groups.service.interface';
+import { GroupsService } from '../../files/domain/interfaces';
 import { GROUPS_CACHE_PREFIX, GROUPS_REQUEST_TIMEOUT } from './groups.constants';
 
 @Injectable()
