@@ -7,6 +7,7 @@ import { FolderEntity, PermissionEntity } from '../../domain/entities';
 import { PermissionAction } from '../../domain/enums';
 import { FolderRepository } from '../../domain/interfaces';
 import { DatabaseContext } from '../persistence/database.context';
+import { PERMISSIONS_SUBJECT_PATH } from '../persistence/persistence.constants';
 import { FolderSchema, toFolderEntity } from '../schemas';
 
 @Injectable()
@@ -136,5 +137,21 @@ export class MongoFolderRepository implements FolderRepository {
         },
       },
     };
+  }
+
+  async findSharedWith(userId: string, groupIds: string[]): Promise<FolderEntity[]> {
+    const subjects = [userId, ...groupIds];
+
+    const docs = await this.folderModel
+      .find({
+        // Exclude folders users own
+        owner: { $ne: userId },
+
+        // Check if user ID or my Group IDs exist in the permissions array
+        [PERMISSIONS_SUBJECT_PATH]: { $in: subjects },
+      })
+      .exec();
+
+    return docs.map((doc) => toFolderEntity(doc));
   }
 }
