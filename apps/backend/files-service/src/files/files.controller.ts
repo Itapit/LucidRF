@@ -54,6 +54,11 @@ export class FilesController {
     return this.folderService.listContent(payload);
   }
 
+  @MessagePattern(FILES_PATTERNS.GET_SHARED_FILES)
+  async getSharedWithMe(@Payload() userId: string) {
+    return this.fileService.getSharedWithMe(userId);
+  }
+
   @MessagePattern(FILES_PATTERNS.DELETE_FOLDER)
   async deleteFolder(@Payload() payload: DeleteResourcePayload) {
     return this.folderService.delete(payload);
