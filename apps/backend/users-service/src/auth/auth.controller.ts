@@ -8,7 +8,7 @@ import {
 } from '@LucidRF/users-contracts';
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { AuthService } from './auth.service';
+import { AuthService } from './application/auth.service';
 
 @Controller('auth')
 export class AuthController {

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { UserDto, UserRole, UserStatus } from '@LucidRF/common';
+import { UserRole, UserStatus } from '@LucidRF/common';
 import {
   AuthLoginPayload,
   AuthLoginResponseDto,
@@ -26,10 +26,13 @@ import { JwtService } from '@nestjs/jwt';
 import { RpcException } from '@nestjs/microservices';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
-import { HASH_ROUNDS } from '../constants';
-import { UserRepository } from '../users/repository/user.repository';
-import { UserSchema } from '../users/repository/user.schema';
-import { RefreshTokenRepository } from './repository/refresh-token.repository';
+import { HASH_ROUNDS } from '../../constants';
+import { UserEntity } from '../../users/domain/entities';
+import { UserRepository } from '../../users/domain/interfaces/user.repository.interface';
+import { toUserDto } from '../../users/domain/mappers';
+import { RefreshTokenRepository } from '../domain/interfaces/refresh-token.repository.interface';
+import { toRefreshTokenDto } from '../domain/mappers';
+import { TokenSecurityService } from '../domain/services/security.service';
 import ms = require('ms');
 
 @Injectable()
@@ -37,6 +40,7 @@ export class AuthService {
   constructor(
     private readonly usersRepository: UserRepository,
     private readonly jwtService: JwtService,
+    private readonly tokenSecurity: TokenSecurityService,
     private readonly refreshTokenRepo: RefreshTokenRepository,
     @Inject(JWT_REFRESH_EXPIRES_IN) private readonly jwtRefreshExpiresIn: string,
     @Inject(JWT_PENDING_EXPIRES_IN) private readonly jwtPendingExpiresIn: string,
@@ -92,7 +96,14 @@ export class AuthService {
    * Main entry point for the refresh command.
    */
   async refreshAccessToken(payload: AuthRefreshPayload): Promise<AuthLoginResponseDto> {
-    const user = await this.validateAndRotateRefreshToken(payload);
+    const { userId, jti } = payload;
+
+    await this.tokenSecurity.validateAndRotate(jti, userId);
+
+    const user = await this.usersRepository.findById(userId);
+    if (!user) {
+      throw new RpcException(new NotFoundException('User not found').getResponse());
+    }
 
     try {
       return this.grantUserTokens(user, payload.userAgent);
@@ -131,51 +142,18 @@ export class AuthService {
   /**
    * Finds user and compares passwords.
    */
-  async validateUser(email: string, pass: string): Promise<UserSchema | null> {
+  async validateUser(email: string, pass: string): Promise<UserEntity | null> {
     const user = await this.usersRepository.findByEmailWithCredentials(email);
-    if (user && (await bcrypt.compare(pass, user.password))) {
+    if (user && user.password && (await bcrypt.compare(pass, user.password))) {
       return user;
     }
     return null;
   }
 
   /**
-   * This handles all validation, theft detection, and the DB rotation.
-   * It returns the full UserSchema if successful.
-   */
-  private async validateAndRotateRefreshToken(payload: AuthRefreshPayload): Promise<UserSchema> {
-    const { userId, jti } = payload;
-    const token = await this.refreshTokenRepo.findByJti(jti);
-
-    if (!token) {
-      // Token not in DB. It's either invalid or has already been used.
-      const user = await this.usersRepository.findById(userId);
-      if (user) {
-        // High-risk security event: Nuke all sessions
-        await this.refreshTokenRepo.deleteAllForUser(userId);
-      }
-      throw new RpcException(new ForbiddenException('Refresh token reuse detected').getResponse());
-    }
-
-    if (token.userId.toString() !== userId) {
-      throw new RpcException(new UnauthorizedException('Invalid credentials').getResponse());
-    }
-
-    // Invalidate the token that was just used
-    await this.refreshTokenRepo.delete(jti);
-
-    const user = await this.usersRepository.findById(userId);
-    if (!user) {
-      throw new RpcException(new NotFoundException('User not found').getResponse());
-    }
-
-    return user;
-  }
-
-  /**
    * Issues a short-lived token for password setup.
    */
-  private async grantPendingToken(user: UserSchema): Promise<PendingLoginResponseDto> {
+  private async grantPendingToken(user: UserEntity): Promise<PendingLoginResponseDto> {
     const payload = {
       sub: user.id,
       status: UserStatus.PENDING,
@@ -188,26 +166,26 @@ export class AuthService {
   }
 
   /**
-   * Issues full Access and Refresh tokens for an active user.
+   * Issues Access and Refresh tokens for an active user.
    */
-  private async grantUserTokens(user: UserSchema, userAgent?: string): Promise<AuthLoginResponseDto> {
+  private async grantUserTokens(user: UserEntity, userAgent?: string): Promise<AuthLoginResponseDto> {
     try {
-      // Generate new token details
       const jti = uuidv4();
       const expiresInMs = ms(this.jwtRefreshExpiresIn as any) as unknown as number;
       const expiresAt = new Date(Date.now() + expiresInMs);
 
-      await this.refreshTokenRepo.create(user.id, jti, expiresAt, userAgent);
+      // Create returns a RefreshTokenEntity
+      const newSession = await this.refreshTokenRepo.create(user.id, jti, expiresAt, userAgent);
 
-      const [accessToken, refreshToken] = await Promise.all([
+      const [accessToken] = await Promise.all([
         this.signAccessToken(user.id, user.role),
         this.signRefreshToken(user.id, jti),
       ]);
 
       return {
         accessToken,
-        refreshToken,
-        user: this.mapToDto(user),
+        refreshToken: toRefreshTokenDto(newSession) as any,
+        user: toUserDto(user),
       };
     } catch (e) {
       Logger.error('Failed to grant user tokens:', e);
@@ -234,18 +212,5 @@ export class AuthService {
       secret: this.jwtSecret,
       expiresIn: this.jwtRefreshExpiresIn as any,
     });
-  }
-
-  /**
-   * Maps the internal UserSchema entity to the safe, public UserDto.
-   */
-  private mapToDto(user: UserSchema): UserDto {
-    return {
-      id: user.id,
-      email: user.email,
-      username: user.username,
-      role: user.role,
-      status: user.status,
-    };
   }
 }

@@ -10,11 +10,12 @@ import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PassportModule } from '@nestjs/passport';
 import { UserModule } from '../users/users.module';
+import { AuthService } from './application/auth.service';
 import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { MongoRefreshTokenRepository } from './repository/mongo-refresh-token.repository';
-import { RefreshTokenRepository } from './repository/refresh-token.repository';
-import { RefreshTokenSchema, RefreshTokenSchemaFactory } from './repository/refresh-token.schema';
+import { RefreshTokenRepository } from './domain/interfaces/refresh-token.repository.interface';
+import { TokenSecurityService } from './domain/services/security.service';
+import { MongoRefreshTokenRepository } from './infrastructure/repositories/mongo-refresh-token.repository';
+import { RefreshTokenSchema, RefreshTokenSchemaFactory } from './infrastructure/schemas/refresh-token.schema';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { RefreshTokenSchema, RefreshTokenSchemaFactory } from './repository/refr
   controllers: [AuthController],
   providers: [
     AuthService,
+    TokenSecurityService,
     { provide: RefreshTokenRepository, useClass: MongoRefreshTokenRepository },
     {
       provide: JWT_ACCESS_EXPIRES_IN,
