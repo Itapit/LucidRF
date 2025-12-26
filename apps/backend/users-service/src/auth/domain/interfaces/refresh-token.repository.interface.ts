@@ -1,15 +1,15 @@
-import { RefreshTokenSchema } from './refresh-token.schema';
+import { RefreshTokenEntity } from '../entities';
 
 export abstract class RefreshTokenRepository {
   /**
    * Creates a new refresh token entry in the database.
    */
-  abstract create(userId: string, jti: string, expiresAt: Date, userAgent?: string): Promise<RefreshTokenSchema>;
+  abstract create(userId: string, jti: string, expiresAt: Date, userAgent?: string): Promise<RefreshTokenEntity>;
 
   /**
    * Finds a token by its JTI (JWT ID).
    */
-  abstract findByJti(jti: string): Promise<RefreshTokenSchema | null>;
+  abstract findByJti(jti: string): Promise<RefreshTokenEntity | null>;
 
   /**
    * Deletes a token by its JTI.

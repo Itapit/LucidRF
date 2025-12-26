@@ -3,7 +3,10 @@ import { Document, Schema as MongooseSchema } from 'mongoose';
 
 export type RefreshTokenDocument = RefreshTokenSchema & Document;
 
-@Schema({ collection: 'refresh_tokens', timestamps: true })
+@Schema({
+  collection: 'refresh_tokens',
+  timestamps: true,
+})
 export class RefreshTokenSchema extends Document {
   @Prop({
     type: MongooseSchema.Types.ObjectId,

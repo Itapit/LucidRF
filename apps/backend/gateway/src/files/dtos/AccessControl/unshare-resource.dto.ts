@@ -1,16 +1,16 @@
-import { PermissionType, UnshareResourceRequest } from '@LucidRF/common';
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { IsResourceId, PermissionType, UnshareResourceRequest } from '@LucidRF/common';
+import { IsEnum, IsNotEmpty } from 'class-validator';
 
 export class UnshareResourceDto implements UnshareResourceRequest {
-  @IsString()
   @IsNotEmpty()
+  @IsResourceId()
   resourceId!: string;
 
-  @IsString()
   @IsNotEmpty()
+  @IsResourceId()
   subjectId!: string;
 
-  @IsEnum(PermissionType)
   @IsNotEmpty()
+  @IsEnum(PermissionType)
   subjectType!: PermissionType;
 }

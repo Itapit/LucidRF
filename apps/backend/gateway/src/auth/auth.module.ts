@@ -2,6 +2,7 @@ import {
   JWT_ACCESS_EXPIRES_IN,
   JWT_PENDING_EXPIRES_IN,
   JWT_REFRESH_EXPIRES_IN,
+  JWT_SECRET,
   UserClientModule,
 } from '@LucidRF/users-contracts';
 import { Module } from '@nestjs/common';
@@ -9,8 +10,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { AccessJwtStrategy, PendingJwtStrategy, RefreshTokenStrategy } from './strategies';
+import { AuthService, CookieService } from './services';
+import { AccessJwtStrategy, PendingJwtStrategy, RefreshJwtStrategy } from './strategies';
 
 @Module({
   imports: [
@@ -30,7 +31,7 @@ import { AccessJwtStrategy, PendingJwtStrategy, RefreshTokenStrategy } from './s
     AuthService,
     AccessJwtStrategy,
     PendingJwtStrategy,
-    RefreshTokenStrategy,
+    RefreshJwtStrategy,
     {
       provide: JWT_ACCESS_EXPIRES_IN,
       useFactory: (configService: ConfigService) => {
@@ -52,6 +53,14 @@ import { AccessJwtStrategy, PendingJwtStrategy, RefreshTokenStrategy } from './s
       },
       inject: [ConfigService],
     },
+    {
+      provide: JWT_SECRET,
+      useFactory: (configService: ConfigService) => {
+        return configService.getOrThrow<string>('JWT_SECRET');
+      },
+      inject: [ConfigService],
+    },
+    CookieService,
   ],
   exports: [PassportModule],
 })

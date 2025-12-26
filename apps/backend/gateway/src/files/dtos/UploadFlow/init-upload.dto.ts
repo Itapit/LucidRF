@@ -1,9 +1,9 @@
-import { InitUploadRequest } from '@LucidRF/common';
+import { InitUploadRequest, IsResourceId } from '@LucidRF/common';
 import { IsMimeType, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 
 export class InitUploadDto implements InitUploadRequest {
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   originalFileName!: string;
 
   @IsNumber()
@@ -15,7 +15,7 @@ export class InitUploadDto implements InitUploadRequest {
   @IsNotEmpty()
   mimeType!: string;
 
-  @IsString()
   @IsOptional()
+  @IsResourceId()
   parentFolderId?: string;
 }

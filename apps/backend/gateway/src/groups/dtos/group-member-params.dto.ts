@@ -1,7 +1,7 @@
-import { IsMongoId } from 'class-validator';
+import { IsResourceId } from '@LucidRF/common';
 import { GroupIdParamsDto } from './group-id.dto';
 
 export class GroupMemberParamsDto extends GroupIdParamsDto {
-  @IsMongoId()
+  @IsResourceId()
   userId: string;
 }

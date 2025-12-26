@@ -1,8 +1,8 @@
-import { ListContentRequest } from '@LucidRF/common';
-import { IsOptional, IsString } from 'class-validator';
+import { IsResourceId, ListContentRequest } from '@LucidRF/common';
+import { IsOptional } from 'class-validator';
 
 export class ListContentDto implements ListContentRequest {
-  @IsString()
   @IsOptional()
+  @IsResourceId()
   folderId?: string;
 }

@@ -1,8 +1,8 @@
-import { AddMemberRequest } from '@LucidRF/common';
-import { IsMongoId, IsNotEmpty } from 'class-validator';
+import { AddMemberRequest, IsResourceId } from '@LucidRF/common';
+import { IsNotEmpty } from 'class-validator';
 
 export class AddMemberDto implements AddMemberRequest {
-  @IsMongoId()
   @IsNotEmpty()
+  @IsResourceId()
   targetUserId: string;
 }

@@ -1,11 +1,12 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsResourceId } from '@LucidRF/common';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class GetContentPayload {
-  @IsString()
   @IsNotEmpty()
+  @IsResourceId()
   userId!: string;
 
-  @IsString()
   @IsOptional()
-  folderId!: string | null;
+  @IsResourceId()
+  folderId!: string;
 }

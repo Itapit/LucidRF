@@ -1,8 +1,8 @@
-import { GetDownloadUrlRequest } from '@LucidRF/common';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { GetDownloadUrlRequest, IsResourceId } from '@LucidRF/common';
+import { IsNotEmpty } from 'class-validator';
 
 export class GetDownloadUrlDto implements GetDownloadUrlRequest {
-  @IsString()
   @IsNotEmpty()
+  @IsResourceId()
   resourceId!: string;
 }

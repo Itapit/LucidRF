@@ -9,16 +9,19 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PassportModule } from '@nestjs/passport';
+import { SecurityModule } from '../security';
 import { UserModule } from '../users/users.module';
+import { AuthService } from './application';
 import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { MongoRefreshTokenRepository } from './repository/mongo-refresh-token.repository';
-import { RefreshTokenRepository } from './repository/refresh-token.repository';
-import { RefreshTokenSchema, RefreshTokenSchemaFactory } from './repository/refresh-token.schema';
+import { RefreshTokenRepository, TokenSecurityService, TokenService } from './domain';
+import { MongoRefreshTokenRepository } from './infrastructure/repositories';
+import { RefreshTokenSchema, RefreshTokenSchemaFactory } from './infrastructure/schemas';
+import { JwtTokenService } from './infrastructure/services';
 
 @Module({
   imports: [
     UserModule,
+    SecurityModule,
     PassportModule,
     ConfigModule,
     JwtModule.registerAsync({
@@ -28,12 +31,25 @@ import { RefreshTokenSchema, RefreshTokenSchemaFactory } from './repository/refr
       }),
       inject: [ConfigService],
     }),
-    MongooseModule.forFeature([{ name: RefreshTokenSchema.name, schema: RefreshTokenSchemaFactory }]),
+    MongooseModule.forFeature([
+      {
+        name: RefreshTokenSchema.name,
+        schema: RefreshTokenSchemaFactory,
+      },
+    ]),
   ],
   controllers: [AuthController],
   providers: [
     AuthService,
-    { provide: RefreshTokenRepository, useClass: MongoRefreshTokenRepository },
+    TokenSecurityService,
+    {
+      provide: RefreshTokenRepository,
+      useClass: MongoRefreshTokenRepository,
+    },
+    {
+      provide: TokenService,
+      useClass: JwtTokenService,
+    },
     {
       provide: JWT_ACCESS_EXPIRES_IN,
       useFactory: (configService: ConfigService) => {

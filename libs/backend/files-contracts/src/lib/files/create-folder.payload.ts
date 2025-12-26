@@ -1,15 +1,16 @@
+import { IsResourceId } from '@LucidRF/common';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateFolderPayload {
-  @IsString()
   @IsNotEmpty()
+  @IsResourceId()
   userId!: string;
 
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   name!: string;
 
-  @IsString()
   @IsOptional()
+  @IsResourceId()
   parentFolderId?: string | null;
 }

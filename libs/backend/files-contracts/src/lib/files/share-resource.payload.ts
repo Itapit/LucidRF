@@ -1,24 +1,24 @@
-import { PermissionRole, PermissionType } from '@LucidRF/common';
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { IsResourceId, PermissionRole, PermissionType } from '@LucidRF/common';
+import { IsEnum, IsNotEmpty } from 'class-validator';
 
 export class ShareResourcePayload {
-  @IsString()
   @IsNotEmpty()
+  @IsResourceId()
   userId!: string;
 
-  @IsString()
   @IsNotEmpty()
+  @IsResourceId()
   resourceId!: string;
 
-  @IsEnum(PermissionRole)
   @IsNotEmpty()
+  @IsEnum(PermissionRole)
   role!: PermissionRole;
 
-  @IsString()
   @IsNotEmpty()
+  @IsResourceId()
   subjectId!: string;
 
-  @IsEnum(PermissionType)
   @IsNotEmpty()
+  @IsEnum(PermissionType)
   subjectType!: PermissionType;
 }

@@ -1,23 +1,18 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { JWT_SECRET } from '@LucidRF/users-contracts';
+import { Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { AccessUser } from '../types/access-jwt.types';
-
-interface JwtPayload {
-  sub: string;
-  role: string;
-}
+import { AccessJwtPayload, AccessUser } from '../types';
 
 @Injectable()
 export class AccessJwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private readonly configService: ConfigService) {
+  constructor(@Inject(JWT_SECRET) jwtSecret: string) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
 
       ignoreExpiration: false,
 
-      secretOrKey: configService.getOrThrow<string>('JWT_SECRET'),
+      secretOrKey: jwtSecret,
     });
   }
 
@@ -27,7 +22,7 @@ export class AccessJwtStrategy extends PassportStrategy(Strategy) {
    *
    * What we return here is what NestJS attaches to `request.user`.
    */
-  async validate(payload: JwtPayload): Promise<AccessUser> {
+  async validate(payload: AccessJwtPayload): Promise<AccessUser> {
     return {
       userId: payload.sub,
       role: payload.role,

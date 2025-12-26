@@ -1,16 +1,13 @@
 import { UserDto, UserStatus } from '@LucidRF/common';
 import { AdminCreateUserPayload } from '@LucidRF/users-contracts';
 import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { RpcException } from '@nestjs/microservices'; // <-- 1. Import RpcException
-import * as bcrypt from 'bcrypt';
-import { HASH_ROUNDS } from '../constants';
-import { CreateUserRepoDto } from './dtos/create-user-repo.dto';
-import { UserRepository } from './repository/user.repository';
-import { UserSchema } from './repository/user.schema';
+import { RpcException } from '@nestjs/microservices';
+import { PasswordService } from '../../security';
+import { CreateUserRepoDto, toUserDto, UserRepository } from '../domain';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(private readonly userRepository: UserRepository, private readonly passwordService: PasswordService) {}
 
   /**
    * Creates a new user with a pending status and a temporary password.
@@ -22,8 +19,8 @@ export class UserService {
       throw new RpcException(error.getResponse());
     }
 
-    const tempPassword = this.generateTempPassword();
-    const hashedPassword = await bcrypt.hash(tempPassword, HASH_ROUNDS);
+    const tempPassword = this.passwordService.generateTemporary();
+    const hashedPassword = await this.passwordService.hash(tempPassword);
 
     const repoDto: CreateUserRepoDto = {
       email: payload.email,
@@ -36,7 +33,7 @@ export class UserService {
     // TODO: add email or smthing
     Logger.log(`Temp password for ${payload.email}: ${tempPassword}`);
 
-    return this.mapToDto(newUserEntity);
+    return toUserDto(newUserEntity);
   }
 
   /**
@@ -48,23 +45,6 @@ export class UserService {
       const error = new NotFoundException('User not found');
       throw new RpcException(error.getResponse());
     }
-    return this.mapToDto(user);
-  }
-
-  private generateTempPassword(): string {
-    return Math.random().toString(36).slice(-8);
-  }
-
-  /**
-   * Maps the internal UserSchema entity to the safe, public UserDto.
-   */
-  private mapToDto(user: UserSchema): UserDto {
-    return {
-      id: user.id,
-      email: user.email,
-      username: user.username,
-      role: user.role,
-      status: user.status,
-    };
+    return toUserDto(user);
   }
 }

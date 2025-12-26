@@ -1,12 +1,13 @@
-import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
+import { IsResourceId } from '@LucidRF/common';
+import { IsBoolean, IsNotEmpty } from 'class-validator';
 
 export class ConfirmUploadPayload {
-  @IsString()
   @IsNotEmpty()
+  @IsResourceId()
   userId!: string;
 
-  @IsString()
   @IsNotEmpty()
+  @IsResourceId()
   fileId!: string;
 
   @IsBoolean()

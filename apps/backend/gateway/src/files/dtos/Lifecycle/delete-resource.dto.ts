@@ -1,8 +1,8 @@
-import { DeleteResourceRequest } from '@LucidRF/common';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { DeleteResourceRequest, IsResourceId } from '@LucidRF/common';
+import { IsNotEmpty } from 'class-validator';
 
 export class DeleteResourceDto implements DeleteResourceRequest {
-  @IsString()
   @IsNotEmpty()
+  @IsResourceId()
   resourceId!: string;
 }

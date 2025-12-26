@@ -8,3 +8,5 @@ maybe use the following things??:
 
 actuator?
 eureka equivalent?
+
+handle username already exist error

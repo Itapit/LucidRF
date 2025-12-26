@@ -6,3 +6,4 @@ export * from './auth-refresh.payload';
 export * from './auth-refresh.response';
 export * from './complete-setup.payload';
 export * from './pending-login.response';
+export * from './refresh-token.dto';

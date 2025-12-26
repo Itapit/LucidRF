@@ -1,12 +1,12 @@
-import { ConfirmUploadRequest } from '@LucidRF/common';
-import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
+import { ConfirmUploadRequest, IsResourceId } from '@LucidRF/common';
+import { IsBoolean, IsNotEmpty } from 'class-validator';
 
 export class ConfirmUploadDto implements ConfirmUploadRequest {
-  @IsString()
   @IsNotEmpty()
+  @IsResourceId()
   fileId!: string;
 
-  @IsBoolean()
   @IsNotEmpty()
+  @IsBoolean()
   success!: boolean;
 }

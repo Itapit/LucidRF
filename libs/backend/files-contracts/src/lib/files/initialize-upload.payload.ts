@@ -1,23 +1,24 @@
+import { IsResourceId } from '@LucidRF/common';
 import { IsMimeType, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class InitializeUploadPayload {
-  @IsString()
   @IsNotEmpty()
+  @IsResourceId()
   userId!: string;
 
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   originalFileName!: string;
 
-  @IsNumber()
   @IsNotEmpty()
+  @IsNumber()
   size!: number;
 
-  @IsMimeType()
   @IsNotEmpty()
+  @IsMimeType()
   mimeType!: string;
 
-  @IsString()
   @IsOptional()
-  parentFolderId?: string | null;
+  @IsResourceId()
+  parentFolderId?: string;
 }

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { RefreshTokenRepository } from './refresh-token.repository';
-import { RefreshTokenSchema } from './refresh-token.schema';
+import { RefreshTokenEntity, RefreshTokenRepository, toRefreshTokenEntity } from '../../domain';
+import { RefreshTokenSchema } from '../schemas';
 
 @Injectable()
 export class MongoRefreshTokenRepository implements RefreshTokenRepository {
@@ -11,18 +11,20 @@ export class MongoRefreshTokenRepository implements RefreshTokenRepository {
     private refreshTokenModel: Model<RefreshTokenSchema>
   ) {}
 
-  async create(userId: string, jti: string, expiresAt: Date, userAgent?: string): Promise<RefreshTokenSchema> {
-    const newToken = new this.refreshTokenModel({
+  async create(userId: string, jti: string, expiresAt: Date, userAgent?: string): Promise<RefreshTokenEntity> {
+    const created = new this.refreshTokenModel({
       userId,
       jti,
       expiresAt,
       userAgent,
     });
-    return newToken.save();
+    const saved = await created.save();
+    return toRefreshTokenEntity(saved);
   }
 
-  async findByJti(jti: string): Promise<RefreshTokenSchema | null> {
-    return this.refreshTokenModel.findOne({ jti }).exec();
+  async findByJti(jti: string): Promise<RefreshTokenEntity | null> {
+    const doc = await this.refreshTokenModel.findOne({ jti }).exec();
+    return doc ? toRefreshTokenEntity(doc) : null;
   }
 
   async delete(jti: string): Promise<void> {

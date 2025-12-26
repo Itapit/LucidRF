@@ -1,4 +1,4 @@
-import { CreateFolderRequest } from '@LucidRF/common';
+import { CreateFolderRequest, IsResourceId } from '@LucidRF/common';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateFolderDto implements CreateFolderRequest {
@@ -6,7 +6,7 @@ export class CreateFolderDto implements CreateFolderRequest {
   @IsNotEmpty()
   name!: string;
 
-  @IsString()
   @IsOptional()
+  @IsResourceId()
   parentFolderId?: string;
 }

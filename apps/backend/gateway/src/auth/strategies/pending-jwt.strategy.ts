@@ -1,17 +1,17 @@
 import { UserStatus } from '@LucidRF/common';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { JWT_SECRET } from '@LucidRF/users-contracts';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { PendingJwtPayload, PendingUser } from '../types/pending-jwt.types';
+import { PendingJwtPayload, PendingUser } from '../types';
 
 @Injectable()
 export class PendingJwtStrategy extends PassportStrategy(Strategy, 'pending-jwt') {
-  constructor(private readonly configService: ConfigService) {
+  constructor(@Inject(JWT_SECRET) jwtSecret: string) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: configService.getOrThrow<string>('JWT_SECRET'),
+      secretOrKey: jwtSecret,
     });
   }
 

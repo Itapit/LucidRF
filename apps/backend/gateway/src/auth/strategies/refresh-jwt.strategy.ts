@@ -1,21 +1,22 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { JWT_SECRET } from '@LucidRF/users-contracts';
+import { Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { RefreshJwtPayload, RefreshUser } from '../types/refresh-jwt.types';
+import { REFRESH_TOKEN } from '../constants';
+import { RefreshJwtPayload, RefreshUser } from '../types';
 
 @Injectable()
-export class RefreshTokenStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
-  constructor(configService: ConfigService) {
+export class RefreshJwtStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
+  constructor(@Inject(JWT_SECRET) jwtSecret: string) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req: Request) => {
-          return req.cookies?.['refresh-token'];
+          return req.cookies?.[REFRESH_TOKEN];
         },
       ]),
       ignoreExpiration: false,
-      secretOrKey: configService.getOrThrow<string>('JWT_SECRET'),
+      secretOrKey: jwtSecret,
     });
   }
 

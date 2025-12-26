@@ -1,6 +1,6 @@
-import { IsMongoId } from 'class-validator';
+import { IsResourceId } from '@LucidRF/common';
 
 export class GroupIdParamsDto {
-  @IsMongoId({ message: 'Invalid Group ID format' })
+  @IsResourceId()
   groupId: string;
 }
