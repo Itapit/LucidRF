@@ -1,5 +1,5 @@
 import { UserDto } from '@LucidRF/common';
-import { UserEntity } from '../entities/user.entity';
+import { UserEntity } from '../entities';
 
 export function toUserDto(entity: UserEntity): UserDto {
   return {

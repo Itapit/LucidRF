@@ -1,5 +1,5 @@
 import { RefreshTokenDto } from '@LucidRF/users-contracts';
-import { RefreshTokenEntity } from '../entities/refresh-token.entity';
+import { RefreshTokenEntity } from '../entities';
 
 export function toRefreshTokenDto(entity: RefreshTokenEntity): RefreshTokenDto {
   return {

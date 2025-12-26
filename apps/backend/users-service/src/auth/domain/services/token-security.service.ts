@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from '../../../users/domain/interfaces';
+import { UserRepository } from '../../../users/domain';
 import { RefreshTokenEntity } from '../entities';
 import { InvalidTokenException, TokenReuseException } from '../exceptions';
 import { RefreshTokenRepository } from '../interfaces';

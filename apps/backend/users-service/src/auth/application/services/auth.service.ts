@@ -17,11 +17,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
-import { UserEntity } from '../../../users/domain/entities';
-import { UserRepository } from '../../../users/domain/interfaces';
-import { toUserDto } from '../../../users/domain/mappers';
-import { PasswordService, RefreshTokenRepository, TokenService } from '../../domain/interfaces';
-import { TokenSecurityService } from '../../domain/services';
+import { toUserDto, UserEntity, UserRepository } from '../../../users/domain';
+import { PasswordService, RefreshTokenRepository, TokenSecurityService, TokenService } from '../../domain';
 
 @Injectable()
 export class AuthService {

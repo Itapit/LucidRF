@@ -1,10 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateUserRepoDto } from '../../domain/dtos';
-import { UserEntity } from '../../domain/entities';
-import { UserRepository } from '../../domain/interfaces';
-import { toUserEntity } from '../../domain/mappers';
+import { CreateUserRepoDto, toUserEntity, UserEntity, UserRepository } from '../../domain';
 import { UserSchema } from '../schemas';
 
 @Injectable()

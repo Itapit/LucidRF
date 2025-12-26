@@ -2,7 +2,7 @@ import { UserDto } from '@LucidRF/common';
 import { AdminCreateUserPayload, GetUserByIdPayload, USER_PATTERNS } from '@LucidRF/users-contracts';
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
-import { UserService } from './application/users.service';
+import { UserService } from './application';
 
 @Controller('user')
 export class UserController {

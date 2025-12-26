@@ -1,5 +1,5 @@
-import { UserDocument } from '../../infrastructure/schemas/user.schema';
-import { UserEntity } from '../entities/user.entity';
+import { UserDocument } from '../../infrastructure/schemas';
+import { UserEntity } from '../entities';
 
 export function toUserEntity(doc: UserDocument): UserEntity {
   if (!doc) return null;

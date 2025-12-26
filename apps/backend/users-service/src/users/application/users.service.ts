@@ -4,9 +4,7 @@ import { ConflictException, Injectable, Logger, NotFoundException } from '@nestj
 import { RpcException } from '@nestjs/microservices';
 import * as bcrypt from 'bcrypt';
 import { HASH_ROUNDS } from '../../constants';
-import { CreateUserRepoDto } from '../domain/dtos';
-import { UserRepository } from '../domain/interfaces';
-import { toUserDto } from '../domain/mappers';
+import { CreateUserRepoDto, toUserDto, UserRepository } from '../domain';
 
 @Injectable()
 export class UserService {

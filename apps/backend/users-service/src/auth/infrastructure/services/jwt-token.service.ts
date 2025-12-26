@@ -12,7 +12,7 @@ import { JwtService } from '@nestjs/jwt';
 import ms from 'ms';
 import { v4 as uuidv4 } from 'uuid';
 import { GeneratedTokensDto } from '../../application/dtos';
-import { TokenService } from '../../domain/interfaces';
+import { TokenService } from '../../domain';
 
 @Injectable()
 export class JwtTokenService implements TokenService {

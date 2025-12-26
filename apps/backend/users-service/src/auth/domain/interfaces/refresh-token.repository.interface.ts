@@ -1,4 +1,4 @@
-import { RefreshTokenEntity } from '../entities/refresh-token.entity';
+import { RefreshTokenEntity } from '../entities';
 
 export abstract class RefreshTokenRepository {
   /**

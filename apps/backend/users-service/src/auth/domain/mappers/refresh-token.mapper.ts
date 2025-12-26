@@ -1,5 +1,5 @@
 import { RefreshTokenDocument } from '../../infrastructure/schemas';
-import { RefreshTokenEntity } from '../entities/refresh-token.entity';
+import { RefreshTokenEntity } from '../entities';
 
 export function toRefreshTokenEntity(doc: RefreshTokenDocument): RefreshTokenEntity {
   if (!doc) return null;

@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { RefreshTokenEntity } from '../../domain/entities/refresh-token.entity';
-import { RefreshTokenRepository } from '../../domain/interfaces';
-import { toRefreshTokenEntity } from '../../domain/mappers';
+import { RefreshTokenEntity, RefreshTokenRepository, toRefreshTokenEntity } from '../../domain';
 import { RefreshTokenSchema } from '../schemas';
 
 @Injectable()

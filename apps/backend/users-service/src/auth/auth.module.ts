@@ -12,11 +12,9 @@ import { PassportModule } from '@nestjs/passport';
 import { UserModule } from '../users/users.module';
 import { AuthService } from './application/services/auth.service';
 import { AuthController } from './auth.controller';
-import { PasswordService, TokenService } from './domain/interfaces';
-import { RefreshTokenRepository } from './domain/interfaces/refresh-token.repository.interface';
-import { TokenSecurityService } from './domain/services/token-security.service';
-import { MongoRefreshTokenRepository } from './infrastructure/repositories/mongo-refresh-token.repository';
-import { RefreshTokenSchema, RefreshTokenSchemaFactory } from './infrastructure/schemas/refresh-token.schema';
+import { PasswordService, RefreshTokenRepository, TokenSecurityService, TokenService } from './domain';
+import { MongoRefreshTokenRepository } from './infrastructure/repositories';
+import { RefreshTokenSchema, RefreshTokenSchemaFactory } from './infrastructure/schemas';
 import { BcryptPasswordService, JwtTokenService } from './infrastructure/services';
 
 @Module({
