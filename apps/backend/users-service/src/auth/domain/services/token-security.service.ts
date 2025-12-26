@@ -1,13 +1,11 @@
-import { ForbiddenException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
-import { RpcException } from '@nestjs/microservices';
+import { Injectable } from '@nestjs/common';
 import { UserRepository } from '../../../users/domain/interfaces';
-import { RefreshTokenEntity } from '../entities/refresh-token.entity';
+import { RefreshTokenEntity } from '../entities';
+import { InvalidTokenException, TokenReuseException } from '../exceptions';
 import { RefreshTokenRepository } from '../interfaces';
 
 @Injectable()
 export class TokenSecurityService {
-  private readonly logger = new Logger(TokenSecurityService.name);
-
   constructor(
     private readonly refreshTokenRepo: RefreshTokenRepository,
     private readonly usersRepository: UserRepository
@@ -40,29 +38,22 @@ export class TokenSecurityService {
   // --- Private Policy Implementations ---
 
   private async handleTokenReuse(userId: string): Promise<never> {
-    const user = await this.usersRepository.findById(userId);
-
-    if (user) {
-      this.logger.warn(`SECURITY ALERT: Refresh token reuse detected for user ${userId}. Invalidating all sessions.`);
-      // "Nuclear Option": Wipe all sessions to force re-login on all devices
-      await this.refreshTokenRepo.deleteAllForUser(userId);
-    }
-
-    // Obfuscate the specific error to prevent enumeration, but deny access
-    throw new RpcException(new ForbiddenException('Refresh token reuse detected').getResponse());
+    // "Nuclear Option": Wipe all sessions to force re-login on all devices
+    await this.refreshTokenRepo.deleteAllForUser(userId);
+    throw new TokenReuseException('Refresh token reuse detected');
   }
 
   private async validateSession(session: RefreshTokenEntity, expectedUserId: string): Promise<void> {
     // Ownership Check
     if (session.userId !== expectedUserId) {
-      throw new RpcException(new UnauthorizedException('Invalid credentials').getResponse());
+      throw new InvalidTokenException('Token ownership mismatch');
     }
 
     // Expiration Check
     if (new Date() > session.expiresAt) {
       // Cleanup: Delete this specific expired token so it doesn't clutter DB
       await this.refreshTokenRepo.delete(session.jti);
-      throw new RpcException(new UnauthorizedException('Session expired').getResponse());
+      throw new InvalidTokenException('Session expired');
     }
   }
 }
