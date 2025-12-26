@@ -77,6 +77,7 @@ export class AuthService {
   /**
    * Main entry point for the refresh command.
    */
+  //TODO: fix the errors being thrown here to proper RpcExceptions
   async refreshAccessToken(payload: AuthRefreshPayload): Promise<AuthLoginResponseDto> {
     const { userId, jti } = payload;
 

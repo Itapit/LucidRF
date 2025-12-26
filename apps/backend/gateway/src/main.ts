@@ -12,6 +12,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const port = process.env.PORT || 3000;
   const globalPrefix = 'api';
+
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
@@ -21,6 +22,7 @@ async function bootstrap() {
   );
   app.setGlobalPrefix(globalPrefix);
   app.use(cookieParser());
+  app.setGlobalPrefix(globalPrefix);
   app.enableCors({
     origin: `http://localhost:${port}`,
     credentials: true,

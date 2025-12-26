@@ -2,6 +2,7 @@ import {
   JWT_ACCESS_EXPIRES_IN,
   JWT_PENDING_EXPIRES_IN,
   JWT_REFRESH_EXPIRES_IN,
+  JWT_SECRET,
   UserClientModule,
 } from '@LucidRF/users-contracts';
 import { Module } from '@nestjs/common';
@@ -49,6 +50,13 @@ import { AccessJwtStrategy, PendingJwtStrategy, RefreshJwtStrategy } from './str
       provide: JWT_PENDING_EXPIRES_IN,
       useFactory: (configService: ConfigService) => {
         return configService.getOrThrow<string>('JWT_PENDING_EXPIRES_IN');
+      },
+      inject: [ConfigService],
+    },
+    {
+      provide: JWT_SECRET,
+      useFactory: (configService: ConfigService) => {
+        return configService.getOrThrow<string>('JWT_SECRET');
       },
       inject: [ConfigService],
     },
