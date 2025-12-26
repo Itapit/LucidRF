@@ -9,17 +9,19 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PassportModule } from '@nestjs/passport';
+import { SecurityModule } from '../security/security.module';
 import { UserModule } from '../users/users.module';
-import { AuthService } from './application/services/auth.service';
+import { AuthService } from './application';
 import { AuthController } from './auth.controller';
-import { PasswordService, RefreshTokenRepository, TokenSecurityService, TokenService } from './domain';
+import { RefreshTokenRepository, TokenSecurityService, TokenService } from './domain';
 import { MongoRefreshTokenRepository } from './infrastructure/repositories';
 import { RefreshTokenSchema, RefreshTokenSchemaFactory } from './infrastructure/schemas';
-import { BcryptPasswordService, JwtTokenService } from './infrastructure/services';
+import { JwtTokenService } from './infrastructure/services';
 
 @Module({
   imports: [
     UserModule,
+    SecurityModule,
     PassportModule,
     ConfigModule,
     JwtModule.registerAsync({
@@ -29,16 +31,20 @@ import { BcryptPasswordService, JwtTokenService } from './infrastructure/service
       }),
       inject: [ConfigService],
     }),
-    MongooseModule.forFeature([{ name: RefreshTokenSchema.name, schema: RefreshTokenSchemaFactory }]),
+    MongooseModule.forFeature([
+      {
+        name: RefreshTokenSchema.name,
+        schema: RefreshTokenSchemaFactory,
+      },
+    ]),
   ],
   controllers: [AuthController],
   providers: [
     AuthService,
     TokenSecurityService,
-    { provide: RefreshTokenRepository, useClass: MongoRefreshTokenRepository },
     {
-      provide: PasswordService,
-      useClass: BcryptPasswordService,
+      provide: RefreshTokenRepository,
+      useClass: MongoRefreshTokenRepository,
     },
     {
       provide: TokenService,
