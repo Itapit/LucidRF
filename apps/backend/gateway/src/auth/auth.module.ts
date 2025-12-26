@@ -10,7 +10,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller';
 import { AuthService, CookieService } from './services';
-import { AccessJwtStrategy, PendingJwtStrategy, RefreshTokenStrategy } from './strategies';
+import { AccessJwtStrategy, PendingJwtStrategy, RefreshJwtStrategy } from './strategies';
 
 @Module({
   imports: [
@@ -30,7 +30,7 @@ import { AccessJwtStrategy, PendingJwtStrategy, RefreshTokenStrategy } from './s
     AuthService,
     AccessJwtStrategy,
     PendingJwtStrategy,
-    RefreshTokenStrategy,
+    RefreshJwtStrategy,
     {
       provide: JWT_ACCESS_EXPIRES_IN,
       useFactory: (configService: ConfigService) => {

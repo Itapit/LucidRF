@@ -3,15 +3,16 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { REFRESH_TOKEN } from '../constants';
 import { RefreshJwtPayload, RefreshUser } from '../types/refresh-jwt.types';
 
 @Injectable()
-export class RefreshTokenStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
+export class RefreshJwtStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
   constructor(configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (req: Request) => {
-          return req.cookies?.['refresh-token'];
+          return req.cookies?.[REFRESH_TOKEN];
         },
       ]),
       ignoreExpiration: false,
