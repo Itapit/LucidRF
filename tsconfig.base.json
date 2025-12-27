@@ -19,7 +19,8 @@
       "@LucidRF/common": ["libs/common/src/index.ts"],
       "@LucidRF/files-contracts": ["libs/backend/files-contracts/src/index.ts"],
       "@LucidRF/groups-contracts": ["libs/backend/groups-contracts/src/index.ts"],
-      "@LucidRF/users-contracts": ["libs/backend/users-contracts/src/index.ts"]
+      "@LucidRF/users-contracts": ["libs/backend/users-contracts/src/index.ts"],
+      "@LucidRF/backend-common": ["libs/backend/backend-common/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
