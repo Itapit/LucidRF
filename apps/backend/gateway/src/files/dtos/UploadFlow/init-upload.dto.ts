@@ -1,4 +1,5 @@
-import { InitUploadRequest, IsResourceId } from '@LucidRF/common';
+import { IsResourceId } from '@LucidRF/backend-common';
+import { InitUploadRequest } from '@LucidRF/common';
 import { IsMimeType, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 
 export class InitUploadDto implements InitUploadRequest {

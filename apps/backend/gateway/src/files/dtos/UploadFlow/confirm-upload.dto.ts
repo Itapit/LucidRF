@@ -1,4 +1,5 @@
-import { ConfirmUploadRequest, IsResourceId } from '@LucidRF/common';
+import { IsResourceId } from '@LucidRF/backend-common';
+import { ConfirmUploadRequest } from '@LucidRF/common';
 import { IsBoolean, IsNotEmpty } from 'class-validator';
 
 export class ConfirmUploadDto implements ConfirmUploadRequest {

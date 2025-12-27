@@ -1,4 +1,4 @@
-import { IsResourceId } from '@LucidRF/common';
+import { IsResourceId } from '@LucidRF/backend-common';
 import { IsBoolean, IsNotEmpty } from 'class-validator';
 
 export class ConfirmUploadPayload {

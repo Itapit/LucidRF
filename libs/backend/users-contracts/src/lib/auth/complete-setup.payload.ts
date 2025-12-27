@@ -1,4 +1,4 @@
-import { IsResourceId } from '@LucidRF/common';
+import { IsResourceId } from '@LucidRF/backend-common';
 import { IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 
 export class CompleteSetupPayload {
