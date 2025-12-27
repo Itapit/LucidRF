@@ -1,6 +1,6 @@
-import { IsResourceId, PermissionRole, PermissionType, ShareResourceRequest } from '@LucidRF/common';
+import { IsResourceId } from '@LucidRF/backend-common';
+import { PermissionRole, PermissionType, ShareResourceRequest } from '@LucidRF/common';
 import { IsEnum, IsNotEmpty } from 'class-validator';
-
 export class ShareResourceDto implements ShareResourceRequest {
   @IsNotEmpty()
   @IsResourceId()

@@ -1,4 +1,5 @@
-import { IsResourceId, PermissionType, UnshareResourceRequest } from '@LucidRF/common';
+import { IsResourceId } from '@LucidRF/backend-common';
+import { PermissionType, UnshareResourceRequest } from '@LucidRF/common';
 import { IsEnum, IsNotEmpty } from 'class-validator';
 
 export class UnshareResourceDto implements UnshareResourceRequest {

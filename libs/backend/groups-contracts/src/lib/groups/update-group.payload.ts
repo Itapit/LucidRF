@@ -1,4 +1,4 @@
-import { IsResourceId } from '@LucidRF/common';
+import { IsResourceId } from '@LucidRF/backend-common';
 import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class UpdateGroupPayload {

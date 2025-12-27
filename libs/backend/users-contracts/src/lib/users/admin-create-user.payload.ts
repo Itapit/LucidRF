@@ -1,4 +1,5 @@
-import { IsResourceId, UserRole } from '@LucidRF/common';
+import { IsResourceId } from '@LucidRF/backend-common';
+import { UserRole } from '@LucidRF/common';
 import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
 export class AdminCreateUserPayload {
