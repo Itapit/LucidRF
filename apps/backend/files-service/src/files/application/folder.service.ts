@@ -3,6 +3,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { CreateFolderRepoDto } from '../domain/dtos';
 import { FolderEntity, PermissionEntity, toFileDto, toFolderDto } from '../domain/entities';
 import { AccessLevel, ResourceType } from '../domain/enums';
+import { ResourceNotFoundException } from '../domain/exceptions';
 import { FileRepository, FolderRepository } from '../domain/interfaces';
 import { calculateInheritedPermissions } from '../domain/logic/permission.logic';
 import { AclService } from './acl.service';
@@ -65,7 +66,11 @@ export class FolderService {
   async delete(payload: DeleteResourcePayload) {
     const { userId, resourceId } = payload;
     await this.aclService.validateAccess(resourceId, userId, ResourceType.FOLDER, AccessLevel.OWNER);
-    await this.recursiveDelete(resourceId);
+    const deleted = await this.recursiveDelete(resourceId);
+
+    if (!deleted) {
+      throw new ResourceNotFoundException(resourceId);
+    }
     return { success: true, resourceId };
   }
 
@@ -83,6 +88,6 @@ export class FolderService {
 
     await this.fileRepository.deleteManyByFolderId(folderId);
 
-    await this.folderRepository.delete(folderId);
+    return this.folderRepository.delete(folderId);
   }
 }
