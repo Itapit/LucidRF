@@ -9,7 +9,7 @@ export abstract class BaseDomainException extends Error {
   constructor(
     override readonly message: string,
     public readonly statusCode: HttpStatus = HttpStatus.BAD_REQUEST,
-    public readonly code?: string
+    public readonly code: string
   ) {
     super(message);
     this.name = 'BaseDomainException';
