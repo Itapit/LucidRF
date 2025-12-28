@@ -4,6 +4,7 @@
  */
 import { USER_CONFIG } from '@LucidRF/users-contracts';
 
+import { RpcDomainExceptionFilter } from '@LucidRF/backend-common';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
@@ -25,6 +26,7 @@ async function bootstrap() {
       forbidNonWhitelisted: true, // Throws an error if extra properties are sent
     })
   );
+  app.useGlobalFilters(new RpcDomainExceptionFilter());
   await app.listen();
   Logger.log(`Users Microservice is listening on port ${USER_CONFIG.PORT}`);
 }
