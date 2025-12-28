@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as Minio from 'minio';
+import { StorageService } from './interfaces';
 import { MinioStorageService } from './minio-storage.service';
 import { MINIO_CLIENT, STORAGE_BUCKET_NAME } from './storage.constants';
-import { StorageService } from './storage.service';
 
 @Module({
   providers: [

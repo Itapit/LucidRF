@@ -33,7 +33,7 @@ export abstract class FolderRepository {
    * Permanently deletes a single folder record by its ID.
    * Throws an exception if the folder does not exist.
    */
-  abstract delete(id: string): Promise<void>;
+  abstract delete(id: string): Promise<boolean>;
 
   /**
    * Adds a new permission or updates an existing one for a specific subject (User/Group).

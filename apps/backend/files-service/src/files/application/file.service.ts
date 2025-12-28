@@ -7,14 +7,14 @@ import {
 } from '@LucidRF/files-contracts';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
+import { StorageService } from '../../storage/interfaces';
 import { STORAGE_BUCKET_NAME } from '../../storage/storage.constants';
-import { StorageService } from '../../storage/storage.service';
 import { CreateFileRepoDto } from '../domain/dtos';
 import { FileEntity, FolderEntity, PermissionEntity, toFileDto } from '../domain/entities';
 import { AccessLevel, ResourceType } from '../domain/enums';
+import { ResourceNotFoundException } from '../domain/exceptions';
 import { FileRepository, FolderRepository, GroupsService } from '../domain/interfaces';
-import { filterTopLevelSharedItems } from '../domain/logic';
-import { calculateInheritedPermissions } from '../domain/logic/permission.logic';
+import { calculateInheritedPermissions, filterTopLevelSharedItems } from '../domain/logic';
 import { AclService } from './acl.service';
 
 @Injectable()
@@ -53,8 +53,10 @@ export class FileService {
     await this.aclService.validateAccess(fileId, userId, ResourceType.FILE, AccessLevel.OWNER);
 
     if (success) {
-      this.logger.log(`File ${fileId} confirmed successfully by user ${userId}`);
       const file = await this.fileRepository.updateStatus(fileId, FileStatus.UPLOADED);
+      if (!file) {
+        throw new ResourceNotFoundException(fileId);
+      }
       return toFileDto(file);
     } else {
       this.logger.warn(`File ${fileId} upload failed or cancelled by user ${userId}. Deleting metadata.`);
@@ -65,8 +67,10 @@ export class FileService {
 
   async delete(payload: DeleteResourcePayload) {
     await this.aclService.validateAccess(payload.resourceId, payload.userId, ResourceType.FILE, AccessLevel.OWNER);
-    await this.fileRepository.delete(payload.resourceId);
-
+    const deleted = await this.fileRepository.delete(payload.resourceId);
+    if (!deleted) {
+      throw new ResourceNotFoundException(payload.resourceId);
+    }
     this.logger.log(`Deleted file ${payload.resourceId} (User: ${payload.userId})`);
 
     return { success: true, id: payload.resourceId };
