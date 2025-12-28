@@ -3,6 +3,7 @@
  * This is only a minimal backend to get started.
  */
 
+import { HttpGlobalExceptionFilter } from '@LucidRF/backend-common';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import cookieParser from 'cookie-parser';
@@ -12,7 +13,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const port = process.env.PORT || 3000;
   const globalPrefix = 'api';
+  app.setGlobalPrefix(globalPrefix);
 
+  app.useGlobalFilters(new HttpGlobalExceptionFilter());
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
@@ -20,7 +23,6 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     })
   );
-  app.setGlobalPrefix(globalPrefix);
   app.use(cookieParser());
   app.setGlobalPrefix(globalPrefix);
   app.enableCors({
