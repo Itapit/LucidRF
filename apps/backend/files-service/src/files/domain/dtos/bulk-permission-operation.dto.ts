@@ -1,5 +1,5 @@
-import { PermissionEntity } from '../entities/permission.entity';
-import { PermissionAction } from '../enums/permission-action.enum';
+import { PermissionEntity } from '../entities';
+import { PermissionAction } from '../enums';
 
 export interface BulkPermissionOperation {
   resourceId: string;
