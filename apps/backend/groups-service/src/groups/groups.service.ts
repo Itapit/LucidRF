@@ -7,8 +7,14 @@ import {
   RemoveMemberPayload,
   UpdateGroupPayload,
 } from '@LucidRF/groups-contracts';
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Types } from 'mongoose';
+import {
+  GroupNotFoundException,
+  GroupPermissionDeniedException,
+  InvalidGroupIdException,
+  InvalidGroupOperationException,
+} from './exceptions';
 import { CreateGroupRepoDto } from './repository/create-group-repo.dto';
 import { GroupRepository } from './repository/group.repository';
 import { GroupSchema } from './repository/group.schema';
@@ -21,7 +27,7 @@ export class GroupsService {
    * Create a new group.
    */
   async create(payload: CreateGroupPayload): Promise<GroupDto> {
-    const ownerObjectId = new Types.ObjectId(payload.ownerId);
+    const ownerObjectId = new Types.ObjectId(payload.ownerId); //TODO remove the moongoose dependency
 
     const repoParams: CreateGroupRepoDto = {
       name: payload.name,
@@ -39,12 +45,12 @@ export class GroupsService {
    */
   async findOne(id: string): Promise<GroupDto> {
     if (!Types.ObjectId.isValid(id)) {
-      throw new BadRequestException('Invalid Group ID');
+      throw new InvalidGroupIdException(id);
     }
 
     const group = await this.groupRepository.findById(id);
     if (!group) {
-      throw new NotFoundException('Group not found');
+      throw new GroupNotFoundException(id);
     }
     return this.mapToDto(group);
   }
@@ -64,12 +70,12 @@ export class GroupsService {
     const group = await this.findOne(payload.groupId);
 
     if (group.ownerId.toString() !== payload.actorId) {
-      throw new ForbiddenException('Only the group owner can add members');
+      throw new GroupPermissionDeniedException('Only the group owner can add members');
     }
 
     const updatedGroup = await this.groupRepository.addMember(payload.groupId, payload.targetUserId);
     if (!updatedGroup) {
-      throw new NotFoundException('Group not found during member addition');
+      throw new GroupNotFoundException(payload.groupId);
     }
 
     return this.mapToDto(updatedGroup);
@@ -85,16 +91,16 @@ export class GroupsService {
     const isSelf = payload.targetUserId === payload.actorId;
 
     if (!isOwner && !isSelf) {
-      throw new ForbiddenException('You do not have permission to remove this member');
+      throw new GroupPermissionDeniedException('Only the owner can remove other members');
     }
 
     if (isOwner && isSelf) {
-      throw new BadRequestException('Owner cannot leave the group. Delete the group instead.');
+      throw new InvalidGroupOperationException('Owner cannot remove themselves from the group');
     }
 
     const updatedGroup = await this.groupRepository.removeMember(payload.groupId, payload.targetUserId);
     if (!updatedGroup) {
-      throw new NotFoundException('Group not found during member removal');
+      throw new GroupNotFoundException(payload.groupId);
     }
     return this.mapToDto(updatedGroup);
   }
@@ -107,7 +113,7 @@ export class GroupsService {
 
     // Permission Check: Is the actor the owner?
     if (group.ownerId.toString() !== payload.actorId) {
-      throw new ForbiddenException('Only the owner can update group details');
+      throw new GroupPermissionDeniedException('Only the owner can update group details');
     }
 
     // We pass the payload directly, as it matches Partial<Group> structure for name/desc
@@ -117,7 +123,7 @@ export class GroupsService {
     });
 
     if (!updated) {
-      throw new NotFoundException('Group not found during update');
+      throw new GroupNotFoundException(payload.groupId);
     }
     return this.mapToDto(updated);
   }
@@ -129,7 +135,7 @@ export class GroupsService {
     const group = await this.findOne(payload.groupId);
 
     if (group.ownerId.toString() !== payload.actorId) {
-      throw new ForbiddenException('Only the owner can delete the group');
+      throw new GroupPermissionDeniedException('Only the owner can delete the group');
     }
 
     return this.groupRepository.delete(payload.groupId);
