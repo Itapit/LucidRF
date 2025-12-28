@@ -36,4 +36,9 @@ export class MongoUserRepository implements UserRepository {
     const doc = await this.userModel.findByIdAndUpdate(id, updates, { new: true }).exec();
     return doc ? toUserEntity(doc) : null;
   }
+
+  async findByUsername(username: string): Promise<UserEntity | null> {
+    const doc = await this.userModel.findOne({ username }).exec();
+    return doc ? toUserEntity(doc) : null;
+  }
 }

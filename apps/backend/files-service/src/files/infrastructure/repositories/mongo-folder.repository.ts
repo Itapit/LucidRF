@@ -1,5 +1,5 @@
 import { PermissionType } from '@LucidRF/common';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { AnyBulkWriteOperation, Model } from 'mongoose';
 import { BulkPermissionOperation, CreateFolderRepoDto } from '../../domain/dtos';
@@ -53,10 +53,10 @@ export class MongoFolderRepository implements FolderRepository {
     return docs.map(toFolderEntity);
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: string): Promise<boolean> {
     const session = this.dbContext.getSession();
     const result = await this.folderModel.findByIdAndDelete(id).session(session).exec();
-    if (!result) throw new NotFoundException(`Folder ${id} not found`);
+    return !!result;
   }
 
   // --- Permission Logic (Identical to File) ---
@@ -76,7 +76,6 @@ export class MongoFolderRepository implements FolderRepository {
       .session(session)
       .exec();
 
-    if (!doc) throw new NotFoundException(`Folder ${id} not found`);
     return toFolderEntity(doc);
   }
 
@@ -87,7 +86,6 @@ export class MongoFolderRepository implements FolderRepository {
       .session(session)
       .exec();
 
-    if (!doc) throw new NotFoundException(`Folder ${id} not found`);
     return toFolderEntity(doc);
   }
 

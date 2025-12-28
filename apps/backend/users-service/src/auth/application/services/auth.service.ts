@@ -8,18 +8,17 @@ import {
   CompleteSetupPayload,
   PendingLoginResponseDto,
 } from '@LucidRF/users-contracts';
-import {
-  ForbiddenException,
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { RpcException } from '@nestjs/microservices';
+import { Injectable } from '@nestjs/common';
 import { PasswordService } from '../../../security';
 import { toUserDto, UserEntity, UserRepository } from '../../../users/domain';
-import { RefreshTokenRepository, TokenSecurityService, TokenService } from '../../domain';
+import { UserNotFoundException } from '../../../users/domain/exceptions';
+import {
+  InvalidCredentialsException,
+  RefreshTokenRepository,
+  TokenSecurityService,
+  TokenService,
+  UserAlreadyActiveException,
+} from '../../domain';
 
 @Injectable()
 export class AuthService {
@@ -36,10 +35,6 @@ export class AuthService {
    */
   async login(payload: AuthLoginPayload): Promise<AuthLoginResponseDto | PendingLoginResponseDto> {
     const user = await this.validateUser(payload.email, payload.password);
-    if (!user) {
-      const error = new UnauthorizedException('Invalid credentials');
-      throw new RpcException(error.getResponse());
-    }
 
     if (user.status === UserStatus.PENDING) {
       return this.grantPendingToken(user);
@@ -56,20 +51,17 @@ export class AuthService {
     const user = await this.usersRepository.findById(userId);
 
     if (!user) {
-      throw new RpcException(new NotFoundException('User not found').getResponse());
+      throw new UserNotFoundException(userId);
     }
     if (user.status !== UserStatus.PENDING) {
-      throw new RpcException(new ForbiddenException('User is already active').getResponse());
+      throw new UserAlreadyActiveException(userId);
     }
+
     const hashedPassword = await this.passwordService.hash(password);
     const updatedUser = await this.usersRepository.update(user.id, {
       password: hashedPassword,
       status: UserStatus.ACTIVE,
     });
-
-    if (!updatedUser) {
-      throw new RpcException(new InternalServerErrorException('Failed to activate user').getResponse());
-    }
 
     return this.grantUserTokens(updatedUser, payload.userAgent);
   }
@@ -77,7 +69,6 @@ export class AuthService {
   /**
    * Main entry point for the refresh command.
    */
-  //TODO: fix the errors being thrown here to proper RpcExceptions
   async refreshAccessToken(payload: AuthRefreshPayload): Promise<AuthLoginResponseDto> {
     const { userId, jti } = payload;
 
@@ -85,41 +76,25 @@ export class AuthService {
 
     const user = await this.usersRepository.findById(userId);
     if (!user) {
-      throw new RpcException(new NotFoundException('User not found').getResponse());
+      throw new UserNotFoundException(userId);
     }
-
-    try {
-      return this.grantUserTokens(user, payload.userAgent);
-    } catch (e) {
-      Logger.error('Error during token granting:', e);
-      throw new RpcException(new InternalServerErrorException('Could not grant tokens').getResponse());
-    }
+    return this.grantUserTokens(user, payload.userAgent);
   }
 
   /**
    * Deletes a single refresh token from the database.
    */
   async logout(payload: AuthLogoutPayload): Promise<{ success: true }> {
-    try {
-      await this.refreshTokenRepo.delete(payload.jti);
-      return { success: true };
-    } catch (e) {
-      Logger.error('Error during logout:', e);
-      return { success: true };
-    }
+    await this.refreshTokenRepo.delete(payload.jti);
+    return { success: true };
   }
 
   /**
    * Deletes ALL refresh tokens for a user.
    */
   async logoutAll(payload: AuthLogoutAllPayload): Promise<{ success: true }> {
-    try {
-      await this.refreshTokenRepo.deleteAllForUser(payload.userId);
-      return { success: true };
-    } catch (e) {
-      Logger.error('Error during logout-all:', e);
-      return { success: true };
-    }
+    await this.refreshTokenRepo.deleteAllForUser(payload.userId);
+    return { success: true };
   }
 
   /**
@@ -128,10 +103,17 @@ export class AuthService {
   async validateUser(email: string, pass: string): Promise<UserEntity | null> {
     const user = await this.usersRepository.findByEmailWithCredentials(email);
 
-    if (user && user.password && (await this.passwordService.compare(pass, user.password))) {
-      return user;
+    if (!user) {
+      throw new InvalidCredentialsException();
     }
-    return null;
+    const isMatch = await this.passwordService.compare(pass, user.password || '');
+
+    if (!isMatch) {
+      throw new InvalidCredentialsException();
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _password, ...result } = user;
+    return result as UserEntity;
   }
 
   /**
@@ -146,19 +128,13 @@ export class AuthService {
    * Issues Access and Refresh tokens for an active user.
    */
   private async grantUserTokens(user: UserEntity, userAgent?: string): Promise<AuthLoginResponseDto> {
-    try {
-      const tokens = await this.tokenService.generateAuthTokens(user.id, user.role);
+    const tokens = await this.tokenService.generateAuthTokens(user.id, user.role);
 
-      await this.refreshTokenRepo.create(user.id, tokens.jti, tokens.refreshToken.expiresAt, userAgent);
-
-      return {
-        accessToken: tokens.accessToken,
-        refreshToken: tokens.refreshToken,
-        user: toUserDto(user),
-      };
-    } catch (e) {
-      Logger.error('Failed to grant user tokens:', e);
-      throw new RpcException(new InternalServerErrorException('Could not grant tokens').getResponse());
-    }
+    await this.refreshTokenRepo.create(user.id, tokens.jti, tokens.refreshToken.expiresAt, userAgent);
+    return {
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      user: toUserDto(user),
+    };
   }
 }

@@ -1,9 +1,13 @@
 import { UserDto, UserStatus } from '@LucidRF/common';
 import { AdminCreateUserPayload } from '@LucidRF/users-contracts';
-import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { RpcException } from '@nestjs/microservices';
+import { Injectable, Logger } from '@nestjs/common';
 import { PasswordService } from '../../security';
 import { CreateUserRepoDto, toUserDto, UserRepository } from '../domain';
+import {
+  EmailAlreadyExistsException,
+  UsernameAlreadyExistsException,
+  UserNotFoundException,
+} from '../domain/exceptions';
 
 @Injectable()
 export class UserService {
@@ -15,8 +19,11 @@ export class UserService {
   async adminCreateUser(payload: AdminCreateUserPayload): Promise<UserDto> {
     const existingUser = await this.userRepository.findByEmail(payload.email);
     if (existingUser) {
-      const error = new ConflictException('User with this email already exists');
-      throw new RpcException(error.getResponse());
+      throw new EmailAlreadyExistsException(payload.email);
+    }
+    const existingUsername = await this.userRepository.findByUsername(payload.username);
+    if (existingUsername) {
+      throw new UsernameAlreadyExistsException(payload.username);
     }
 
     const tempPassword = this.passwordService.generateTemporary();
@@ -42,8 +49,7 @@ export class UserService {
   async getUserById(id: string): Promise<UserDto> {
     const user = await this.userRepository.findById(id);
     if (!user) {
-      const error = new NotFoundException('User not found');
-      throw new RpcException(error.getResponse());
+      throw new UserNotFoundException(id);
     }
     return toUserDto(user);
   }

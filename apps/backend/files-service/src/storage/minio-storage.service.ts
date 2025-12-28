@@ -1,7 +1,8 @@
 import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import * as Minio from 'minio';
-import { MINIO_CLIENT, STORAGE_BUCKET_NAME } from './storage.constants';
-import { StorageService } from './storage.service';
+import { StorageConnectionException, StorageDeleteException, StorageUploadException } from './exceptions';
+import { StorageService } from './interfaces/storage.service.interface';
+import { DEFAULT_PRESIGNED_URL_EXPIRY, MINIO_CLIENT, STORAGE_BUCKET_NAME } from './storage.constants';
 
 @Injectable()
 export class MinioStorageService implements StorageService, OnModuleInit {
@@ -25,26 +26,25 @@ export class MinioStorageService implements StorageService, OnModuleInit {
       }
     } catch (error) {
       this.logger.error(`Failed to verify/create bucket '${this.bucketName}': ${error.message}`);
-      // We log but don't throw here to prevent the service from crashing on boot
-      // if MinIO is momentarily unavailable (e.g. docker startup order).
+      throw new StorageConnectionException('MinIO', error.message);
     }
   }
 
-  async getPresignedPutUrl(key: string, expiry = 3600): Promise<string> {
+  async getPresignedPutUrl(key: string, expiry = DEFAULT_PRESIGNED_URL_EXPIRY): Promise<string> {
     try {
       return await this.minioClient.presignedPutObject(this.bucketName, key, expiry);
     } catch (error) {
       this.logger.error(`Error generating PUT URL for ${key}: ${error.message}`);
-      throw error;
+      throw new StorageUploadException(key, error.message);
     }
   }
 
-  async getPresignedGetUrl(key: string, expiry = 3600): Promise<string> {
+  async getPresignedGetUrl(key: string, expiry = DEFAULT_PRESIGNED_URL_EXPIRY): Promise<string> {
     try {
       return await this.minioClient.presignedGetObject(this.bucketName, key, expiry);
     } catch (error) {
       this.logger.error(`Error generating GET URL for ${key}: ${error.message}`);
-      throw error;
+      throw new StorageUploadException(key, error.message);
     }
   }
 
@@ -54,7 +54,7 @@ export class MinioStorageService implements StorageService, OnModuleInit {
       this.logger.debug(`Deleted object: ${key}`);
     } catch (error) {
       this.logger.error(`Error deleting object ${key}: ${error.message}`);
-      throw error;
+      throw new StorageDeleteException(key, error.message);
     }
   }
 }

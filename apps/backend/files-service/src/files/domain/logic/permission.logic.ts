@@ -1,6 +1,5 @@
 import { PermissionRole, PermissionType } from '@LucidRF/common';
-import { FolderEntity } from '../entities/folder.entity';
-import { PermissionEntity } from '../entities/permission.entity';
+import { FolderEntity, PermissionEntity } from '../entities';
 
 /**
  * Calculates the initial permissions for a new resource (File/Folder)
