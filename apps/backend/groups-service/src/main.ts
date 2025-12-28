@@ -5,6 +5,7 @@
 import { GROUPS_CONFIG } from '@LucidRF/groups-contracts';
 import { Logger } from '@nestjs/common';
 
+import { RpcDomainExceptionFilter } from '@LucidRF/backend-common';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
@@ -26,6 +27,7 @@ async function bootstrap() {
     })
   );
 
+  app.useGlobalFilters(new RpcDomainExceptionFilter());
   await app.listen();
   Logger.log(`Groups microservice is running on: http://localhost:${GROUPS_CONFIG.PORT}`);
 }
