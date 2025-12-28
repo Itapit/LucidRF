@@ -1,6 +1,7 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { FileEntity, FolderEntity, PermissionEntity } from '../domain/entities';
 import { AccessLevel, PermissionAction, ResourceType } from '../domain/enums';
+import { InvalidPermissionException, ResourceNotFoundException } from '../domain/exceptions';
 import { FileRepository, FolderRepository, GroupsService } from '../domain/interfaces';
 import { hasSufficientAccess } from '../domain/logic';
 import { TransactionManager } from '../domain/transaction.manager';
@@ -36,8 +37,7 @@ export class AclService {
     if (hasSufficientAccess(resource, userId, requiredLevel, userGroupIds)) {
       return resource;
     }
-
-    throw new ForbiddenException(`User ${userId} lacks ${requiredLevel} access to ${type} ${resourceId}`);
+    throw new InvalidPermissionException(resourceId);
   }
 
   /**
@@ -73,7 +73,7 @@ export class AclService {
     const resource = await repo.findById(resourceId);
 
     if (!resource) {
-      throw new NotFoundException(`${type} ${resourceId} not found`);
+      throw new ResourceNotFoundException(resourceId);
     }
 
     return resource;
