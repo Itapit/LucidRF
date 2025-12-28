@@ -1,13 +1,12 @@
 import { PermissionType } from '@LucidRF/common';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { AnyBulkWriteOperation, Model } from 'mongoose';
 import { BulkPermissionOperation, CreateFileRepoDto } from '../../domain/dtos';
 import { FileEntity, PermissionEntity } from '../../domain/entities';
 import { PermissionAction } from '../../domain/enums';
 import { FileRepository } from '../../domain/interfaces';
-import { DatabaseContext } from '../persistence/database.context';
-import { PERMISSIONS_SUBJECT_PATH } from '../persistence/persistence.constants';
+import { DatabaseContext, PERMISSIONS_SUBJECT_PATH } from '../persistence';
 import { FileSchema, toFileEntity } from '../schemas';
 
 @Injectable()
@@ -59,15 +58,15 @@ export class MongoFileRepository implements FileRepository {
   async updateStatus(id: string, status: string): Promise<FileEntity> {
     const session = this.dbContext.getSession();
     const doc = await this.fileModel.findByIdAndUpdate(id, { status }, { new: true }).session(session).exec();
-    if (!doc) throw new NotFoundException(`File ${id} not found`);
     return toFileEntity(doc);
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: string): Promise<boolean> {
     const session = this.dbContext.getSession();
     const result = await this.fileModel.findByIdAndDelete(id).session(session).exec();
-    if (!result) throw new NotFoundException(`File ${id} not found`);
+    return !!result;
   }
+
   /**
    * Bulk Delete
    * Used for Recursive Deletion to remove all files in a folder at once.
@@ -96,7 +95,6 @@ export class MongoFileRepository implements FileRepository {
       .session(session)
       .exec();
 
-    if (!doc) throw new NotFoundException(`File ${id} not found`);
     return toFileEntity(doc);
   }
 
@@ -107,7 +105,6 @@ export class MongoFileRepository implements FileRepository {
       .session(session)
       .exec();
 
-    if (!doc) throw new NotFoundException(`File ${id} not found`);
     return toFileEntity(doc);
   }
 
