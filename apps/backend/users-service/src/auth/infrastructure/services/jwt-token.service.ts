@@ -12,7 +12,7 @@ import { JwtService } from '@nestjs/jwt';
 import ms from 'ms';
 import { v4 as uuidv4 } from 'uuid';
 import { GeneratedTokensDto } from '../../application/dtos';
-import { TokenService } from '../../domain';
+import { TokenGenerationException, TokenService } from '../../domain';
 
 @Injectable()
 export class JwtTokenService implements TokenService {
@@ -28,6 +28,9 @@ export class JwtTokenService implements TokenService {
     const jti = uuidv4();
 
     const refreshExpiresInMs = ms(this.jwtRefreshExpiresIn as any);
+    if (!refreshExpiresInMs) {
+      throw new TokenGenerationException('Invalid refresh token expiration configuration');
+    }
     const refreshExpiresAt = new Date(Date.now() + refreshExpiresInMs);
 
     const [accessToken, refreshTokenString] = await Promise.all([
