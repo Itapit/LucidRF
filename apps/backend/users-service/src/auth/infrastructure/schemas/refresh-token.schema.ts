@@ -22,7 +22,7 @@ export class RefreshTokenSchema extends Document {
   @Prop({ default: false })
   isRevoked: boolean;
 
-  @Prop({ type: Date, required: true })
+  @Prop({ type: Date, required: true, index: { expireAfterSeconds: 0 } })
   expiresAt: Date;
 
   @Prop({ type: String })
@@ -30,5 +30,3 @@ export class RefreshTokenSchema extends Document {
 }
 
 export const RefreshTokenSchemaFactory = SchemaFactory.createForClass(RefreshTokenSchema);
-
-RefreshTokenSchemaFactory.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
