@@ -17,28 +17,31 @@ export class UserService {
    * Creates a new user with a pending status and a temporary password.
    */
   async adminCreateUser(payload: AdminCreateUserPayload): Promise<UserDto> {
-    const existingUser = await this.userRepository.findByEmail(payload.email);
+    const email = payload.email.toLowerCase();
+    const username = payload.username.toLowerCase();
+
+    const existingUser = await this.userRepository.findByEmail(email);
     if (existingUser) {
-      throw new EmailAlreadyExistsException(payload.email);
+      throw new EmailAlreadyExistsException(email);
     }
-    const existingUsername = await this.userRepository.findByUsername(payload.username);
+    const existingUsername = await this.userRepository.findByUsername(username);
     if (existingUsername) {
-      throw new UsernameAlreadyExistsException(payload.username);
+      throw new UsernameAlreadyExistsException(username);
     }
 
     const tempPassword = this.passwordService.generateTemporary();
     const hashedPassword = await this.passwordService.hash(tempPassword);
 
     const repoDto: CreateUserRepoDto = {
-      email: payload.email,
-      username: payload.username,
+      email: email,
+      username: username,
       password: hashedPassword,
       role: payload.role,
       status: UserStatus.PENDING,
     };
     const newUserEntity = await this.userRepository.create(repoDto);
     // TODO: add email or smthing
-    Logger.log(`Temp password for ${payload.email}: ${tempPassword}`);
+    Logger.log(`Temp password for ${email}: ${tempPassword}`);
 
     return toUserDto(newUserEntity);
   }
