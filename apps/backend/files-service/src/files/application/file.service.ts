@@ -40,7 +40,7 @@ export class FileService {
 
     const file = await this.createFileRecord(payload, storageKey, initialPermissions);
 
-    this.logger.log(`Initialized upload for file ${file._id} (User: ${userId})`);
+    this.logger.log(`Initialized upload for file ${file.id} (User: ${userId})`);
     return {
       uploadUrl,
       file: toFileDto(file),
@@ -162,23 +162,23 @@ export class FileService {
     const exists = await this.storageService.fileExists(file.storageKey);
 
     if (!exists) {
-      this.logger.warn(`Security Alert: File ${file._id} missing in storage.`);
+      this.logger.warn(`Security Alert: File ${file.id} missing in storage.`);
       // If it's not there, we treat it as a failed upload and clean up
       await this.handleFailedUpload(file);
-      throw new StorageUploadException(file._id, 'File missing in storage after upload confirmation.');
+      throw new StorageUploadException(file.id, 'File missing in storage after upload confirmation.');
     }
 
-    const updatedFile = await this.fileRepository.updateStatus(file._id, FileStatus.UPLOADED);
+    const updatedFile = await this.fileRepository.updateStatus(file.id, FileStatus.UPLOADED);
     if (!updatedFile) {
-      throw new ResourceNotFoundException(file._id);
+      throw new ResourceNotFoundException(file.id);
     }
 
     return toFileDto(updatedFile);
   }
   private async handleFailedUpload(file: FileEntity) {
-    this.logger.warn(`Cleaning up failed upload for file ${file._id}`);
+    this.logger.warn(`Cleaning up failed upload for file ${file.id}`);
 
-    await this.fileRepository.delete(file._id);
+    await this.fileRepository.delete(file.id);
 
     // Ensure Storage is Clean (Best Effort)
     // We swallow errors here because if the file doesn't exist, that's actually good.

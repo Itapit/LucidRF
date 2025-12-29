@@ -42,7 +42,7 @@ export class FolderService {
     };
 
     const folder = await this.folderRepository.create(dto);
-    this.logger.log(`Created folder ${folder._id}`);
+    this.logger.log(`Created folder ${folder.id} for user ${payload.userId}`);
     return toFolderDto(folder);
   }
 
@@ -85,7 +85,7 @@ export class FolderService {
 
     // Recurse First (Depth-First Traversal)
     for (const sub of subFolders) {
-      if (sub._id) await this.recursiveDelete(sub._id.toString());
+      if (sub.id) await this.recursiveDelete(sub.id);
     }
     const files = await this.fileRepository.findByFolderIdSystem(folderId);
 

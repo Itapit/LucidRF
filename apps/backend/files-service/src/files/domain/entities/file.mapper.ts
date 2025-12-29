@@ -3,7 +3,7 @@ import { FileEntity } from './file.entity';
 
 export function toFileDto(entity: FileEntity): FileDto {
   return {
-    resourceId: entity._id.toString(),
+    resourceId: entity.id,
     originalFileName: entity.originalFileName,
     mimeType: entity.mimeType,
     size: entity.size,

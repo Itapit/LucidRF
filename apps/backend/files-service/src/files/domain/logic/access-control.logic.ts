@@ -116,7 +116,7 @@ export function calculateBulkUpdates(
 
     if (shouldProcess) {
       operations.push({
-        resourceId: resource._id.toString(),
+        resourceId: resource.id,
         action,
         permission,
       });

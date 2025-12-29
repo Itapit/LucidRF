@@ -52,7 +52,7 @@ export function toFileEntity(doc: FileDocument): FileEntity {
 
   return new FileEntity({
     ...obj,
-    _id: obj._id.toString(), // Convert ObjectId -> string
+    id: obj._id.toString(), // Convert ObjectId -> string
     parentFolderId: obj.parentFolderId?.toString() || null, // Convert ObjectId -> string
     permissions:
       obj.permissions?.map((p) => ({

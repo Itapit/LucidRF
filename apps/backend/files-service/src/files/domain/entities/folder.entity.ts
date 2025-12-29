@@ -1,7 +1,7 @@
 import { PermissionEntity } from './permission.entity';
 
 export class FolderEntity {
-  _id?: string;
+  id: string;
   name: string;
   ownerId: string;
 

@@ -74,8 +74,8 @@ export class AclService {
 
     // Recursively process children
     for (const folder of subFolders) {
-      if (folder._id) {
-        await this.recursivePropagate(folder._id, ownerId, permission, action);
+      if (folder.id) {
+        await this.recursivePropagate(folder.id, ownerId, permission, action);
       }
     }
   }

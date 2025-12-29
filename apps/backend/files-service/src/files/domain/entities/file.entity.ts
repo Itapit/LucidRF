@@ -2,7 +2,7 @@ import { FileStatus } from '@LucidRF/common';
 import { PermissionEntity } from './permission.entity';
 
 export class FileEntity {
-  _id?: string;
+  id: string;
   originalFileName: string;
   ownerId: string;
   size: number;

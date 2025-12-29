@@ -9,16 +9,16 @@ export function filterTopLevelSharedItems(
   files: FileEntity[],
   folders: FolderEntity[]
 ): { files: FileEntity[]; folders: FolderEntity[] } {
-  const sharedFolderIds = new Set(folders.map((f) => f._id?.toString()).filter((id): id is string => !!id));
+  const sharedFolderIds = new Set(folders.map((f) => f.id).filter((id): id is string => !!id));
 
   const isRootFolder = (folder: FolderEntity) => {
     if (!folder.parentFolderId) return true;
-    return !sharedFolderIds.has(folder.parentFolderId.toString());
+    return !sharedFolderIds.has(folder.parentFolderId);
   };
 
   const isRootFile = (file: FileEntity) => {
     if (!file.parentFolderId) return true;
-    return !sharedFolderIds.has(file.parentFolderId.toString());
+    return !sharedFolderIds.has(file.parentFolderId);
   };
 
   return {
