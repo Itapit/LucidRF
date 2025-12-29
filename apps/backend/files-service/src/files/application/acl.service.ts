@@ -51,19 +51,34 @@ export class AclService {
     action: PermissionAction
   ): Promise<void> {
     await this.txManager.run(async () => {
-      // Delegate "Heavy Lifting" to the Helper Service
-      // This fetches children, calculates upgrades (Domain Logic), and executes Bulk Writes (Infra)
-      const subFolders = await this.propagationService.processFolderLevel(folderId, permission, action);
-
-      for (const folder of subFolders) {
-        await this.propagatePermissionChange(folder._id.toString(), ownerId, permission, action);
-      }
+      await this.recursivePropagate(folderId, ownerId, permission, action);
     });
   }
 
   // =================================================================================================
   //  Helpers
   // =================================================================================================
+
+  /**
+   * Recursively propagates permission changes to sub-folders.
+   */
+  private async recursivePropagate(
+    folderId: string,
+    ownerId: string,
+    permission: PermissionEntity,
+    action: PermissionAction
+  ): Promise<void> {
+    // Process the current folder level (Bulk Writes)
+    // This service should pick up the active session from your DatabaseContext/CLS
+    const subFolders = await this.propagationService.processFolderLevel(folderId, permission, action);
+
+    // Recursively process children
+    for (const folder of subFolders) {
+      if (folder.id) {
+        await this.recursivePropagate(folder.id, ownerId, permission, action);
+      }
+    }
+  }
 
   /**
    * Fetches a resource by ID and Type.

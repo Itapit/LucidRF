@@ -101,7 +101,8 @@ export class AuthService {
    * Finds user and compares passwords.
    */
   async validateUser(email: string, pass: string): Promise<UserEntity | null> {
-    const user = await this.usersRepository.findByEmailWithCredentials(email);
+    const normalizedEmail = email.toLowerCase();
+    const user = await this.usersRepository.findByEmailWithCredentials(normalizedEmail);
 
     if (!user) {
       throw new InvalidCredentialsException();

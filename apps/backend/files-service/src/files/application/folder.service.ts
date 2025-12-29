@@ -1,5 +1,6 @@
 import { CreateFolderPayload, DeleteResourcePayload, GetContentPayload } from '@LucidRF/files-contracts';
 import { Injectable, Logger } from '@nestjs/common';
+import { StorageService } from '../../storage/interfaces';
 import { CreateFolderRepoDto } from '../domain/dtos';
 import { FolderEntity, PermissionEntity, toFileDto, toFolderDto } from '../domain/entities';
 import { AccessLevel, ResourceType } from '../domain/enums';
@@ -15,6 +16,7 @@ export class FolderService {
   constructor(
     private readonly folderRepository: FolderRepository,
     private readonly fileRepository: FileRepository,
+    private readonly storageService: StorageService,
     private readonly aclService: AclService
   ) {}
 
@@ -40,7 +42,7 @@ export class FolderService {
     };
 
     const folder = await this.folderRepository.create(dto);
-    this.logger.log(`Created folder ${folder._id}`);
+    this.logger.log(`Created folder ${folder.id} for user ${payload.userId}`);
     return toFolderDto(folder);
   }
 
@@ -83,7 +85,13 @@ export class FolderService {
 
     // Recurse First (Depth-First Traversal)
     for (const sub of subFolders) {
-      if (sub._id) await this.recursiveDelete(sub._id.toString());
+      if (sub.id) await this.recursiveDelete(sub.id);
+    }
+    const files = await this.fileRepository.findByFolderIdSystem(folderId);
+
+    const storageKeys = files.map((f) => f.storageKey);
+    if (storageKeys.length > 0) {
+      await this.storageService.deleteMany(storageKeys);
     }
 
     await this.fileRepository.deleteManyByFolderId(folderId);

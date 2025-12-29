@@ -6,7 +6,9 @@ import {
   InitializeUploadPayload,
 } from '@LucidRF/files-contracts';
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { basename } from 'path';
 import { v4 as uuidv4 } from 'uuid';
+import { StorageUploadException } from '../../storage/exceptions';
 import { StorageService } from '../../storage/interfaces';
 import { STORAGE_BUCKET_NAME } from '../../storage/storage.constants';
 import { CreateFileRepoDto } from '../domain/dtos';
@@ -39,7 +41,7 @@ export class FileService {
 
     const file = await this.createFileRecord(payload, storageKey, initialPermissions);
 
-    this.logger.log(`Initialized upload for file ${file._id} (User: ${userId})`);
+    this.logger.log(`Initialized upload for file ${file.id} (User: ${userId})`);
     return {
       uploadUrl,
       file: toFileDto(file),
@@ -49,19 +51,17 @@ export class FileService {
   async confirmUpload(payload: ConfirmUploadPayload) {
     const { userId, fileId, success } = payload;
 
-    // Just verify ownership
-    await this.aclService.validateAccess(fileId, userId, ResourceType.FILE, AccessLevel.OWNER);
+    const file = (await this.aclService.validateAccess(
+      fileId,
+      userId,
+      ResourceType.FILE,
+      AccessLevel.OWNER
+    )) as FileEntity;
 
     if (success) {
-      const file = await this.fileRepository.updateStatus(fileId, FileStatus.UPLOADED);
-      if (!file) {
-        throw new ResourceNotFoundException(fileId);
-      }
-      return toFileDto(file);
+      return this.handleFailedUpload(file);
     } else {
-      this.logger.warn(`File ${fileId} upload failed or cancelled by user ${userId}. Deleting metadata.`);
-      await this.fileRepository.delete(fileId);
-      return { status: 'deleted' };
+      return this.handleSuccessfulUpload(file);
     }
   }
 
@@ -130,7 +130,8 @@ export class FileService {
    */
   private async generateStorageDetails(userId: string, fileName: string) {
     const uniqueSuffix = uuidv4();
-    const storageKey = `uploads/${userId}/${uniqueSuffix}-${fileName}`;
+    const safeFileName = basename(fileName);
+    const storageKey = `uploads/${userId}/${uniqueSuffix}-${safeFileName}`;
     const uploadUrl = await this.storageService.getPresignedPutUrl(storageKey);
 
     return { storageKey, uploadUrl };
@@ -157,5 +158,38 @@ export class FileService {
     };
 
     return this.fileRepository.create(dto);
+  }
+
+  private async handleSuccessfulUpload(file: FileEntity) {
+    const exists = await this.storageService.fileExists(file.storageKey);
+
+    if (!exists) {
+      this.logger.warn(`Security Alert: File ${file.id} missing in storage.`);
+      // If it's not there, we treat it as a failed upload and clean up
+      await this.handleFailedUpload(file);
+      throw new StorageUploadException(file.id, 'File missing in storage after upload confirmation.');
+    }
+
+    const updatedFile = await this.fileRepository.updateStatus(file.id, FileStatus.UPLOADED);
+    if (!updatedFile) {
+      throw new ResourceNotFoundException(file.id);
+    }
+
+    return toFileDto(updatedFile);
+  }
+  private async handleFailedUpload(file: FileEntity) {
+    this.logger.warn(`Cleaning up failed upload for file ${file.id}`);
+
+    await this.fileRepository.delete(file.id);
+
+    // Ensure Storage is Clean (Best Effort)
+    // We swallow errors here because if the file doesn't exist, that's actually good.
+    try {
+      await this.storageService.delete(file.storageKey);
+    } catch (error) {
+      this.logger.debug(`Storage cleanup note: ${error.message}`);
+    }
+
+    return { status: 'deleted' };
   }
 }

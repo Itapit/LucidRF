@@ -35,7 +35,7 @@ export function toFolderEntity(doc: FolderDocument): FolderEntity {
 
   return new FolderEntity({
     ...obj,
-    _id: obj._id.toString(),
+    id: obj._id.toString(),
     parentFolderId: obj.parentFolderId?.toString() || null,
     permissions:
       obj.permissions?.map((p) => ({

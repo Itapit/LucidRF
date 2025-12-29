@@ -3,7 +3,7 @@ import { FolderEntity } from './folder.entity';
 
 export function toFolderDto(entity: FolderEntity): FolderDto {
   return {
-    resourceId: entity._id.toString(),
+    resourceId: entity.id,
     name: entity.name,
     ownerId: entity.ownerId,
     parentFolderId: entity.parentFolderId,

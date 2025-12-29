@@ -3,6 +3,7 @@
  * This is only a minimal backend to get started.
  */
 
+import { RpcDomainExceptionFilter } from '@LucidRF/backend-common';
 import { FILES_CONFIG } from '@LucidRF/files-contracts';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
@@ -24,6 +25,7 @@ async function bootstrap() {
       forbidNonWhitelisted: true, // Throws an error if extra properties are sent
     })
   );
+  app.useGlobalFilters(new RpcDomainExceptionFilter());
   await app.listen();
   Logger.log(`Files microservice is running on: http://localhost:${FILES_CONFIG.PORT}}`);
 }

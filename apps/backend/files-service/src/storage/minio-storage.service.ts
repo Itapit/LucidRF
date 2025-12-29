@@ -57,4 +57,27 @@ export class MinioStorageService implements StorageService, OnModuleInit {
       throw new StorageDeleteException(key, error.message);
     }
   }
+  async deleteMany(keys: string[]): Promise<void> {
+    if (!keys.length) return;
+
+    try {
+      await this.minioClient.removeObjects(this.bucketName, keys);
+      this.logger.debug(`Bulk deleted ${keys.length} objects`);
+    } catch (error) {
+      this.logger.error(`Error bulk deleting objects: ${error.message}`);
+      throw new StorageDeleteException('BULK_DELETE', error.message);
+    }
+  }
+  async fileExists(key: string): Promise<boolean> {
+    try {
+      await this.minioClient.statObject(this.bucketName, key);
+      return true;
+    } catch (error) {
+      if (error.code === 'NotFound') {
+        return false;
+      }
+      this.logger.error(`Error checking existence of object ${key}: ${error.message}`);
+      throw new StorageConnectionException('MinIO', error.message);
+    }
+  }
 }

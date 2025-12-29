@@ -22,15 +22,30 @@ export class JwtTokenService implements TokenService {
     @Inject(JWT_PENDING_EXPIRES_IN) private readonly jwtPendingExpiresIn: string,
     @Inject(JWT_ACCESS_EXPIRES_IN) private readonly jwtAccessExpiresIn: string,
     @Inject(JWT_SECRET) private readonly jwtSecret: string
-  ) {}
+  ) {
+    this.validateTimeFormats();
+  }
+
+  private validateTimeFormats() {
+    const timeConfigs = [
+      { name: JWT_ACCESS_EXPIRES_IN, value: this.jwtAccessExpiresIn },
+      { name: JWT_REFRESH_EXPIRES_IN, value: this.jwtRefreshExpiresIn },
+      { name: JWT_PENDING_EXPIRES_IN, value: this.jwtPendingExpiresIn },
+    ];
+
+    for (const config of timeConfigs) {
+      if (ms(config.value as any) === undefined) {
+        throw new TokenGenerationException(
+          `Fatal Config Error: ${config.name} has invalid value "${config.value}". Expected a time string (e.g. "15m", "7d").`
+        );
+      }
+    }
+  }
 
   async generateAuthTokens(userId: string, role: UserRole): Promise<GeneratedTokensDto> {
     const jti = uuidv4();
 
     const refreshExpiresInMs = ms(this.jwtRefreshExpiresIn as any);
-    if (!refreshExpiresInMs) {
-      throw new TokenGenerationException('Invalid refresh token expiration configuration');
-    }
     const refreshExpiresAt = new Date(Date.now() + refreshExpiresInMs);
 
     const [accessToken, refreshTokenString] = await Promise.all([
