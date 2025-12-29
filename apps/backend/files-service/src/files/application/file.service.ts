@@ -6,6 +6,7 @@ import {
   InitializeUploadPayload,
 } from '@LucidRF/files-contracts';
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { basename } from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { StorageUploadException } from '../../storage/exceptions';
 import { StorageService } from '../../storage/interfaces';
@@ -129,7 +130,8 @@ export class FileService {
    */
   private async generateStorageDetails(userId: string, fileName: string) {
     const uniqueSuffix = uuidv4();
-    const storageKey = `uploads/${userId}/${uniqueSuffix}-${fileName}`;
+    const safeFileName = basename(fileName);
+    const storageKey = `uploads/${userId}/${uniqueSuffix}-${safeFileName}`;
     const uploadUrl = await this.storageService.getPresignedPutUrl(storageKey);
 
     return { storageKey, uploadUrl };
