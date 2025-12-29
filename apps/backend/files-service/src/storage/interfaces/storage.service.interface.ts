@@ -27,4 +27,11 @@ export abstract class StorageService {
    * @param keys Array of storage keys to delete
    */
   abstract deleteMany(keys: string[]): Promise<void>;
+
+  /**
+   * Checks if a file exists in the storage bucket.
+   * @param key The unique key of the object to check.
+   * @returns True if the file exists, false otherwise.
+   */
+  abstract fileExists(key: string): Promise<boolean>;
 }

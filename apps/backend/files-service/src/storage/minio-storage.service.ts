@@ -68,4 +68,16 @@ export class MinioStorageService implements StorageService, OnModuleInit {
       throw new StorageDeleteException('BULK_DELETE', error.message);
     }
   }
+  async fileExists(key: string): Promise<boolean> {
+    try {
+      await this.minioClient.statObject(this.bucketName, key);
+      return true;
+    } catch (error) {
+      if (error.code === 'NotFound') {
+        return false;
+      }
+      this.logger.error(`Error checking existence of object ${key}: ${error.message}`);
+      throw new StorageConnectionException('MinIO', error.message);
+    }
+  }
 }
