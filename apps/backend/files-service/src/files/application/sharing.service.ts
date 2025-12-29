@@ -6,6 +6,7 @@ import { AccessLevel, PermissionAction, ResourceType } from '../domain/enums';
 import { ResourceNotFoundException } from '../domain/exceptions';
 import { FileRepository, FolderRepository } from '../domain/interfaces';
 import { determineSharingAction } from '../domain/logic';
+import { TransactionManager } from '../domain/transaction.manager';
 import { AclService } from './acl.service';
 
 @Injectable()
@@ -13,7 +14,8 @@ export class SharingService {
   constructor(
     private readonly aclService: AclService,
     private readonly fileRepo: FileRepository,
-    private readonly folderRepo: FolderRepository
+    private readonly folderRepo: FolderRepository,
+    private readonly txManager: TransactionManager
   ) {}
 
   async shareFile(payload: ShareResourcePayload) {
@@ -46,15 +48,17 @@ export class SharingService {
       role: payload.role,
     };
 
-    const updatedFolder = await this.folderRepo.addPermission(payload.resourceId, permission);
+    return this.txManager.run(async () => {
+      const updatedFolder = await this.folderRepo.addPermission(payload.resourceId, permission);
 
-    if (!updatedFolder) {
-      throw new ResourceNotFoundException(payload.resourceId);
-    }
-    // Propagate Change (Recursive)
-    await this.aclService.propagatePermissionChange(payload.resourceId, payload.userId, permission, action);
+      if (!updatedFolder) {
+        throw new ResourceNotFoundException(payload.resourceId);
+      }
+      // Propagate Change (Recursive)
+      await this.aclService.propagatePermissionChange(payload.resourceId, payload.userId, permission, action);
 
-    return updatedFolder;
+      return updatedFolder;
+    });
   }
 
   async unshareFile(payload: UnshareResourcePayload) {
@@ -74,30 +78,32 @@ export class SharingService {
   async unshareFolder(payload: UnshareResourcePayload) {
     await this.aclService.validateAccess(payload.resourceId, payload.userId, ResourceType.FOLDER, AccessLevel.OWNER);
 
-    const updatedFolder = await this.folderRepo.removePermission(
-      payload.resourceId,
-      payload.subjectId,
-      payload.subjectType
-    );
+    return this.txManager.run(async () => {
+      const updatedFolder = await this.folderRepo.removePermission(
+        payload.resourceId,
+        payload.subjectId,
+        payload.subjectType
+      );
 
-    if (!updatedFolder) {
-      throw new ResourceNotFoundException(payload.resourceId);
-    }
+      if (!updatedFolder) {
+        throw new ResourceNotFoundException(payload.resourceId);
+      }
 
-    // Propagate Removal (Recursive)
-    const permission = {
-      subjectId: payload.subjectId,
-      subjectType: payload.subjectType,
-      role: PermissionRole.VIEWER,
-    };
+      // Propagate Removal (Recursive)
+      const permission = {
+        subjectId: payload.subjectId,
+        subjectType: payload.subjectType,
+        role: PermissionRole.VIEWER,
+      };
 
-    await this.aclService.propagatePermissionChange(
-      payload.resourceId,
-      payload.userId,
-      permission,
-      PermissionAction.REMOVE
-    );
+      await this.aclService.propagatePermissionChange(
+        payload.resourceId,
+        payload.userId,
+        permission,
+        PermissionAction.REMOVE
+      );
 
-    return updatedFolder;
+      return updatedFolder;
+    });
   }
 }
