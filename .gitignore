@@ -54,3 +54,11 @@ minio_data
 mongo_data
 
 TODO.txt
+
+ml/.venv
+ml/__pycache__
+ml/notebooks/.ipynb_checkpoints
+ml/models/*.pkl
+ml/models/*.h5
+ml/data/*
+*.pyc
