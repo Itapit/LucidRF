@@ -1,4 +1,8 @@
 {
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "python.defaultInterpreterPath": "/home/itapit/.cache/pypoetry/virtualenvs/lucidrf-ml-JDFE4R37-py3.13/bin/python",
+  "python.analysis.extraPaths": [
+    "./ml/src"
+  ]
 }
