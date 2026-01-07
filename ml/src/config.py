@@ -20,9 +20,11 @@ RAW_DATA_DIR = DATA_DIR / 'raw'
 PROCESSED_DIR = DATA_DIR / "processed"
 
 # JamShield Paths (Real Hardware Data)
-JAMSHIELD_RAW_DIR = RAW_DATA_DIR / 'JamShield' / 'iq-data'
+JAMSHIELD_DIR = RAW_DATA_DIR / 'JamShield'
+JAMSHIELD_RAW_DIR = RAW_DATA_DIR / JAMSHIELD_DIR / 'iq-data'
 JAMSHIELD_NPY_DIR = PROCESSED_DIR / 'jamshield_npy'
 JAMSHIELD_FILE_PATTERN = "w*.mat"
+JAMSHIELD_METADATA_FILE = RAW_DATA_DIR / JAMSHIELD_RAW_DIR / 'metadata.csv'
 
 # Simulated Paths (Zero Noise / Perfect Data)
 SDR_CAPTURES_DIR = RAW_DATA_DIR / 'sdr_captures'
