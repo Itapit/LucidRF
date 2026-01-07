@@ -64,7 +64,12 @@ SIMULATION_DTYPE = np.float32
 # -----------------------------------------------------------------
 
 # --- FEATURE DEFINITIONS ---
-MACHINE_A_FEATURES = ['Mean Power', 'PAPR', 'Kurtosis']
+MACHINE_A_FEATURES = ['Mean Power', 
+                      'PAPR', 
+                      'Kurtosis',
+                    #   'Variance', correlated with Mean Power
+                      'Skewness',
+                      'Spectral Flatness',
+                    #   'Spectral Entropy' correlated with Spectral Flatness
+                      ]
 
-# --- EXPERIMENT SETTINGS ---
-NOISE_POWER_DB = -25.0
