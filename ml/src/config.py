@@ -53,8 +53,12 @@ MACHINE_A_DATASET_FILE = PROCESSED_DIR / 'machine_a_dataset.csv'
 # -----------------------------------------------------------------
 
 # JamShield Dataset (USRP X310)
-# Spec: 25 MHz Sampling Rate
-JAMSHIELD_SAMPLE_RATE = 25e6
+# Spec: 1 Msps Sampling Rate
+JAMSHIELD_SAMPLE_RATE = 1_000_000
+
+# This controls FFT resolution and time stationarity (frame size).
+# 10,000 samples @ 1Msps = 10ms duration
+CHUNK_SIZE = 10_000
 
 # MIT RF Challenge Dataset
 # Spec: 25 MHz (per the provided documentation)
@@ -82,4 +86,4 @@ MACHINE_A_FEATURES = ['Mean Power',
 # -----------------------------------------------------------------
 # toggles
 # -----------------------------------------------------------------
-SAVE_FIGURES = False
+SAVE_FIGURES = True
