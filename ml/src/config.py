@@ -8,6 +8,10 @@ import numpy as np
 # --- PROJECT STRUCTURE ---
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# reports directory
+REPORTS_DIR = BASE_DIR / "reports"
+FIGURES_DIR = REPORTS_DIR / "figures"
+
 # models directory
 MODELS_DIR = BASE_DIR / "models"
 
@@ -37,6 +41,7 @@ MIT_DATA_DIR = RAW_DATA_DIR / 'mit-rf-challenge'
 PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
 JAMSHIELD_NPY_DIR.mkdir(parents=True, exist_ok=True)
 MODELS_DIR.mkdir(parents=True, exist_ok=True)
+FIGURES_DIR.mkdir(parents=True, exist_ok=True)
 
 # --- MACHINE A (Detection) PATHS ---
 # The CSV dataset we will generate
