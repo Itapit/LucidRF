@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import os
 from pathlib import Path
-from config import FIGURES_DIR
+from config import FIGURES_DIR, SAVE_FIGURES
 from datetime import datetime
 
 def save_plot(filename_slug, subfolder=None, prefix=None, timestamp=True):
@@ -14,6 +14,11 @@ def save_plot(filename_slug, subfolder=None, prefix=None, timestamp=True):
         prefix (str, optional): Notebook ID or identifier (e.g., '21'). 
                                 Automatically adds an underscore.
     """
+
+    if not SAVE_FIGURES:
+        print(f"[Info] Saving skipped for: {filename_slug} (SAVE_FIGURES=False)")
+        return
+
     # Determine base path
     if subfolder:
         save_dir = FIGURES_DIR / subfolder
