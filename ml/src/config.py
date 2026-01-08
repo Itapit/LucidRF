@@ -72,9 +72,9 @@ SIMULATION_DTYPE = np.float32
 MACHINE_A_FEATURES = ['Mean Power', 
                       'PAPR', 
                       'Kurtosis',
-                    #   'Variance', correlated with Mean Power
+                      'Variance', # correlated with Mean Power
                       'Skewness',
                       'Spectral Flatness',
-                    #   'Spectral Entropy' correlated with Spectral Flatness
+                      'Spectral Entropy' # correlated with Spectral Flatness
                       ]
 
