@@ -78,3 +78,10 @@ MACHINE_A_FEATURES = ['Mean Power',
                       'Spectral Entropy' # correlated with Spectral Flatness
                       ]
 
+
+
+
+# -----------------------------------------------------------------
+# toggles
+# -----------------------------------------------------------------
+SAVE_FIGURES = True
