@@ -43,13 +43,17 @@ JAMSHIELD_NPY_DIR.mkdir(parents=True, exist_ok=True)
 MODELS_DIR.mkdir(parents=True, exist_ok=True)
 FIGURES_DIR.mkdir(parents=True, exist_ok=True)
 
-# --- MACHINE A (Detection) PATHS ---
-# The CSV dataset we will generate
-MACHINE_A_DATASET_FILE = PROCESSED_DIR / 'machine_a_dataset.csv'
+# -----------------------------------------------------------------
+# DATASETS & ARTIFACTS
+# -----------------------------------------------------------------
 
+# --- MACHINE A (Detection) PATHS ---
+MACHINE_A_DATASET_FILE = PROCESSED_DIR / 'machine_a_dataset.csv'
 MACHINE_A_TRAIN_SET_FILE = PROCESSED_DIR / 'train_set.csv'
 MACHINE_A_VAL_SET_FILE   = PROCESSED_DIR / 'val_set.csv'
 MACHINE_A_TEST_SET_FILE  = PROCESSED_DIR / 'test_set.csv'
+
+MACHINE_A_MODEL_FILE = MODELS_DIR / 'machine_a_logistic_v1.pkl'
 
 # -----------------------------------------------------------------
 # Define PHYSICS & SIGNAL CONSTANTS
