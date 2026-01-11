@@ -8,7 +8,7 @@
 
 ## 1. Executive Summary
 
-The goal of this session was to transform experimental Jupyter Notebooks into a better structured pipeline. We successfully decoupled logic from presentation, corrected critical physical assumptions about the dataset (Sample Rate), and scientifically validated our feature selection strategy. The system is now ready for the model training phase.
+The goal of this session was to transform experimental Jupyter Notebooks into a better structured pipeline. We successfully decoupled logic from presentation and scientifically validated our feature selection strategy. The system is now ready for the model training phase.
 
 ## 2. Architecture & Code Refactoring
 
@@ -43,9 +43,9 @@ We transitioned from monolithic notebooks to a modular `src/` architecture to im
 
 ## 3. Data Engineering Improvements
 
-### A. Physics Correction (Critical)
+### A. Physics Correction
 
-- **Discovery:** We identified that the initial assumption of **25 Msps** (standard USRP settings) was incorrect for this specific dataset.
+- **Discovery:** We identified that the initial assumption of the sample rate for this specific dataset.
 - **Correction:** Confirmed the actual sample rate is **1 Msps**.
 - **Impact:**
 - Window Duration changed from **0.4ms** **10ms**.
