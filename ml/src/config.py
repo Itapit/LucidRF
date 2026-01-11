@@ -47,6 +47,9 @@ FIGURES_DIR.mkdir(parents=True, exist_ok=True)
 # The CSV dataset we will generate
 MACHINE_A_DATASET_FILE = PROCESSED_DIR / 'machine_a_dataset.csv'
 
+MACHINE_A_TRAIN_SET_FILE = PROCESSED_DIR / 'train_set.csv'
+MACHINE_A_VAL_SET_FILE   = PROCESSED_DIR / 'val_set.csv'
+MACHINE_A_TEST_SET_FILE  = PROCESSED_DIR / 'test_set.csv'
 
 # -----------------------------------------------------------------
 # Define PHYSICS & SIGNAL CONSTANTS
@@ -76,14 +79,14 @@ SIMULATION_DTYPE = np.float32
 MACHINE_A_FEATURES = ['Mean Power', 
                       'PAPR', 
                       'Kurtosis',
-                      'Variance', # correlated with Mean Power
+                      # 'Variance', # correlated with Mean Power
                       'Skewness',
                       'Spectral Flatness',
-                      'Spectral Entropy' # correlated with Spectral Flatness
+                      # 'Spectral Entropy' # correlated with Spectral Flatness
                       ]
 
 
 # -----------------------------------------------------------------
 # toggles
 # -----------------------------------------------------------------
-SAVE_FIGURES = True
+SAVE_FIGURES = False
