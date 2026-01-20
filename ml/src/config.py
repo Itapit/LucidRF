@@ -58,9 +58,14 @@ MIT_NOISE_FILE = MIT_DATASET_PATH / "EMISignal1_raw_data.h5"
 
 MIT_GENERATED_DATA_DIR = PROCESSED_DIR / 'mit_autoencoder_dataset'
 
-MIT_X = MIT_GENERATED_DATA_DIR / "dataset_X.npy"
-MIT_Y = MIT_GENERATED_DATA_DIR / "dataset_Y.npy"
-MIT_DATASET_METADATA_FILE = MIT_GENERATED_DATA_DIR / "dataset_metadata.csv"
+MIT_SPOT_X = MIT_GENERATED_DATA_DIR / "spot_dataset_X.npy"
+MIT_SPOT_Y = MIT_GENERATED_DATA_DIR / "spot_dataset_Y.npy"
+MIT_SPOT_DATASET_METADATA_FILE = MIT_GENERATED_DATA_DIR / "spot_dataset_metadata.csv"
+
+
+MIT_BARRAGE_X = MIT_GENERATED_DATA_DIR / "barrage_dataset_X.npy"
+MIT_BARRAGE_Y = MIT_GENERATED_DATA_DIR / "barrage_dataset_Y.npy"
+MIT_BARRAGE_DATASET_METADATA_FILE = MIT_GENERATED_DATA_DIR / "barrage_dataset_metadata.csv"
 
 # -----------------------------------------------------------------
 # Define PHYSICS & SIGNAL CONSTANTS
@@ -77,6 +82,14 @@ CHUNK_SIZE = 10_000
 # MIT RF Challenge Dataset
 # Spec: 25 MHz (per the provided documentation)
 MIT_SAMPLE_RATE = 25e6
+
+# This is the size of the "chunk" (or frame) we cut out of the recording to feed into the model.
+MIT_SAMPLE_LENGTH = 40_960
+
+# this is the amount of data to generate for the MIT autoencoder dataset
+MIT_DATASET_SIZE = 2500
+
+SINR_LEVELS = [-12, -9, -6, -3, 0, 3]
 
 # -----------------------------------------------------------------
 # Define Feature and Experiment Settings 
