@@ -56,6 +56,12 @@ MIT_DATASET_PATH = RAW_DATA_DIR / 'mit-rf-challenge/dataset/interferenceset_fram
 MIT_CLEAN_FILE = MIT_DATASET_PATH / "CommSignal2_raw_data.h5"
 MIT_NOISE_FILE = MIT_DATASET_PATH / "EMISignal1_raw_data.h5"
 
+MIT_GENERATED_DATA_DIR = PROCESSED_DIR / 'mit_autoencoder_dataset'
+
+MIT_X = MIT_GENERATED_DATA_DIR / "dataset_X.npy"
+MIT_Y = MIT_GENERATED_DATA_DIR / "dataset_Y.npy"
+MIT_DATASET_METADATA_FILE = MIT_GENERATED_DATA_DIR / "dataset_metadata.csv"
+
 # -----------------------------------------------------------------
 # Define PHYSICS & SIGNAL CONSTANTS
 # -----------------------------------------------------------------
@@ -90,4 +96,4 @@ MACHINE_A_FEATURES = ['Mean Power',
 # -----------------------------------------------------------------
 # toggles
 # -----------------------------------------------------------------
-SAVE_FIGURES = True
+SAVE_FIGURES = False
