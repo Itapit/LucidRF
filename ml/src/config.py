@@ -50,6 +50,12 @@ MACHINE_A_TEST_SET_FILE  = MACHINE_A_CSV_DIR / 'test_set.csv'
 
 MACHINE_A_MODEL_FILE = MODELS_DIR / 'machine_a_logistic_v1.pkl'
 
+
+# --- Machine B (autoencoder) PATHS ---
+MIT_DATASET_PATH = RAW_DATA_DIR / 'mit-rf-challenge/dataset/interferenceset_frame'
+MIT_CLEAN_FILE = MIT_DATASET_PATH / "CommSignal2_raw_data.h5"
+MIT_NOISE_FILE = MIT_DATASET_PATH / "EMISignal1_raw_data.h5"
+
 # -----------------------------------------------------------------
 # Define PHYSICS & SIGNAL CONSTANTS
 # -----------------------------------------------------------------
