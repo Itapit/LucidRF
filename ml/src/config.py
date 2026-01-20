@@ -66,10 +66,6 @@ CHUNK_SIZE = 10_000
 # Spec: 25 MHz (per the provided documentation)
 MIT_SAMPLE_RATE = 25e6
 
-# SDR Captures
-SIMULATION_SAMPLE_RATE = 100e6
-SIMULATION_DTYPE = np.float32
-
 # -----------------------------------------------------------------
 # Define Feature and Experiment Settings 
 # -----------------------------------------------------------------
