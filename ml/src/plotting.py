@@ -22,14 +22,15 @@ def setup_plotting_style():
     print("Plotting style configured")
 
 
-def save_plot(filename_slug, fig_id=None, nb_id=None, subfolder=None, timestamp=True, watermark=True):
+def save_plot(filename_slug, machine_id=None, nb_id=None, fig_id=None, subfolder=None, timestamp=True, watermark=True):
     """
     Saves the current matplotlib figure using the path defined in config.py.
     
     Args:
         filename_slug (str): Descriptive name (e.g., 'sensitivity_vs_type').
-        fig_id (str): The figure number in the notebook (e.g., '05').
+        machine_id (str): Machine identifier (e.g., 'A' or 'B').
         nb_id (str): Notebook ID (e.g., '40').
+        fig_id (str): The figure number in the notebook (e.g., '05').
         subfolder (str): Optional folder inside 'figures/'.
         timestamp (bool): Append timestamp to filename.
         watermark (bool): Add 'Figure X.Y' text to the image corner.
@@ -41,6 +42,8 @@ def save_plot(filename_slug, fig_id=None, nb_id=None, subfolder=None, timestamp=
     # Determine base path
     if subfolder:
         save_dir = FIGURES_DIR / subfolder
+    elif machine_id:
+        save_dir = FIGURES_DIR / f"Machine_{machine_id}"
     else:
         save_dir = FIGURES_DIR
     
@@ -48,8 +51,9 @@ def save_plot(filename_slug, fig_id=None, nb_id=None, subfolder=None, timestamp=
 
     name_parts = []
 
-    if nb_id and fig_id:
-        name_parts.append(f"{nb_id}_{fig_id}")
+
+    if machine_id and nb_id and fig_id:
+        name_parts.append(f"{machine_id}_NB{nb_id}_Fig{fig_id}")
         
     name_parts.append(filename_slug)
 
@@ -64,9 +68,9 @@ def save_plot(filename_slug, fig_id=None, nb_id=None, subfolder=None, timestamp=
         
     filepath = save_dir / clean_name
 
-    if watermark and nb_id and fig_id:
+    if watermark and machine_id and nb_id and fig_id:
         # Puts text "Figure 40_05" in bottom-right corner
-        label_text = f"Figure {nb_id}_{fig_id}"
+        label_text = f"{machine_id}_NB{nb_id}_Fig{fig_id}"
         plt.figtext(0.99, 0.01, label_text, ha='right', va='bottom', 
                     fontsize=10, color='gray', style='italic', weight='bold')
     
