@@ -15,9 +15,6 @@ FIGURES_DIR = REPORTS_DIR / "figures"
 # models directory
 MODELS_DIR = BASE_DIR / "models"
 
-# notebook directory
-NOTEBOOKS_DIR = BASE_DIR / "notebooks"
-
 # Data Directories
 DATA_DIR = BASE_DIR / "data"
 RAW_DATA_DIR = DATA_DIR / 'raw'
@@ -25,13 +22,10 @@ PROCESSED_DIR = DATA_DIR / "processed"
 
 # JamShield Paths (Real Hardware Data)
 JAMSHIELD_DIR = RAW_DATA_DIR / 'JamShield'
-JAMSHIELD_RAW_DIR = RAW_DATA_DIR / JAMSHIELD_DIR / 'iq-data'
+JAMSHIELD_RAW_DIR = JAMSHIELD_DIR / 'iq-data'
 JAMSHIELD_NPY_DIR = PROCESSED_DIR / 'jamshield_npy'
 JAMSHIELD_FILE_PATTERN = "w*.mat"
-JAMSHIELD_METADATA_FILE = RAW_DATA_DIR / JAMSHIELD_RAW_DIR / 'metadata.csv'
-
-# Simulated Paths (Zero Noise / Perfect Data)
-SDR_CAPTURES_DIR = RAW_DATA_DIR / 'sdr_captures'
+JAMSHIELD_METADATA_FILE = JAMSHIELD_RAW_DIR / 'metadata.csv'
 
 # MIT Challenge Paths
 MIT_DATA_DIR = RAW_DATA_DIR / 'mit-rf-challenge'
@@ -48,10 +42,11 @@ FIGURES_DIR.mkdir(parents=True, exist_ok=True)
 # -----------------------------------------------------------------
 
 # --- MACHINE A (Detection) PATHS ---
-MACHINE_A_DATASET_FILE = PROCESSED_DIR / 'machine_a_dataset.csv'
-MACHINE_A_TRAIN_SET_FILE = PROCESSED_DIR / 'train_set.csv'
-MACHINE_A_VAL_SET_FILE   = PROCESSED_DIR / 'val_set.csv'
-MACHINE_A_TEST_SET_FILE  = PROCESSED_DIR / 'test_set.csv'
+MACHINE_A_CSV_DIR = PROCESSED_DIR / 'logistic_regression_machine_a'
+MACHINE_A_DATASET_FILE = MACHINE_A_CSV_DIR / 'machine_a_dataset.csv'
+MACHINE_A_TRAIN_SET_FILE = MACHINE_A_CSV_DIR / 'train_set.csv'
+MACHINE_A_VAL_SET_FILE   = MACHINE_A_CSV_DIR / 'val_set.csv'
+MACHINE_A_TEST_SET_FILE  = MACHINE_A_CSV_DIR / 'test_set.csv'
 
 MACHINE_A_MODEL_FILE = MODELS_DIR / 'machine_a_logistic_v1.pkl'
 
