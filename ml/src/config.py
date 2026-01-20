@@ -41,7 +41,7 @@ FIGURES_DIR.mkdir(parents=True, exist_ok=True)
 # DATASETS & ARTIFACTS
 # -----------------------------------------------------------------
 
-# --- MACHINE A (Detection) PATHS ---
+# --- MACHINE A (logistic regression) PATHS ---
 MACHINE_A_CSV_DIR = PROCESSED_DIR / 'logistic_regression_machine_a'
 MACHINE_A_DATASET_FILE = MACHINE_A_CSV_DIR / 'machine_a_dataset.csv'
 MACHINE_A_TRAIN_SET_FILE = MACHINE_A_CSV_DIR / 'train_set.csv'
