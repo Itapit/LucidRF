@@ -62,10 +62,16 @@ MIT_SPOT_X = MIT_GENERATED_DATA_DIR / "spot_dataset_X.npy"
 MIT_SPOT_Y = MIT_GENERATED_DATA_DIR / "spot_dataset_Y.npy"
 MIT_SPOT_DATASET_METADATA_FILE = MIT_GENERATED_DATA_DIR / "spot_dataset_metadata.csv"
 
+MIT_SPOT_X_NORMALIZED = MIT_GENERATED_DATA_DIR / "Spot_dataset_X_normalized.npy"
+MIT_SPOT_Y_NORMALIZED = MIT_GENERATED_DATA_DIR / "Spot_dataset_Y_normalized.npy"
+
 
 MIT_BARRAGE_X = MIT_GENERATED_DATA_DIR / "barrage_dataset_X.npy"
 MIT_BARRAGE_Y = MIT_GENERATED_DATA_DIR / "barrage_dataset_Y.npy"
 MIT_BARRAGE_DATASET_METADATA_FILE = MIT_GENERATED_DATA_DIR / "barrage_dataset_metadata.csv"
+
+MIT_BARRAGE_X_NORMALIZED = MIT_GENERATED_DATA_DIR / "Barrage_dataset_X_normalized.npy"
+MIT_BARRAGE_Y_NORMALIZED = MIT_GENERATED_DATA_DIR / "Barrage_dataset_Y_normalized.npy"
 
 # -----------------------------------------------------------------
 # Define PHYSICS & SIGNAL CONSTANTS
