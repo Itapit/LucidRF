@@ -73,6 +73,9 @@ MIT_BARRAGE_DATASET_METADATA_FILE = MIT_GENERATED_DATA_DIR / "barrage_dataset_me
 MIT_BARRAGE_X_NORMALIZED = MIT_GENERATED_DATA_DIR / "Barrage_dataset_X_normalized.npy"
 MIT_BARRAGE_Y_NORMALIZED = MIT_GENERATED_DATA_DIR / "Barrage_dataset_Y_normalized.npy"
 
+
+MASTER_SCALING_FACTORS_FILE = MIT_GENERATED_DATA_DIR / "master_scaling_factors.txt"
+
 # -----------------------------------------------------------------
 # Define PHYSICS & SIGNAL CONSTANTS
 # -----------------------------------------------------------------
