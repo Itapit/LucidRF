@@ -3,6 +3,7 @@ import os
 from config import FIGURES_DIR, SAVE_FIGURES
 from datetime import datetime
 import seaborn as sns
+from IPython.display import clear_output
 
 def setup_plotting_style():
     """
@@ -76,3 +77,31 @@ def save_plot(filename_slug, machine_id=None, nb_id=None, fig_id=None, subfolder
     
     plt.savefig(filepath, dpi=300, bbox_inches='tight')
     print(f"Saved figure: {filepath.name}")
+
+
+def plot_training_live_history(history):
+    """
+    Updates the Loss and SINR curves in real-time.
+    """
+    clear_output(wait=True)
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
+    
+    # Plot Loss
+    ax1.plot(history['train_loss'], label='Train Loss', color='C0')
+    ax1.plot(history['val_loss'], label='Val Loss', color='C1')
+    ax1.set_title("Model Loss (MSE)")
+    ax1.set_xlabel("Epoch")
+    ax1.set_ylabel("Loss")
+    ax1.legend()
+    ax1.grid(True, alpha=0.3)
+    
+    # Plot SINR
+    ax2.plot(history['train_sinr'], label='Train SINR', color='C0')
+    ax2.plot(history['val_sinr'], label='Val SINR', color='C1')
+    ax2.set_title("Model Quality (SINR dB)")
+    ax2.set_xlabel("Epoch")
+    ax2.set_ylabel("dB (Higher is Better)")
+    ax2.legend()
+    ax2.grid(True, alpha=0.3)
+    
+    plt.show()
