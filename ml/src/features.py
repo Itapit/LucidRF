@@ -111,3 +111,33 @@ def compute_feature_vector(chunk, active_features):
             row[feature_name] = 0.0
             
     return row
+
+
+def calc_sinr_db(predictions, targets):
+    """
+    Calculates the Signal-to-Interference-Noise Ratio (SINR) in dB.
+    
+    Args:
+        predictions (np.array): The Denoised Signal (Batch, Length) or (Batch, 2, Length)
+        targets (np.array): The Ground Truth Clean Signal
+        
+    Returns:
+        float: The average SINR in dB across the batch.
+    """
+    pred_flat = predictions.reshape(predictions.shape[0], -1)
+    targ_flat = targets.reshape(targets.shape[0], -1)
+
+    # Vectorized Power Calculation (Axis 1 = across time/channels)
+    signal_power = np.mean(targ_flat ** 2, axis=1)
+    
+    # Noise = Difference between Prediction and Target
+    noise_power = np.mean((pred_flat - targ_flat) ** 2, axis=1)
+
+    # Ratio Calculation (with epsilon for safety)
+    ratio = signal_power / (noise_power + 1e-10)
+    
+    # Convert to dB
+    sinr_db = 10 * np.log10(ratio)
+
+    # Return scalar mean
+    return float(np.mean(sinr_db))
