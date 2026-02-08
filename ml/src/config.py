@@ -76,6 +76,9 @@ MIT_BARRAGE_Y_NORMALIZED = MIT_GENERATED_DATA_DIR / "Barrage_dataset_Y_normalize
 
 MASTER_SCALING_FACTORS_FILE = MIT_GENERATED_DATA_DIR / "master_scaling_factors.txt"
 
+MACHINE_B_MODEL_FILE = MODELS_DIR / 'machine_b_unet_v1.pth'
+
+
 # -----------------------------------------------------------------
 # Define PHYSICS & SIGNAL CONSTANTS
 # -----------------------------------------------------------------
