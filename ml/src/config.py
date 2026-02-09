@@ -99,9 +99,10 @@ MIT_SAMPLE_RATE = 25e6
 MIT_SAMPLE_LENGTH = 40_960
 
 # this is the amount of data to generate for the MIT autoencoder dataset
-MIT_DATASET_SIZE = 2500
+MIT_DATASET_SIZE = 12500
 
-SINR_LEVELS = [-12, -9, -6, -3, 0, 3]
+MIT_SINR_MIN_DB = -18.0
+MIT_SINR_MAX_DB = 20.0
 
 # -----------------------------------------------------------------
 # Define Feature and Experiment Settings 
