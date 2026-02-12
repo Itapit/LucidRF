@@ -50,21 +50,20 @@ MACHINE_A_TEST_SET_FILE  = MACHINE_A_CSV_DIR / 'test_set.csv'
 
 MACHINE_A_MODEL_FILE = MODELS_DIR / 'machine_a_logistic_v1.pkl'
 
-
-# --- Machine B (autoencoder) PATHS ---
+# -- machine B paths --
 MIT_DATASET_PATH = RAW_DATA_DIR / 'mit-rf-challenge/dataset/interferenceset_frame'
+
+
+# -- Machine B old paths --
 MIT_CLEAN_FILE = MIT_DATASET_PATH / "CommSignal2_raw_data.h5"
 MIT_NOISE_FILE = MIT_DATASET_PATH / "EMISignal1_raw_data.h5"
-
 MIT_GENERATED_DATA_DIR = PROCESSED_DIR / 'mit_autoencoder_dataset'
-
 MIT_SPOT_X = MIT_GENERATED_DATA_DIR / "spot_dataset_X.npy"
 MIT_SPOT_Y = MIT_GENERATED_DATA_DIR / "spot_dataset_Y.npy"
 MIT_SPOT_DATASET_METADATA_FILE = MIT_GENERATED_DATA_DIR / "spot_dataset_metadata.csv"
 
 MIT_SPOT_X_NORMALIZED = MIT_GENERATED_DATA_DIR / "Spot_dataset_X_normalized.npy"
 MIT_SPOT_Y_NORMALIZED = MIT_GENERATED_DATA_DIR / "Spot_dataset_Y_normalized.npy"
-
 
 MIT_BARRAGE_X = MIT_GENERATED_DATA_DIR / "barrage_dataset_X.npy"
 MIT_BARRAGE_Y = MIT_GENERATED_DATA_DIR / "barrage_dataset_Y.npy"
@@ -73,11 +72,28 @@ MIT_BARRAGE_DATASET_METADATA_FILE = MIT_GENERATED_DATA_DIR / "barrage_dataset_me
 MIT_BARRAGE_X_NORMALIZED = MIT_GENERATED_DATA_DIR / "Barrage_dataset_X_normalized.npy"
 MIT_BARRAGE_Y_NORMALIZED = MIT_GENERATED_DATA_DIR / "Barrage_dataset_Y_normalized.npy"
 
-
 MASTER_SCALING_FACTORS_FILE = MIT_GENERATED_DATA_DIR / "master_scaling_factors.txt"
 
 MACHINE_B_MODEL_FILE = MODELS_DIR / 'machine_b_unet_v1.pth'
 
+
+# --- Machine B (U-net) new PATHS ---
+
+UNET_PROCESSED_DATA_DIR = PROCESSED_DIR / 'U-net_dataset'
+
+UNET_PROCESSED_DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+EMISignal3_RAW_NPY = UNET_PROCESSED_DATA_DIR / 'EMISignal1_raw_data.npy'
+CommSignal2_RAW_NPY = UNET_PROCESSED_DATA_DIR / 'CommSignal2_raw_data.npy'
+CommSignal5G1_RAW_NPY = UNET_PROCESSED_DATA_DIR /  'CommSignal5G1_raw_data.npy'
+CommSignal3_RAW_NPY = UNET_PROCESSED_DATA_DIR / 'CommSignal3_raw_data.npy'
+
+UNET_DATASET_RAW = [
+    EMISignal3_RAW_NPY,
+    CommSignal2_RAW_NPY,
+    CommSignal3_RAW_NPY,
+    CommSignal5G1_RAW_NPY
+]
 
 # -----------------------------------------------------------------
 # Define PHYSICS & SIGNAL CONSTANTS
