@@ -79,14 +79,20 @@ MACHINE_B_MODEL_FILE = MODELS_DIR / 'machine_b_unet_v1.pth'
 
 # --- Machine B (U-net) new PATHS ---
 
+EMISignal1 = "EMISignal1"
+CommSignal2 = "CommSignal2"
+CommSignal3 = "CommSignal3"
+CommSignal5G1 = "CommSignal5G1"
+
+
 UNET_PROCESSED_DATA_DIR = PROCESSED_DIR / 'U-net_dataset'
 
 UNET_PROCESSED_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-EMISignal3_RAW_NPY = UNET_PROCESSED_DATA_DIR / 'EMISignal1_raw_data.npy'
-CommSignal2_RAW_NPY = UNET_PROCESSED_DATA_DIR / 'CommSignal2_raw_data.npy'
-CommSignal5G1_RAW_NPY = UNET_PROCESSED_DATA_DIR /  'CommSignal5G1_raw_data.npy'
-CommSignal3_RAW_NPY = UNET_PROCESSED_DATA_DIR / 'CommSignal3_raw_data.npy'
+EMISignal3_RAW_NPY = UNET_PROCESSED_DATA_DIR / f'{EMISignal1}_raw_data.npy'
+CommSignal2_RAW_NPY = UNET_PROCESSED_DATA_DIR / f'{CommSignal2}_raw_data.npy'
+CommSignal5G1_RAW_NPY = UNET_PROCESSED_DATA_DIR /  f'{CommSignal5G1}_raw_data.npy'
+CommSignal3_RAW_NPY = UNET_PROCESSED_DATA_DIR / f'{CommSignal3}_raw_data.npy'
 
 UNET_DATASET_RAW = [
     EMISignal3_RAW_NPY,
@@ -94,6 +100,26 @@ UNET_DATASET_RAW = [
     CommSignal3_RAW_NPY,
     CommSignal5G1_RAW_NPY
 ]
+
+EMISignal1_RAW_NPY_CLEAN = UNET_PROCESSED_DATA_DIR / f'{EMISignal1}_raw_data_clean.npy'
+CommSignal2_RAW_NPY_CLEAN = UNET_PROCESSED_DATA_DIR / f'{CommSignal2}_raw_data_clean.npy'
+CommSignal5G1_RAW_NPY_CLEAN = UNET_PROCESSED_DATA_DIR /  f'{CommSignal5G1}_raw_data_clean.npy'
+CommSignal3_RAW_NPY_CLEAN = UNET_PROCESSED_DATA_DIR / f'{CommSignal3}_raw_data_clean.npy'
+
+UNET_DATASET_CLEAN = [
+    EMISignal1_RAW_NPY_CLEAN,
+    CommSignal2_RAW_NPY_CLEAN,
+    CommSignal3_RAW_NPY_CLEAN,
+    CommSignal5G1_RAW_NPY_CLEAN
+]
+
+UNET_TRAIN_DIR = UNET_PROCESSED_DATA_DIR / 'train'
+UNET_VAL_DIR = UNET_PROCESSED_DATA_DIR / 'val'
+UNET_TEST_DIR = UNET_PROCESSED_DATA_DIR / 'test'
+
+UNET_TRAIN_DIR.mkdir(parents=True, exist_ok=True)
+UNET_VAL_DIR.mkdir(parents=True, exist_ok=True)
+UNET_TEST_DIR.mkdir(parents=True, exist_ok=True)
 
 # -----------------------------------------------------------------
 # Define PHYSICS & SIGNAL CONSTANTS
