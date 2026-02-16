@@ -83,6 +83,7 @@ EMISignal1 = "EMISignal1"
 CommSignal2 = "CommSignal2"
 CommSignal3 = "CommSignal3"
 CommSignal5G1 = "CommSignal5G1"
+BarrageSignal = "BarrageSignal"
 
 
 UNET_PROCESSED_DATA_DIR = PROCESSED_DIR / 'U-net_dataset'
@@ -105,12 +106,14 @@ EMISignal1_RAW_NPY_CLEAN = UNET_PROCESSED_DATA_DIR / f'{EMISignal1}_raw_data_cle
 CommSignal2_RAW_NPY_CLEAN = UNET_PROCESSED_DATA_DIR / f'{CommSignal2}_raw_data_clean.npy'
 CommSignal5G1_RAW_NPY_CLEAN = UNET_PROCESSED_DATA_DIR /  f'{CommSignal5G1}_raw_data_clean.npy'
 CommSignal3_RAW_NPY_CLEAN = UNET_PROCESSED_DATA_DIR / f'{CommSignal3}_raw_data_clean.npy'
+BarrageSignal_RAW_NPY_CLEAN = UNET_PROCESSED_DATA_DIR / f'{BarrageSignal}_raw_data_clean.npy'
 
 UNET_DATASET_CLEAN = [
     EMISignal1_RAW_NPY_CLEAN,
     CommSignal2_RAW_NPY_CLEAN,
     CommSignal3_RAW_NPY_CLEAN,
-    CommSignal5G1_RAW_NPY_CLEAN
+    CommSignal5G1_RAW_NPY_CLEAN,
+    BarrageSignal_RAW_NPY_CLEAN
 ]
 
 UNET_TRAIN_DIR = UNET_PROCESSED_DATA_DIR / 'train'
