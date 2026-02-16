@@ -79,50 +79,105 @@ MACHINE_B_MODEL_FILE = MODELS_DIR / 'machine_b_unet_v1.pth'
 
 # --- Machine B (U-net) new PATHS ---
 
+UNET_PROCESSED_DATA_DIR = PROCESSED_DIR / 'U-net_dataset'
+
+
+STAGE_RAW = "01_raw"
+STAGE_CLEANED = "02_cleaned"
+STAGE_SPLIT = "03_split"
+STAGE_AUGMENTED = "04_augmented"
+STAGE_MIXED = "05_mixed"
+STAGE_SCALED = "06_scaled"
+STAGE_FINAL = "07_final"
+
+STAGES = [
+    STAGE_RAW, STAGE_CLEANED, STAGE_SPLIT, 
+    STAGE_AUGMENTED, STAGE_MIXED, STAGE_SCALED, STAGE_FINAL
+]
+
+TRAIN = "train"
+VAL = "val"
+TEST = "test"
+
+SPLITS = [TRAIN, VAL, TEST]
+
 EMISignal1 = "EMISignal1"
 CommSignal2 = "CommSignal2"
 CommSignal3 = "CommSignal3"
 CommSignal5G1 = "CommSignal5G1"
 BarrageSignal = "BarrageSignal"
 
+SIGNALS = [EMISignal1, CommSignal2, CommSignal3, CommSignal5G1, BarrageSignal   ]
 
-UNET_PROCESSED_DATA_DIR = PROCESSED_DIR / 'U-net_dataset'
+SUBFOLDERS = {
+    "03_split": [TRAIN, VAL, TEST],
+    "04_augmented": [TRAIN], # Only augment training data
+    "05_mixed": [TRAIN, VAL, TEST],
+}
 
-UNET_PROCESSED_DATA_DIR.mkdir(parents=True, exist_ok=True)
+for stage in STAGES:
+    stage_path = UNET_PROCESSED_DATA_DIR / stage
+    if stage in SUBFOLDERS:
+        for sub in SUBFOLDERS[stage]:
+            (stage_path / sub).mkdir(parents=True, exist_ok=True)
+    else:
+        stage_path.mkdir(parents=True, exist_ok=True)
 
-EMISignal3_RAW_NPY = UNET_PROCESSED_DATA_DIR / f'{EMISignal1}_raw_data.npy'
-CommSignal2_RAW_NPY = UNET_PROCESSED_DATA_DIR / f'{CommSignal2}_raw_data.npy'
-CommSignal5G1_RAW_NPY = UNET_PROCESSED_DATA_DIR /  f'{CommSignal5G1}_raw_data.npy'
-CommSignal3_RAW_NPY = UNET_PROCESSED_DATA_DIR / f'{CommSignal3}_raw_data.npy'
 
-UNET_DATASET_RAW = [
-    EMISignal3_RAW_NPY,
-    CommSignal2_RAW_NPY,
-    CommSignal3_RAW_NPY,
-    CommSignal5G1_RAW_NPY
-]
+def get_unet_path(stage, split=None, signal=None, extension="npy"):
+    """
+    Returns the Path object for a specific file in the pipeline.
+    Usage: get_unet_path("03_split", split="train", signal="CommSignal2")
+    """
+    path = UNET_PROCESSED_DATA_DIR / stage
+    
+    # Add split subfolder if provided (e.g., /train/)
+    if split:
+        path = path / split
+        
+    # If a signal name is provided, return the file path
+    # Otherwise, return the directory path
+    if signal:
+        return path / f"{signal}.{extension}"
+    
+    return path
 
-EMISignal1_RAW_NPY_CLEAN = UNET_PROCESSED_DATA_DIR / f'{EMISignal1}_raw_data_clean.npy'
-CommSignal2_RAW_NPY_CLEAN = UNET_PROCESSED_DATA_DIR / f'{CommSignal2}_raw_data_clean.npy'
-CommSignal5G1_RAW_NPY_CLEAN = UNET_PROCESSED_DATA_DIR /  f'{CommSignal5G1}_raw_data_clean.npy'
-CommSignal3_RAW_NPY_CLEAN = UNET_PROCESSED_DATA_DIR / f'{CommSignal3}_raw_data_clean.npy'
-BarrageSignal_RAW_NPY_CLEAN = UNET_PROCESSED_DATA_DIR / f'{BarrageSignal}_raw_data_clean.npy'
 
-UNET_DATASET_CLEAN = [
-    EMISignal1_RAW_NPY_CLEAN,
-    CommSignal2_RAW_NPY_CLEAN,
-    CommSignal3_RAW_NPY_CLEAN,
-    CommSignal5G1_RAW_NPY_CLEAN,
-    BarrageSignal_RAW_NPY_CLEAN
-]
+# UNET_PROCESSED_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-UNET_TRAIN_DIR = UNET_PROCESSED_DATA_DIR / 'train'
-UNET_VAL_DIR = UNET_PROCESSED_DATA_DIR / 'val'
-UNET_TEST_DIR = UNET_PROCESSED_DATA_DIR / 'test'
+# EMISignal3_RAW_NPY = UNET_PROCESSED_DATA_DIR / f'{EMISignal1}_raw_data.npy'
+# CommSignal2_RAW_NPY = UNET_PROCESSED_DATA_DIR / f'{CommSignal2}_raw_data.npy'
+# CommSignal5G1_RAW_NPY = UNET_PROCESSED_DATA_DIR /  f'{CommSignal5G1}_raw_data.npy'
+# CommSignal3_RAW_NPY = UNET_PROCESSED_DATA_DIR / f'{CommSignal3}_raw_data.npy'
 
-UNET_TRAIN_DIR.mkdir(parents=True, exist_ok=True)
-UNET_VAL_DIR.mkdir(parents=True, exist_ok=True)
-UNET_TEST_DIR.mkdir(parents=True, exist_ok=True)
+# UNET_DATASET_RAW = [
+#     EMISignal3_RAW_NPY,
+#     CommSignal2_RAW_NPY,
+#     CommSignal3_RAW_NPY,
+#     CommSignal5G1_RAW_NPY
+# ]
+
+# EMISignal1_RAW_NPY_CLEAN = UNET_PROCESSED_DATA_DIR / f'{EMISignal1}_raw_data_clean.npy'
+# CommSignal2_RAW_NPY_CLEAN = UNET_PROCESSED_DATA_DIR / f'{CommSignal2}_raw_data_clean.npy'
+# CommSignal5G1_RAW_NPY_CLEAN = UNET_PROCESSED_DATA_DIR /  f'{CommSignal5G1}_raw_data_clean.npy'
+# CommSignal3_RAW_NPY_CLEAN = UNET_PROCESSED_DATA_DIR / f'{CommSignal3}_raw_data_clean.npy'
+# BarrageSignal_RAW_NPY_CLEAN = UNET_PROCESSED_DATA_DIR / f'{BarrageSignal}_raw_data_clean.npy'
+
+# UNET_DATASET_CLEAN = [
+#     EMISignal1_RAW_NPY_CLEAN,
+#     CommSignal2_RAW_NPY_CLEAN,
+#     CommSignal3_RAW_NPY_CLEAN,
+#     CommSignal5G1_RAW_NPY_CLEAN,
+#     BarrageSignal_RAW_NPY_CLEAN
+# ]
+
+# UNET_TRAIN_DIR = UNET_PROCESSED_DATA_DIR / 'train'
+# UNET_VAL_DIR = UNET_PROCESSED_DATA_DIR / 'val'
+# UNET_TEST_DIR = UNET_PROCESSED_DATA_DIR / 'test'
+
+# UNET_TRAIN_DIR.mkdir(parents=True, exist_ok=True)
+# UNET_VAL_DIR.mkdir(parents=True, exist_ok=True)
+# UNET_TEST_DIR.mkdir(parents=True, exist_ok=True)
 
 # -----------------------------------------------------------------
 # Define PHYSICS & SIGNAL CONSTANTS
