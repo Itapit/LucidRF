@@ -107,12 +107,17 @@ CommSignal3 = "CommSignal3"
 CommSignal5G1 = "CommSignal5G1"
 BarrageSignal = "BarrageSignal"
 
+MIXED_DATASET = "mixed_dataset"
+MIXED_METADATA = "mixed_metadata"
+
 SIGNALS = [EMISignal1, CommSignal2, CommSignal3, CommSignal5G1, BarrageSignal   ]
 
 SUBFOLDERS = {
-    "03_split": [TRAIN, VAL, TEST],
-    "04_augmented": [TRAIN], # Only augment training data
-    "05_mixed": [TRAIN, VAL, TEST],
+    STAGE_SPLIT: SPLITS,
+    STAGE_AUGMENTED: [TRAIN], # Only augment training data
+    STAGE_MIXED: SPLITS,
+    STAGE_SCALED: SPLITS,
+    STAGE_FINAL: SPLITS
 }
 
 for stage in STAGES:
@@ -127,7 +132,7 @@ for stage in STAGES:
 def get_unet_path(stage, split=None, signal=None, extension="npy"):
     """
     Returns the Path object for a specific file in the pipeline.
-    Usage: get_unet_path("03_split", split="train", signal="CommSignal2")
+    Usage: get_unet_path(STAGE_SPLIT, split="train", signal=CommSignal2)
     """
     path = UNET_PROCESSED_DATA_DIR / stage
     
@@ -142,42 +147,23 @@ def get_unet_path(stage, split=None, signal=None, extension="npy"):
     
     return path
 
-
-# UNET_PROCESSED_DATA_DIR.mkdir(parents=True, exist_ok=True)
-
-# EMISignal3_RAW_NPY = UNET_PROCESSED_DATA_DIR / f'{EMISignal1}_raw_data.npy'
-# CommSignal2_RAW_NPY = UNET_PROCESSED_DATA_DIR / f'{CommSignal2}_raw_data.npy'
-# CommSignal5G1_RAW_NPY = UNET_PROCESSED_DATA_DIR /  f'{CommSignal5G1}_raw_data.npy'
-# CommSignal3_RAW_NPY = UNET_PROCESSED_DATA_DIR / f'{CommSignal3}_raw_data.npy'
-
-# UNET_DATASET_RAW = [
-#     EMISignal3_RAW_NPY,
-#     CommSignal2_RAW_NPY,
-#     CommSignal3_RAW_NPY,
-#     CommSignal5G1_RAW_NPY
-# ]
-
-# EMISignal1_RAW_NPY_CLEAN = UNET_PROCESSED_DATA_DIR / f'{EMISignal1}_raw_data_clean.npy'
-# CommSignal2_RAW_NPY_CLEAN = UNET_PROCESSED_DATA_DIR / f'{CommSignal2}_raw_data_clean.npy'
-# CommSignal5G1_RAW_NPY_CLEAN = UNET_PROCESSED_DATA_DIR /  f'{CommSignal5G1}_raw_data_clean.npy'
-# CommSignal3_RAW_NPY_CLEAN = UNET_PROCESSED_DATA_DIR / f'{CommSignal3}_raw_data_clean.npy'
-# BarrageSignal_RAW_NPY_CLEAN = UNET_PROCESSED_DATA_DIR / f'{BarrageSignal}_raw_data_clean.npy'
-
-# UNET_DATASET_CLEAN = [
-#     EMISignal1_RAW_NPY_CLEAN,
-#     CommSignal2_RAW_NPY_CLEAN,
-#     CommSignal3_RAW_NPY_CLEAN,
-#     CommSignal5G1_RAW_NPY_CLEAN,
-#     BarrageSignal_RAW_NPY_CLEAN
-# ]
-
-# UNET_TRAIN_DIR = UNET_PROCESSED_DATA_DIR / 'train'
-# UNET_VAL_DIR = UNET_PROCESSED_DATA_DIR / 'val'
-# UNET_TEST_DIR = UNET_PROCESSED_DATA_DIR / 'test'
-
-# UNET_TRAIN_DIR.mkdir(parents=True, exist_ok=True)
-# UNET_VAL_DIR.mkdir(parents=True, exist_ok=True)
-# UNET_TEST_DIR.mkdir(parents=True, exist_ok=True)
+def get_dataset_pairs(split):
+    """
+    Returns the paths for the (X, Y) pair for a given split.
+    Usage: x_path, y_path = get_dataset_pairs(TRAIN)
+    """
+    # X is ALWAYS the Mixed dataset
+    x_path = get_unet_path(STAGE_MIXED, split=split, extension="npy") / "mixed_dataset.npy"
+    
+    #Y depends on the split (Augmented vs. Raw)
+    if split == TRAIN:
+        # Training Y comes from Stage 04 (Augmented)
+        y_path = get_unet_path(STAGE_AUGMENTED, split=TRAIN, signal=CommSignal2)
+    else:
+        # Val/Test Y comes from Stage 03 (Raw Split)
+        y_path = get_unet_path(STAGE_SPLIT, split=split, signal=CommSignal2)
+        
+    return x_path, y_path
 
 # -----------------------------------------------------------------
 # Define PHYSICS & SIGNAL CONSTANTS
