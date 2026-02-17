@@ -61,5 +61,7 @@ ml/notebooks/.ipynb_checkpoints
 ml/models/*.pkl
 ml/models/*.h5
 ml/data/*
+ml/reports/
+ml/models
 *.pyc
 __pycache__/
