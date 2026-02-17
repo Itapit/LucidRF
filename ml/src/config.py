@@ -72,9 +72,7 @@ MIT_BARRAGE_DATASET_METADATA_FILE = MIT_GENERATED_DATA_DIR / "barrage_dataset_me
 MIT_BARRAGE_X_NORMALIZED = MIT_GENERATED_DATA_DIR / "Barrage_dataset_X_normalized.npy"
 MIT_BARRAGE_Y_NORMALIZED = MIT_GENERATED_DATA_DIR / "Barrage_dataset_Y_normalized.npy"
 
-MASTER_SCALING_FACTORS_FILE = MIT_GENERATED_DATA_DIR / "master_scaling_factors.txt"
-
-MACHINE_B_MODEL_FILE = MODELS_DIR / 'machine_b_unet_v1.pth'
+MACHINE_B_MODEL_FILE = MODELS_DIR / 'lucidrf_unet_checkpoint.pth'
 
 
 # --- Machine B (U-net) new PATHS ---
@@ -109,6 +107,8 @@ BarrageSignal = "BarrageSignal"
 
 MIXED_DATASET = "mixed_dataset"
 MIXED_METADATA = "mixed_metadata"
+SCALING_FACTORS_FILE = UNET_PROCESSED_DATA_DIR / "scaling_factors.txt"
+
 
 SIGNALS = [EMISignal1, CommSignal2, CommSignal3, CommSignal5G1, BarrageSignal   ]
 
@@ -146,24 +146,6 @@ def get_unet_path(stage, split=None, signal=None, extension="npy"):
         return path / f"{signal}.{extension}"
     
     return path
-
-def get_dataset_pairs(split):
-    """
-    Returns the paths for the (X, Y) pair for a given split.
-    Usage: x_path, y_path = get_dataset_pairs(TRAIN)
-    """
-    # X is ALWAYS the Mixed dataset
-    x_path = get_unet_path(STAGE_MIXED, split=split, extension="npy") / "mixed_dataset.npy"
-    
-    #Y depends on the split (Augmented vs. Raw)
-    if split == TRAIN:
-        # Training Y comes from Stage 04 (Augmented)
-        y_path = get_unet_path(STAGE_AUGMENTED, split=TRAIN, signal=CommSignal2)
-    else:
-        # Val/Test Y comes from Stage 03 (Raw Split)
-        y_path = get_unet_path(STAGE_SPLIT, split=split, signal=CommSignal2)
-        
-    return x_path, y_path
 
 # -----------------------------------------------------------------
 # Define PHYSICS & SIGNAL CONSTANTS
