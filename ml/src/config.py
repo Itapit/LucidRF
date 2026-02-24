@@ -114,7 +114,7 @@ SIGNALS = [EMISignal1, CommSignal2, CommSignal3, CommSignal5G1, BarrageSignal   
 
 SUBFOLDERS = {
     STAGE_SPLIT: SPLITS,
-    STAGE_AUGMENTED: [TRAIN], # Only augment training data
+    STAGE_AUGMENTED: SPLITS, # Only augment training data
     STAGE_MIXED: SPLITS,
     STAGE_SCALED: SPLITS,
     STAGE_FINAL: SPLITS
