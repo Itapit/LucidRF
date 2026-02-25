@@ -41,7 +41,7 @@ Thumbs.db
 .agent/
 .agents/
 skills-lock.json
-
+AGENTS.md
 .nx
 .nx/cache
 .nx/workspace-data

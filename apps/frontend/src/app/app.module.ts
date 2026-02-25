@@ -3,11 +3,6 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
-import Lara from '@primeuix/themes/lara';
-import { Button } from 'primeng/button';
-import { Card } from 'primeng/card';
-import { providePrimeNG } from 'primeng/config';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { AppComponent } from './app.component';
 import { appRoutes } from './app.routes';
 import { CredentialsInterceptor } from './auth/infrastructure/interceptors/credentials.interceptor';
@@ -16,22 +11,9 @@ import { AppStoreModule } from './state/app-store.module';
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [
-    BrowserModule,
-    HttpClientModule,
-    BrowserAnimationsModule,
-    RouterModule.forRoot(appRoutes),
-    AppStoreModule,
-    ProgressSpinnerModule,
-    Card,
-    Button,
-  ],
+  imports: [BrowserModule, HttpClientModule, BrowserAnimationsModule, RouterModule.forRoot(appRoutes), AppStoreModule],
   bootstrap: [AppComponent],
   providers: [
-    providePrimeNG({
-      theme: { preset: Lara, options: { darkModeSelector: 'light' } },
-      ripple: true,
-    }),
     {
       provide: HTTP_INTERCEPTORS,
       useClass: CredentialsInterceptor,
