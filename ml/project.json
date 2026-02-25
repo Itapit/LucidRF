@@ -1,0 +1,38 @@
+{
+  "name": "ml",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "ml/src",
+  "targets": {
+    "install": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "poetry install",
+        "cwd": "ml"
+      }
+    },
+    "jupyter": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "poetry run jupyter notebook",
+        "cwd": "ml"
+      }
+    },
+    "train": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/models"],
+      "options": {
+        "command": "poetry run python src/train.py",
+        "cwd": "ml"
+      },
+      "cache": true
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "poetry run python -m unittest discover tests",
+        "cwd": "ml"
+      }
+    }
+  }
+}
