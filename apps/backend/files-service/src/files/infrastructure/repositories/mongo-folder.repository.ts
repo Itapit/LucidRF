@@ -1,13 +1,10 @@
-import { PermissionType } from '@LucidRF/common';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { AnyBulkWriteOperation, Model } from 'mongoose';
-import { BulkPermissionOperation, CreateFolderRepoDto } from '../../domain/dtos';
-import { FolderEntity, PermissionEntity } from '../../domain/entities';
-import { PermissionAction } from '../../domain/enums';
+import { Model } from 'mongoose';
+import { CreateFolderRepoDto } from '../../domain/dtos';
+import { FolderEntity } from '../../domain/entities';
 import { FolderRepository } from '../../domain/interfaces';
 import { DatabaseContext } from '../persistence/database.context';
-import { PERMISSIONS_SUBJECT_PATH } from '../persistence/persistence.constants';
 import { FolderSchema, toFolderEntity } from '../schemas';
 
 @Injectable()
@@ -31,20 +28,20 @@ export class MongoFolderRepository implements FolderRepository {
   }
 
   /**
-   * Returns folders where the user is the OWNER OR has PERMISSION.
+   * Returns folders that belong to any of the provided team IDs.
    */
-  async findSubFolders(parentFolderId: string | null, userId: string): Promise<FolderEntity[]> {
+  async findSubFolders(parentFolderId: string | null, teamIds: string[]): Promise<FolderEntity[]> {
     const session = this.dbContext.getSession();
     const query = {
       parentFolderId: parentFolderId,
-      $or: [{ ownerId: userId }, { 'permissions.subjectId': userId }],
+      teamId: { $in: teamIds },
     };
     const docs = await this.folderModel.find(query).session(session).exec();
     return docs.map(toFolderEntity);
   }
 
   /**
-   * System Level Access (No Owner Filter)
+   * System Level Access (No Team Filter)
    * Used for Recursive Deletion and Permission Propagation.
    */
   async findSubFoldersByParentIdSystem(parentFolderId: string): Promise<FolderEntity[]> {
@@ -57,99 +54,5 @@ export class MongoFolderRepository implements FolderRepository {
     const session = this.dbContext.getSession();
     const result = await this.folderModel.findByIdAndDelete(id).session(session).exec();
     return !!result;
-  }
-
-  // --- Permission Logic (Identical to File) ---
-
-  async addPermission(id: string, permission: PermissionEntity): Promise<FolderEntity> {
-    const session = this.dbContext.getSession();
-    await this.folderModel
-      .updateOne(
-        { _id: id },
-        { $pull: { permissions: { subjectId: permission.subjectId, subjectType: permission.subjectType } } }
-      )
-      .session(session)
-      .exec();
-
-    const doc = await this.folderModel
-      .findByIdAndUpdate(id, { $push: { permissions: permission } }, { new: true })
-      .session(session)
-      .exec();
-
-    return toFolderEntity(doc);
-  }
-
-  async removePermission(id: string, subjectId: string, subjectType: PermissionType): Promise<FolderEntity> {
-    const session = this.dbContext.getSession();
-    const doc = await this.folderModel
-      .findByIdAndUpdate(id, { $pull: { permissions: { subjectId, subjectType } } }, { new: true })
-      .session(session)
-      .exec();
-
-    return toFolderEntity(doc);
-  }
-
-  async updatePermissionsBulk(operations: BulkPermissionOperation[]): Promise<void> {
-    const session = this.dbContext.getSession();
-    if (operations.length === 0) return;
-
-    const bulkOps: AnyBulkWriteOperation<FolderSchema>[] = [];
-
-    for (const op of operations) {
-      if (op.action === PermissionAction.ADD || op.action === PermissionAction.UPDATE) {
-        bulkOps.push(...this.createAddOperations(op));
-      } else {
-        bulkOps.push(this.createRemoveOperation(op));
-      }
-    }
-
-    await this.folderModel.bulkWrite(bulkOps, { session, ordered: true });
-  }
-
-  // -- private helpers --
-
-  private createAddOperations(op: BulkPermissionOperation): AnyBulkWriteOperation<FolderSchema>[] {
-    const filter = { _id: op.resourceId };
-    const permissionQuery = {
-      subjectId: op.permission.subjectId,
-      subjectType: op.permission.subjectType,
-    };
-
-    return [
-      { updateOne: { filter, update: { $pull: { permissions: permissionQuery } } } },
-      { updateOne: { filter, update: { $push: { permissions: op.permission } } } },
-    ];
-  }
-
-  private createRemoveOperation(op: BulkPermissionOperation): AnyBulkWriteOperation<FolderSchema> {
-    return {
-      updateOne: {
-        filter: { _id: op.resourceId },
-        update: {
-          $pull: {
-            permissions: {
-              subjectId: op.permission.subjectId,
-              subjectType: op.permission.subjectType,
-            },
-          },
-        },
-      },
-    };
-  }
-
-  async findSharedWith(userId: string, groupIds: string[]): Promise<FolderEntity[]> {
-    const subjects = [userId, ...groupIds];
-
-    const docs = await this.folderModel
-      .find({
-        // Exclude folders users own
-        owner: { $ne: userId },
-
-        // Check if user ID or my Group IDs exist in the permissions array
-        [PERMISSIONS_SUBJECT_PATH]: { $in: subjects },
-      })
-      .exec();
-
-    return docs.map((doc) => toFolderEntity(doc));
   }
 }

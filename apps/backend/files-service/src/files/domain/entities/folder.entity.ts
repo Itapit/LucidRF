@@ -1,15 +1,10 @@
-import { PermissionEntity } from './permission.entity';
-
 export class FolderEntity {
   id: string;
   name: string;
-  ownerId: string;
+  teamId: string;
 
   // Hierarchy
   parentFolderId?: string | null;
-
-  // Security
-  permissions: PermissionEntity[];
 
   createdAt?: Date;
   updatedAt?: Date;

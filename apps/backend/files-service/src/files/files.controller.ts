@@ -6,21 +6,14 @@ import {
   GetContentPayload,
   GetDownloadUrlPayload,
   InitializeUploadPayload,
-  ShareResourcePayload,
-  UnshareResourcePayload,
 } from '@LucidRF/files-contracts';
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { FileService, FolderService } from './application';
-import { SharingService } from './application/sharing.service';
 
 @Controller('files')
 export class FilesController {
-  constructor(
-    private readonly fileService: FileService,
-    private readonly folderService: FolderService,
-    private readonly sharingService: SharingService
-  ) {}
+  constructor(private readonly fileService: FileService, private readonly folderService: FolderService) {}
 
   // --- File Lifecycle ---
   @MessagePattern(FILES_PATTERNS.INIT_UPLOAD)
@@ -54,34 +47,8 @@ export class FilesController {
     return this.folderService.listContent(payload);
   }
 
-  @MessagePattern(FILES_PATTERNS.GET_SHARED_FILES)
-  async getSharedWithMe(@Payload() userId: string) {
-    return this.fileService.getSharedWithMe(userId);
-  }
-
   @MessagePattern(FILES_PATTERNS.DELETE_FOLDER)
   async deleteFolder(@Payload() payload: DeleteResourcePayload) {
     return this.folderService.delete(payload);
-  }
-
-  // --- Access Control ---
-  @MessagePattern(FILES_PATTERNS.SHARE_FILE)
-  async shareFile(@Payload() payload: ShareResourcePayload) {
-    return this.sharingService.shareFile(payload);
-  }
-
-  @MessagePattern(FILES_PATTERNS.UNSHARE_FILE)
-  async unshareFile(@Payload() payload: UnshareResourcePayload) {
-    return this.sharingService.unshareFile(payload);
-  }
-
-  @MessagePattern(FILES_PATTERNS.SHARE_FOLDER)
-  async shareFolder(@Payload() payload: ShareResourcePayload) {
-    return this.sharingService.shareFolder(payload);
-  }
-
-  @MessagePattern(FILES_PATTERNS.UNSHARE_FOLDER)
-  async unshareFolder(@Payload() payload: UnshareResourcePayload) {
-    return this.sharingService.unshareFolder(payload);
   }
 }

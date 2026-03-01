@@ -2,12 +2,9 @@ import { CreateFolderPayload, DeleteResourcePayload, GetContentPayload } from '@
 import { Injectable, Logger } from '@nestjs/common';
 import { StorageService } from '../../storage/interfaces';
 import { CreateFolderRepoDto } from '../domain/dtos';
-import { FolderEntity, PermissionEntity, toFileDto, toFolderDto } from '../domain/entities';
-import { AccessLevel, ResourceType } from '../domain/enums';
-import { ResourceNotFoundException } from '../domain/exceptions';
-import { FileRepository, FolderRepository } from '../domain/interfaces';
-import { calculateInheritedPermissions } from '../domain/logic/permission.logic';
-import { AclService } from './acl.service';
+import { toFileDto, toFolderDto } from '../domain/entities';
+import { ResourceNotFoundException, UserDoesntHaveAccessToTeamException } from '../domain/exceptions';
+import { FileRepository, FolderRepository, TeamsService } from '../domain/interfaces';
 
 @Injectable()
 export class FolderService {
@@ -17,46 +14,53 @@ export class FolderService {
     private readonly folderRepository: FolderRepository,
     private readonly fileRepository: FileRepository,
     private readonly storageService: StorageService,
-    private readonly aclService: AclService
+    private readonly teamsService: TeamsService
   ) {}
 
   async create(payload: CreateFolderPayload) {
-    let permissions: PermissionEntity[] = [];
+    const { userId, teamId, name, parentFolderId } = payload;
 
-    if (payload.parentFolderId) {
-      const parent = (await this.aclService.validateAccess(
-        payload.parentFolderId,
-        payload.userId,
-        ResourceType.FOLDER,
-        AccessLevel.EDITOR
-      )) as FolderEntity;
+    await this.validateTeamAccess(userId, teamId);
 
-      permissions = calculateInheritedPermissions(parent, payload.userId);
+    if (parentFolderId) {
+      const parent = await this.folderRepository.findById(parentFolderId);
+      if (!parent || parent.teamId !== teamId) {
+        throw new ResourceNotFoundException(parentFolderId);
+      }
     }
 
     const dto: CreateFolderRepoDto = {
-      name: payload.name,
-      ownerId: payload.userId,
-      parentFolderId: payload.parentFolderId || null,
-      permissions,
+      name,
+      teamId,
+      parentFolderId: parentFolderId || null,
     };
 
     const folder = await this.folderRepository.create(dto);
-    this.logger.log(`Created folder ${folder.id} for user ${payload.userId}`);
+    this.logger.log(`Created folder ${folder.id} for user ${userId} in team ${teamId}`);
     return toFolderDto(folder);
   }
 
   async listContent(payload: GetContentPayload) {
     const { userId, folderId } = payload;
     const targetId = folderId || null;
+    let targetTeamIds: string[] = [];
 
     if (targetId) {
-      await this.aclService.validateAccess(targetId, userId, ResourceType.FOLDER, AccessLevel.VIEWER);
+      const folder = await this.folderRepository.findById(targetId);
+      if (!folder) throw new ResourceNotFoundException(targetId);
+
+      await this.validateTeamAccess(userId, folder.teamId);
+      targetTeamIds = [folder.teamId];
+    } else {
+      targetTeamIds = await this.teamsService.getUserTeamIds(userId);
+      if (targetTeamIds.length === 0) {
+        return { files: [], folders: [] };
+      }
     }
 
     const [files, folders] = await Promise.all([
-      this.fileRepository.findByFolder(targetId, userId),
-      this.folderRepository.findSubFolders(targetId, userId),
+      this.fileRepository.findByFolder(targetId, targetTeamIds),
+      this.folderRepository.findSubFolders(targetId, targetTeamIds),
     ]);
 
     return {
@@ -67,7 +71,10 @@ export class FolderService {
 
   async delete(payload: DeleteResourcePayload) {
     const { userId, resourceId } = payload;
-    await this.aclService.validateAccess(resourceId, userId, ResourceType.FOLDER, AccessLevel.OWNER);
+    const folder = await this.folderRepository.findById(resourceId);
+    if (!folder) throw new ResourceNotFoundException(resourceId);
+
+    await this.validateTeamAccess(userId, folder.teamId);
     const deleted = await this.recursiveDelete(resourceId);
 
     if (!deleted) {
@@ -97,5 +104,12 @@ export class FolderService {
     await this.fileRepository.deleteManyByFolderId(folderId);
 
     return this.folderRepository.delete(folderId);
+  }
+
+  private async validateTeamAccess(userId: string, teamId: string): Promise<void> {
+    const teamIds = await this.teamsService.getUserTeamIds(userId);
+    if (!teamIds.includes(teamId)) {
+      throw new UserDoesntHaveAccessToTeamException(userId, teamId);
+    }
   }
 }

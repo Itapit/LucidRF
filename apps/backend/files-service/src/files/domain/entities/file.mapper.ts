@@ -8,9 +8,8 @@ export function toFileDto(entity: FileEntity): FileDto {
     mimeType: entity.mimeType,
     size: entity.size,
     status: entity.status,
-    ownerId: entity.ownerId,
+    teamId: entity.teamId,
     parentFolderId: entity.parentFolderId,
-    permissions: entity.permissions || [],
     createdAt: entity.createdAt,
     updatedAt: entity.updatedAt,
   };

@@ -1,10 +1,14 @@
 import { IsResourceId } from '@LucidRF/backend-common';
-import { IsMimeType, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class InitializeUploadPayload {
   @IsNotEmpty()
   @IsResourceId()
   userId!: string;
+
+  @IsNotEmpty()
+  @IsResourceId()
+  teamId!: string;
 
   @IsNotEmpty()
   @IsString()
@@ -15,7 +19,7 @@ export class InitializeUploadPayload {
   size!: number;
 
   @IsNotEmpty()
-  @IsMimeType()
+  @IsString()
   mimeType!: string;
 
   @IsOptional()
