@@ -1,4 +1,4 @@
-export interface UpdateGroupRequest {
+export interface UpdateTeamRequest {
   name?: string;
   description?: string;
 }

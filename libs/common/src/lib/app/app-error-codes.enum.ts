@@ -1,12 +1,12 @@
 import { AuthErrorCodes } from '../auth';
-import { GroupErrorCodes } from '../groups';
+import { TeamErrorCodes } from '../teams';
 import { UserErrorCodes } from '../users';
 import { SystemErrorCodes } from './system-errors.codes';
 
 export const AppErrorCodes = {
   ...AuthErrorCodes,
   ...UserErrorCodes,
-  ...GroupErrorCodes,
+  ...TeamErrorCodes,
   //   ...FileErrorCodes,
   ...SystemErrorCodes,
 } as const;
