@@ -1,7 +1,8 @@
 import { IsResourceId } from '@LucidRF/backend-common';
-import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { TeamType } from '@LucidRF/common';
+import { IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
-export class CreateGroupPayload {
+export class CreateTeamPayload {
   @IsString()
   @IsNotEmpty()
   @MaxLength(50)
@@ -15,4 +16,8 @@ export class CreateGroupPayload {
   @IsNotEmpty()
   @IsResourceId()
   ownerId!: string;
+
+  @IsOptional()
+  @IsEnum(TeamType)
+  type?: TeamType = TeamType.COLLABORATIVE;
 }

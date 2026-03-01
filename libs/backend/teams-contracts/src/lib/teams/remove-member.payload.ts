@@ -1,14 +1,14 @@
 import { IsResourceId } from '@LucidRF/backend-common';
 import { IsNotEmpty } from 'class-validator';
 
-export class AddMemberPayload {
+export class RemoveMemberPayload {
   @IsNotEmpty()
   @IsResourceId()
-  groupId!: string;
+  teamId!: string;
 
   @IsNotEmpty()
   @IsResourceId()
-  targetUserId!: string; // The user being added
+  targetUserId!: string; // The user being removed
 
   @IsNotEmpty()
   @IsResourceId()

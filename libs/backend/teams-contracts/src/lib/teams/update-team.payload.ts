@@ -1,10 +1,10 @@
 import { IsResourceId } from '@LucidRF/backend-common';
 import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
-export class UpdateGroupPayload {
+export class UpdateTeamPayload {
   @IsNotEmpty()
   @IsResourceId()
-  groupId!: string;
+  teamId!: string;
 
   @IsNotEmpty()
   @IsResourceId()

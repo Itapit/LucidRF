@@ -1,20 +1,20 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { GROUPS_CONFIG, GROUPS_SERVICE } from './group-constants';
+import { TEAMS_CONFIG, TEAMS_SERVICE } from './team-constants';
 
 @Module({
   imports: [
     ClientsModule.register([
       {
-        name: GROUPS_SERVICE,
+        name: TEAMS_SERVICE,
         transport: Transport.TCP,
         options: {
-          host: GROUPS_CONFIG.HOST,
-          port: GROUPS_CONFIG.PORT,
+          host: TEAMS_CONFIG.HOST,
+          port: TEAMS_CONFIG.PORT,
         },
       },
     ]),
   ],
   exports: [ClientsModule],
 })
-export class GroupClientModule {}
+export class TeamClientModule {}

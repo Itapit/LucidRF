@@ -1,12 +1,12 @@
 import { IsResourceId } from '@LucidRF/backend-common';
 import { IsNotEmpty } from 'class-validator';
 
-export class CheckGroupMembershipPayload {
+export class DeleteTeamPayload {
   @IsNotEmpty()
   @IsResourceId()
-  userId!: string;
+  teamId!: string;
 
   @IsNotEmpty()
   @IsResourceId()
-  groupId!: string;
+  actorId!: string; // The user performing the deletion (must be owner)
 }
