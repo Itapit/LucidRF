@@ -2,7 +2,7 @@
  * This is not a production server yet!
  * This is only a minimal backend to get started.
  */
-import { GROUPS_CONFIG } from '@LucidRF/groups-contracts';
+import { TEAMS_CONFIG } from '@LucidRF/teams-contracts';
 import { Logger } from '@nestjs/common';
 
 import { RpcDomainExceptionFilter } from '@LucidRF/backend-common';
@@ -15,7 +15,7 @@ async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
     transport: Transport.TCP,
     options: {
-      port: GROUPS_CONFIG.PORT,
+      port: TEAMS_CONFIG.PORT,
     },
   });
 
@@ -29,7 +29,7 @@ async function bootstrap() {
 
   app.useGlobalFilters(new RpcDomainExceptionFilter());
   await app.listen();
-  Logger.log(`Groups microservice is running on: http://localhost:${GROUPS_CONFIG.PORT}`);
+  Logger.log(`Teams microservice is running on: http://localhost:${TEAMS_CONFIG.PORT}`);
 }
 
 bootstrap();

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { GroupsModule } from './groups/groups.module';
+import { TeamsModule } from './teams/teams.module';
 
 @Module({
   imports: [
@@ -16,7 +16,7 @@ import { GroupsModule } from './groups/groups.module';
       }),
       inject: [ConfigService],
     }),
-    GroupsModule,
+    TeamsModule,
   ],
   controllers: [],
   providers: [],
