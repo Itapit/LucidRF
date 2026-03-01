@@ -1,5 +1,5 @@
 import { IsResourceId } from '@LucidRF/backend-common';
-import { UserRole } from '@LucidRF/common';
+import { SystemRole } from '@LucidRF/common';
 import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
 export class AdminCreateUserPayload {
@@ -10,8 +10,8 @@ export class AdminCreateUserPayload {
   @IsNotEmpty()
   username!: string;
 
-  @IsEnum(UserRole)
-  role!: UserRole;
+  @IsEnum(SystemRole)
+  role!: SystemRole;
 
   @IsNotEmpty()
   @IsResourceId()

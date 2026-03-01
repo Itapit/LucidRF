@@ -1,11 +1,8 @@
-import { PermissionDto } from './permission.dto';
-
 export class FolderDto {
   resourceId!: string;
   name!: string;
-  ownerId!: string;
+  teamId!: string;
   parentFolderId?: string | null;
-  permissions!: PermissionDto[];
   createdAt!: Date;
   updatedAt!: Date;
 }
