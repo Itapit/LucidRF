@@ -1,5 +1,5 @@
 import { CreateTeamRequest, TeamType } from '@LucidRF/common';
-import { IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength, NotEquals } from 'class-validator';
 
 export class CreateTeamDto implements CreateTeamRequest {
   @IsString()
@@ -13,6 +13,6 @@ export class CreateTeamDto implements CreateTeamRequest {
   description?: string;
 
   @IsEnum(TeamType)
-  @IsOptional()
-  type?: TeamType;
+  @NotEquals(TeamType.PERSONAL, { message: 'Cannot manually create a personal team' })
+  type: TeamType;
 }
