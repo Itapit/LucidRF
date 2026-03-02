@@ -1,5 +1,5 @@
 import { TeamDto } from '@LucidRF/common';
-import { TEAMS_PATTERNS, TEAMS_SERVICE } from '@LucidRF/teams-contracts';
+import { GetUserTeamsPayload, TEAMS_PATTERNS, TEAMS_SERVICE } from '@LucidRF/teams-contracts';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
@@ -26,8 +26,11 @@ export class TcpTeamsService implements TeamsService {
     }
 
     try {
+      const payload: GetUserTeamsPayload = {
+        userId: userId,
+      };
       const teams = await firstValueFrom(
-        this.client.send<TeamDto[]>(TEAMS_PATTERNS.GET_USER_TEAMS, userId).pipe(timeout(TEAMS_REQUEST_TIMEOUT))
+        this.client.send<TeamDto[]>(TEAMS_PATTERNS.GET_USER_TEAMS, payload).pipe(timeout(TEAMS_REQUEST_TIMEOUT))
       );
       const teamIds = teams?.map((t) => t.id) || [];
 

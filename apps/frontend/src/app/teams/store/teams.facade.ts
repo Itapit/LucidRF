@@ -11,7 +11,7 @@ import {
 } from './teams.selectors';
 import { TeamsState } from './teams.state';
 
-Injectable({ providedIn: 'root' });
+@Injectable({ providedIn: 'root' })
 export class TeamsFacade {
   private readonly store = inject<Store<{ teams: TeamsState }>>(Store);
 

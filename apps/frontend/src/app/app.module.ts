@@ -6,7 +6,7 @@ import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
 import { appRoutes } from './app.routes';
 import { CredentialsInterceptor } from './auth/infrastructure/interceptors/credentials.interceptor';
-import { AuthInterceptor } from './auth/infrastructure/interceptors/refresh.interceptor';
+import { RefreshInterceptor } from './auth/infrastructure/interceptors/refresh.interceptor';
 import { AppStoreModule } from './state/app-store.module';
 
 @NgModule({
@@ -21,7 +21,7 @@ import { AppStoreModule } from './state/app-store.module';
     },
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,
+      useClass: RefreshInterceptor,
       multi: true,
     },
   ],

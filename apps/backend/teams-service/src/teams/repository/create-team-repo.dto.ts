@@ -1,9 +1,11 @@
-import { TeamType } from '@LucidRF/common';
-import { TeamMemberSchema } from './team.schema';
+import { TeamRole, TeamType } from '@LucidRF/common';
 
 export class CreateTeamRepoDto {
   name: string;
   description?: string;
   type: TeamType;
-  members: TeamMemberSchema[];
+  members: {
+    userId: string;
+    role: TeamRole;
+  }[];
 }

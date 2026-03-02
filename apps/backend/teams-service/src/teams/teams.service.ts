@@ -4,18 +4,13 @@ import {
   CheckTeamMembershipPayload,
   CreateTeamPayload,
   DeleteTeamPayload,
+  FindOneTeamPayload,
+  GetUserTeamsPayload,
   RemoveMemberPayload,
   UpdateTeamPayload,
 } from '@LucidRF/teams-contracts';
 import { Injectable } from '@nestjs/common';
-import { Types } from 'mongoose';
-import {
-  InvalidTeamIdException,
-  InvalidTeamOperationException,
-  TeamNameExistsException,
-  TeamNotFoundException,
-  TeamPermissionDeniedException,
-} from './exceptions';
+import { InvalidTeamOperationException, TeamNotFoundException, TeamPermissionDeniedException } from './exceptions';
 import { CreateTeamRepoDto } from './repository/create-team-repo.dto';
 import { TeamRepository } from './repository/team.repository';
 import { TeamSchema } from './repository/team.schema';
@@ -28,18 +23,11 @@ export class TeamsService {
    * Create a new team.
    */
   async create(payload: CreateTeamPayload): Promise<TeamDto> {
-    const existingTeam = await this.teamRepository.findByName(payload.name);
-    if (existingTeam) {
-      throw new TeamNameExistsException(payload.name);
-    }
-
-    const ownerObjectId = new Types.ObjectId(payload.ownerId); //TODO remove the moongoose dependency
-
     const repoParams: CreateTeamRepoDto = {
       name: payload.name,
       description: payload.description,
       type: payload.type || TeamType.COLLABORATIVE,
-      members: [{ userId: ownerObjectId as any, role: TeamRole.OWNER }], // Owner is automatically a member
+      members: [{ userId: payload.ownerId, role: TeamRole.OWNER }], // Owner is automatically a member
     };
 
     const team = await this.teamRepository.create(repoParams);
@@ -49,14 +37,10 @@ export class TeamsService {
   /**
    * Find a specific team.
    */
-  async findOne(id: string): Promise<TeamDto> {
-    if (!Types.ObjectId.isValid(id)) {
-      throw new InvalidTeamIdException(id);
-    }
-
-    const team = await this.teamRepository.findById(id);
+  async findOne(payload: FindOneTeamPayload): Promise<TeamDto> {
+    const team = await this.teamRepository.findById(payload.teamId);
     if (!team) {
-      throw new TeamNotFoundException(id);
+      throw new TeamNotFoundException(payload.teamId);
     }
     return this.mapToDto(team);
   }
@@ -64,8 +48,8 @@ export class TeamsService {
   /**
    * Find all teams a user belongs to.
    */
-  async findMyTeams(userId: string): Promise<TeamDto[]> {
-    const teams = await this.teamRepository.findByMemberId(userId);
+  async findMyTeams(payload: GetUserTeamsPayload): Promise<TeamDto[]> {
+    const teams = await this.teamRepository.findByMemberId(payload.userId);
     return teams.map((team) => this.mapToDto(team));
   }
 
@@ -73,7 +57,7 @@ export class TeamsService {
    * Add a member to a team.
    */
   async addMember(payload: AddMemberPayload): Promise<TeamDto> {
-    const team = await this.findOne(payload.teamId);
+    const team = await this.findOne({ teamId: payload.teamId });
 
     const existingMember = team.members.find((m) => m.userId === payload.targetUserId);
     if (existingMember) {
@@ -101,7 +85,7 @@ export class TeamsService {
    * Remove a member from a team.
    */
   async removeMember(payload: RemoveMemberPayload): Promise<TeamDto> {
-    const team = await this.findOne(payload.teamId);
+    const team = await this.findOne({ teamId: payload.teamId });
 
     const actorMembership = team.members.find((m) => m.userId === payload.actorId);
     const targetMembership = team.members.find((m) => m.userId === payload.targetUserId);
@@ -146,7 +130,7 @@ export class TeamsService {
    * Update team details.
    */
   async update(payload: UpdateTeamPayload): Promise<TeamDto> {
-    const team = await this.findOne(payload.teamId);
+    const team = await this.findOne({ teamId: payload.teamId });
 
     const actorMembership = team.members.find((m) => m.userId === payload.actorId);
     if (!actorMembership || (actorMembership.role !== TeamRole.OWNER && actorMembership.role !== TeamRole.MANAGER)) {
@@ -169,7 +153,7 @@ export class TeamsService {
    * Delete a team.
    */
   async delete(payload: DeleteTeamPayload): Promise<boolean> {
-    const team = await this.findOne(payload.teamId);
+    const team = await this.findOne({ teamId: payload.teamId });
 
     const actorMembership = team.members.find((m) => m.userId === payload.actorId);
     if (!actorMembership || actorMembership.role !== TeamRole.OWNER) {
@@ -183,9 +167,6 @@ export class TeamsService {
    * Internal Microservice Helper
    */
   async isUserInTeam(payload: CheckTeamMembershipPayload): Promise<boolean> {
-    if (!Types.ObjectId.isValid(payload.teamId) || !Types.ObjectId.isValid(payload.userId)) {
-      return false;
-    }
     return this.teamRepository.isUserInTeam(payload.teamId, payload.userId);
   }
 

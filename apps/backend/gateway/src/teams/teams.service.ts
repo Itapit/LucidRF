@@ -3,6 +3,8 @@ import {
   AddMemberPayload,
   CreateTeamPayload,
   DeleteTeamPayload,
+  FindOneTeamPayload,
+  GetUserTeamsPayload,
   RemoveMemberPayload,
   TEAMS_PATTERNS,
   TEAMS_SERVICE,
@@ -78,12 +80,18 @@ export class TeamsService {
   }
 
   async findByUser(userId: string): Promise<TeamDto[]> {
-    const teams = await firstValueFrom(this.teamsClient.send<TeamDto[]>(TEAMS_PATTERNS.GET_USER_TEAMS, userId));
+    const playload: GetUserTeamsPayload = {
+      userId: userId,
+    };
+    const teams = await firstValueFrom(this.teamsClient.send<TeamDto[]>(TEAMS_PATTERNS.GET_USER_TEAMS, playload));
     return this.hydrateTeams(teams);
   }
 
   async findOne(id: string): Promise<TeamDto> {
-    const team = await firstValueFrom(this.teamsClient.send<TeamDto>(TEAMS_PATTERNS.FIND_ONE, id));
+    const playload: FindOneTeamPayload = {
+      teamId: id,
+    };
+    const team = await firstValueFrom(this.teamsClient.send<TeamDto>(TEAMS_PATTERNS.FIND_ONE, playload));
     return this.hydrateTeams(team);
   }
 

@@ -11,16 +11,19 @@ export class TeamMongoRepository implements TeamRepository {
   constructor(@InjectModel(TeamSchema.name) private readonly teamModel: Model<TeamSchema>) {}
 
   async create(dto: CreateTeamRepoDto): Promise<TeamSchema> {
-    const createdTeam = new this.teamModel(dto);
+    const documentData = {
+      ...dto,
+      members: dto.members.map((m) => ({
+        userId: new Types.ObjectId(m.userId),
+        role: m.role,
+      })),
+    };
+    const createdTeam = new this.teamModel(documentData);
     return createdTeam.save();
   }
 
   async findById(id: string): Promise<TeamSchema | null> {
     return this.teamModel.findById(id).exec();
-  }
-
-  async findByName(name: string): Promise<TeamSchema | null> {
-    return this.teamModel.findOne({ name }).exec();
   }
 
   async findByMemberId(userId: string): Promise<TeamSchema[]> {

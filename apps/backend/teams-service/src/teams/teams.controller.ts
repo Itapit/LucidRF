@@ -4,8 +4,10 @@ import {
   CheckTeamMembershipPayload,
   CreateTeamPayload,
   DeleteTeamPayload,
-  TEAMS_PATTERNS,
+  FindOneTeamPayload,
+  GetUserTeamsPayload,
   RemoveMemberPayload,
+  TEAMS_PATTERNS,
   UpdateTeamPayload,
 } from '@LucidRF/teams-contracts';
 import { Controller } from '@nestjs/common';
@@ -23,13 +25,13 @@ export class TeamsController {
   }
 
   @MessagePattern(TEAMS_PATTERNS.FIND_ONE)
-  findOne(@Payload() id: string): Promise<TeamDto> {
-    return this.teamsService.findOne(id);
+  findOne(@Payload() payload: FindOneTeamPayload): Promise<TeamDto> {
+    return this.teamsService.findOne(payload);
   }
 
   @MessagePattern(TEAMS_PATTERNS.GET_USER_TEAMS)
-  findMyTeams(@Payload() userId: string): Promise<TeamDto[]> {
-    return this.teamsService.findMyTeams(userId);
+  findMyTeams(@Payload() payload: GetUserTeamsPayload): Promise<TeamDto[]> {
+    return this.teamsService.findMyTeams(payload);
   }
 
   @MessagePattern(TEAMS_PATTERNS.UPDATE)
