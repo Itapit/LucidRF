@@ -106,7 +106,7 @@ export class TeamsEffects {
     this.actions$.pipe(
       ofType(TeamsActions.addMember),
       concatMap(({ teamId, request }) =>
-        this.teamsService.addUserToTeam(teamId, request.targetUserId).pipe(
+        this.teamsService.addUserToTeam(teamId, request).pipe(
           map((team) => TeamsActions.addMemberSuccess({ team })),
           catchError((error) =>
             of(
@@ -124,7 +124,7 @@ export class TeamsEffects {
     this.actions$.pipe(
       ofType(TeamsActions.removeMember),
       concatMap(({ teamId, request }) =>
-        this.teamsService.removeUserFromTeam(teamId, request.targetUserId).pipe(
+        this.teamsService.removeUserFromTeam(teamId, request).pipe(
           map((team) => TeamsActions.removeMemberSuccess({ team })),
           catchError((error) =>
             of(

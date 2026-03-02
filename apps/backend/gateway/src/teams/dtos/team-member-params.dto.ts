@@ -3,5 +3,5 @@ import { TeamIdParamsDto } from './team-id.dto';
 
 export class TeamMemberParamsDto extends TeamIdParamsDto {
   @IsResourceId()
-  userId: string;
+  targetUserId: string;
 }

@@ -48,7 +48,7 @@ export const teamsReducer = createReducer(
   })),
   on(TeamsActions.updateTeamSuccess, (state, { team }) => ({
     ...state,
-    teams: state.teams.map((g) => (g.id === team.id ? team : g)),
+    teams: state.teams.map((t) => (t.id === team.id ? team : t)),
     loading: false,
   })),
   on(TeamsActions.updateTeamFailure, (state, { error }) => ({
@@ -65,7 +65,7 @@ export const teamsReducer = createReducer(
   })),
   on(TeamsActions.deleteTeamSuccess, (state, { teamId }) => ({
     ...state,
-    teams: state.teams.filter((g) => g.id !== teamId),
+    teams: state.teams.filter((t) => t.id !== teamId),
     loading: false,
   })),
   on(TeamsActions.deleteTeamFailure, (state, { error }) => ({
@@ -84,7 +84,7 @@ export const teamsReducer = createReducer(
 
   on(TeamsActions.addMemberSuccess, TeamsActions.removeMemberSuccess, (state, { team }) => ({
     ...state,
-    teams: state.teams.map((g) => (g.id === team.id ? team : g)),
+    teams: state.teams.map((t) => (t.id === team.id ? team : t)),
     loading: false,
   })),
 

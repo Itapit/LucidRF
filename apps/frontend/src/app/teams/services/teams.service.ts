@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { CreateTeamRequest, TeamDto, UpdateTeamRequest } from '@LucidRF/common';
+import { AddMemberRequest, CreateTeamRequest, RemoveMemberRequest, TeamDto, UpdateTeamRequest } from '@LucidRF/common';
 import { Observable } from 'rxjs';
 import { ApiEndpoint } from '../../core/http/api-endpoints.enum';
 import { environment } from '../../environments/environment';
@@ -26,13 +26,11 @@ export class TeamsService {
     return this.http.delete<boolean>(`${this.baseUrl}${ApiEndpoint.TEAMS}/${teamId}`);
   }
 
-  addUserToTeam(teamId: string, userId: string): Observable<TeamDto> {
-    return this.http.post<TeamDto>(`${this.baseUrl}${ApiEndpoint.TEAMS}/${teamId}/members`, {
-      targetUserId: userId,
-    });
+  addUserToTeam(teamId: string, request: AddMemberRequest): Observable<TeamDto> {
+    return this.http.post<TeamDto>(`${this.baseUrl}${ApiEndpoint.TEAMS}/${teamId}/members`, request);
   }
 
-  removeUserFromTeam(teamId: string, userId: string): Observable<TeamDto> {
-    return this.http.delete<TeamDto>(`${this.baseUrl}${ApiEndpoint.TEAMS}/${teamId}/members/${userId}`);
+  removeUserFromTeam(teamId: string, request: RemoveMemberRequest): Observable<TeamDto> {
+    return this.http.delete<TeamDto>(`${this.baseUrl}${ApiEndpoint.TEAMS}/${teamId}/members/${request.targetUserId}`);
   }
 }

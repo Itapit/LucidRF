@@ -19,6 +19,10 @@ export class TeamMongoRepository implements TeamRepository {
     return this.teamModel.findById(id).exec();
   }
 
+  async findByName(name: string): Promise<TeamSchema | null> {
+    return this.teamModel.findOne({ name }).exec();
+  }
+
   async findByMemberId(userId: string): Promise<TeamSchema[]> {
     return this.teamModel.find({ 'members.userId': new Types.ObjectId(userId) }).exec();
   }

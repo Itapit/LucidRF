@@ -12,6 +12,7 @@ import { Types } from 'mongoose';
 import {
   InvalidTeamIdException,
   InvalidTeamOperationException,
+  TeamNameExistsException,
   TeamNotFoundException,
   TeamPermissionDeniedException,
 } from './exceptions';
@@ -27,6 +28,11 @@ export class TeamsService {
    * Create a new team.
    */
   async create(payload: CreateTeamPayload): Promise<TeamDto> {
+    const existingTeam = await this.teamRepository.findByName(payload.name);
+    if (existingTeam) {
+      throw new TeamNameExistsException(payload.name);
+    }
+
     const ownerObjectId = new Types.ObjectId(payload.ownerId); //TODO remove the moongoose dependency
 
     const repoParams: CreateTeamRepoDto = {
@@ -69,13 +75,18 @@ export class TeamsService {
   async addMember(payload: AddMemberPayload): Promise<TeamDto> {
     const team = await this.findOne(payload.teamId);
 
+    const existingMember = team.members.find((m) => m.userId === payload.targetUserId);
+    if (existingMember) {
+      throw new InvalidTeamOperationException('User is already a member of this team');
+    }
+
     const actorMembership = team.members.find((m) => m.userId === payload.actorId);
     if (!actorMembership || (actorMembership.role !== TeamRole.OWNER && actorMembership.role !== TeamRole.MANAGER)) {
       throw new TeamPermissionDeniedException('Only the team owner or managers can add members');
     }
 
-    if (payload.role === TeamRole.OWNER && actorMembership.role !== TeamRole.OWNER) {
-      throw new TeamPermissionDeniedException('Only the team owner can add another owner');
+    if (actorMembership.role === TeamRole.MANAGER && payload.role !== TeamRole.MEMBER) {
+      throw new TeamPermissionDeniedException('Managers can only add regular members');
     }
 
     const updatedTeam = await this.teamRepository.addMember(payload.teamId, payload.targetUserId, payload.role);
@@ -96,16 +107,22 @@ export class TeamsService {
     const targetMembership = team.members.find((m) => m.userId === payload.targetUserId);
 
     if (!targetMembership) {
-      throw new TeamNotFoundException(payload.teamId); // Could throw not a member
+      throw new InvalidTeamOperationException('User is not a member of this team');
     }
 
     const isSelf = payload.targetUserId === payload.actorId;
     const isActorOwner = actorMembership?.role === TeamRole.OWNER;
-    const isActorManager = actorMembership?.role === TeamRole.MANAGER;
-    const isTargetOwner = targetMembership?.role === TeamRole.OWNER;
 
-    if (!isSelf && !isActorOwner && (!isActorManager || isTargetOwner)) {
-      throw new TeamPermissionDeniedException('Permission denied to remove this member');
+    if (!isSelf) {
+      if (!actorMembership) {
+        throw new TeamPermissionDeniedException('Actor is not a member of this team');
+      }
+      if (actorMembership.role === TeamRole.MEMBER) {
+        throw new TeamPermissionDeniedException('Members cannot remove other members');
+      }
+      if (actorMembership.role === TeamRole.MANAGER && targetMembership.role !== TeamRole.MEMBER) {
+        throw new TeamPermissionDeniedException('Managers can only remove regular members');
+      }
     }
 
     if (isSelf && isActorOwner) {

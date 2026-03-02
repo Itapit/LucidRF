@@ -7,6 +7,8 @@ export abstract class TeamRepository {
 
   abstract findById(id: string): Promise<TeamSchema | null>;
 
+  abstract findByName(name: string): Promise<TeamSchema | null>;
+
   /**
    * Finds all teams where the user is listed in the 'members' array
    */

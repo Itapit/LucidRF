@@ -44,9 +44,9 @@ export class TeamsController {
     return this.teamsService.addMember(params.teamId, req.user.userId, dto);
   }
 
-  @Delete(':teamId/members/:userId')
+  @Delete(':teamId/members/:targetUserId')
   async removeMember(@Param() params: TeamMemberParamsDto, @Req() req: AccessAuthenticatedRequest): Promise<TeamDto> {
-    return this.teamsService.removeMember(params.teamId, req.user.userId, params.userId);
+    return this.teamsService.removeMember(params.teamId, req.user.userId, params.targetUserId);
   }
 
   @Delete(':teamId')

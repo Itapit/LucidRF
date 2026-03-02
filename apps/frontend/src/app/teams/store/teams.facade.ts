@@ -57,12 +57,12 @@ export class TeamsFacade {
   }
 
   //** Dispatches the addMember action */
-  addMember(teamId: string, targetUserId: AddMemberRequest) {
-    this.store.dispatch(TeamsActions.addMember({ teamId, request: targetUserId }));
+  addMember(teamId: string, request: AddMemberRequest) {
+    this.store.dispatch(TeamsActions.addMember({ teamId, request }));
   }
 
   /** Dispatches the removeMember action */
-  removeMember(teamId: string, targetUserId: RemoveMemberRequest) {
-    this.store.dispatch(TeamsActions.removeMember({ teamId, request: targetUserId }));
+  removeMember(teamId: string, request: RemoveMemberRequest) {
+    this.store.dispatch(TeamsActions.removeMember({ teamId, request }));
   }
 }
