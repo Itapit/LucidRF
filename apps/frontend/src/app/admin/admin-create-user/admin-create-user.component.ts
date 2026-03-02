@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { UserRole } from '@LucidRF/common';
+import { SystemRole } from '@LucidRF/common';
 import { Observable } from 'rxjs';
 import { AuthFacade } from '../../auth/store/auth.facade';
 
@@ -15,8 +15,8 @@ export class AdminCreateUserComponent implements OnInit {
   private authFacade = inject(AuthFacade);
 
   roles = [
-    { label: 'Standard User', value: UserRole.USER },
-    { label: 'Administrator', value: UserRole.ADMIN },
+    { label: 'Standard User', value: SystemRole.USER },
+    { label: 'Administrator', value: SystemRole.ADMIN },
   ];
 
   adminCreateForm!: FormGroup;
@@ -32,7 +32,7 @@ export class AdminCreateUserComponent implements OnInit {
     this.adminCreateForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(5)]],
       email: ['', [Validators.required, Validators.email]],
-      role: [UserRole.USER, [Validators.required]], // Default to '
+      role: [SystemRole.USER, [Validators.required]],
     });
   }
 

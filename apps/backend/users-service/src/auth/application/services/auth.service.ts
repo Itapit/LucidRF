@@ -1,4 +1,5 @@
-import { UserStatus } from '@LucidRF/common';
+import { TeamType, UserStatus } from '@LucidRF/common';
+import { TEAMS_PATTERNS, TEAMS_SERVICE } from '@LucidRF/teams-contracts';
 import {
   AuthLoginPayload,
   AuthLoginResponseDto,
@@ -8,7 +9,9 @@ import {
   CompleteSetupPayload,
   PendingLoginResponseDto,
 } from '@LucidRF/users-contracts';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
 import { PasswordService } from '../../../security';
 import { toUserDto, UserEntity, UserRepository } from '../../../users/domain';
 import { UserNotFoundException } from '../../../users/domain/exceptions';
@@ -27,7 +30,8 @@ export class AuthService {
     private readonly passwordService: PasswordService,
     private readonly tokenSecurity: TokenSecurityService,
     private readonly refreshTokenRepo: RefreshTokenRepository,
-    private readonly tokenService: TokenService
+    private readonly tokenService: TokenService,
+    @Inject(TEAMS_SERVICE) private readonly teamsClient: ClientProxy
   ) {}
 
   /**
@@ -62,6 +66,19 @@ export class AuthService {
       password: hashedPassword,
       status: UserStatus.ACTIVE,
     });
+
+    try {
+      await firstValueFrom(
+        this.teamsClient.send(TEAMS_PATTERNS.CREATE, {
+          name: `${updatedUser.username}'s Personal Workspace`,
+          description: 'Personal workspace',
+          ownerId: updatedUser.id,
+          type: TeamType.PERSONAL,
+        })
+      );
+    } catch (error) {
+      Logger.error(`Failed to create personal team for user ${updatedUser.id}`, error);
+    }
 
     return this.grantUserTokens(updatedUser, payload.userAgent);
   }

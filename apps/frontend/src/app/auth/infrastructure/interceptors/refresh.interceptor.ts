@@ -9,7 +9,7 @@ import { AuthState } from '../../store/auth.state';
 import { isAuthFinalFailureEndpoint, isAuthLoginEndpoint } from './interceptor.constants';
 
 @Injectable()
-export class AuthInterceptor implements HttpInterceptor {
+export class RefreshInterceptor implements HttpInterceptor {
   private tokenService = inject(AccessTokenService);
   private store = inject(Store<AuthState>);
   private actions$ = inject(Actions);

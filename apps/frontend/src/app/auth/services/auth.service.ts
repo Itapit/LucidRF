@@ -34,7 +34,6 @@ export class AuthService {
     return this.http.post<LoginResponse>(`${this.baseUrl}/auth/complete-setup`, dto);
   }
 
-  //TODO: add this in the back
   getMe(): Observable<UserDto> {
     return this.http.get<UserDto>(`${this.baseUrl}/users/me`);
   }

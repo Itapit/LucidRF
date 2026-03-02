@@ -6,6 +6,10 @@ export class GetContentPayload {
   @IsResourceId()
   userId!: string;
 
+  @IsNotEmpty()
+  @IsResourceId()
+  teamId!: string;
+
   @IsOptional()
   @IsResourceId()
   folderId!: string;

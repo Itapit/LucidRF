@@ -1,7 +1,5 @@
-import { PermissionType } from '@LucidRF/common';
-import { BulkPermissionOperation } from '../dtos';
 import { CreateFileRepoDto } from '../dtos/create-file-repo.dto';
-import { FileEntity, PermissionEntity } from '../entities';
+import { FileEntity } from '../entities';
 
 export abstract class FileRepository {
   /**
@@ -16,12 +14,11 @@ export abstract class FileRepository {
   abstract findById(id: string): Promise<FileEntity | null>;
 
   /**
-   * Retrieves all files within a specific folder that are visible to the given user.
-   * This includes files owned by the user AND files shared with them.
+   * Retrieves all files within a specific folder that belong to the specified teams.
    * @param folderId The ID of the parent folder (or null for root).
-   * @param userId The ID of the user requesting the list.
+   * @param teamIds The IDs of the teams requesting the list.
    */
-  abstract findByFolder(folderId: string | null, ownerId: string): Promise<FileEntity[]>;
+  abstract findByFolder(folderId: string | null, teamIds: string[]): Promise<FileEntity[]>;
 
   /**
    * SYSTEM INTERNAL: Retrieves ALL files in a folder regardless of ownership or permissions.
@@ -45,25 +42,4 @@ export abstract class FileRepository {
    * Throws an exception if the file does not exist.
    */
   abstract delete(id: string): Promise<boolean>;
-
-  /**
-   * Adds a new permission or updates an existing one for a specific subject (User/Group).
-   * This effectively shares the file with that subject.
-   */
-  abstract addPermission(id: string, permission: PermissionEntity): Promise<FileEntity>;
-
-  /**
-   * Revokes access for a specific subject by removing their permission entry.
-   */
-  abstract removePermission(id: string, subjectId: string, subjectType: PermissionType): Promise<FileEntity>;
-
-  /**
-   * Updates the permissions of multiple files in bulk.
-   */
-  abstract updatePermissionsBulk(operations: BulkPermissionOperation[]): Promise<void>;
-
-  /**
-   * Retrieves all files that are shared with a specific user or any of the groups they belong to.
-   */
-  abstract findSharedWith(userId: string, groupIds: string[]): Promise<FileEntity[]>;
 }

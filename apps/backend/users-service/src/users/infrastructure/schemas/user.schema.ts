@@ -1,4 +1,4 @@
-import { UserRole, UserStatus } from '@LucidRF/common';
+import { SystemRole, UserStatus } from '@LucidRF/common';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
@@ -15,8 +15,8 @@ export class UserSchema extends Document {
   @Prop({ type: String, required: true, unique: true })
   username: string;
 
-  @Prop({ type: String, enum: UserRole, default: UserRole.USER })
-  role: UserRole;
+  @Prop({ type: String, enum: SystemRole, default: SystemRole.USER })
+  role: SystemRole;
 
   @Prop({ type: String, enum: UserStatus, default: UserStatus.PENDING })
   status: UserStatus;

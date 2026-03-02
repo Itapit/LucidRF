@@ -8,8 +8,6 @@ import {
   GetDownloadUrlDto,
   InitUploadDto,
   ListContentDto,
-  ShareResourceDto,
-  UnshareResourceDto,
 } from './dtos';
 import { FilesService } from './files.service';
 
@@ -52,40 +50,11 @@ export class FilesController {
 
   @Get('content')
   async listContent(@Query() query: ListContentDto, @Req() req: AccessAuthenticatedRequest) {
-    return this.filesService.listContent(query.folderId, req.user.userId);
-  }
-
-  @Get('shared')
-  async getSharedWithMe(@Req() req: AccessAuthenticatedRequest) {
-    return this.filesService.getSharedWithMe(req.user.userId);
+    return this.filesService.listContent(query.teamId, query.folderId, req.user.userId);
   }
 
   @Delete('folder/:resourceId')
   async deleteFolder(@Param() params: DeleteResourceDto, @Req() req: AccessAuthenticatedRequest) {
     return this.filesService.deleteFolder(params, req.user.userId);
-  }
-
-  // =================================================================================================
-  //  Sharing / ACL
-  // =================================================================================================
-
-  @Post('file/share')
-  async shareFile(@Body() dto: ShareResourceDto, @Req() req: AccessAuthenticatedRequest) {
-    return this.filesService.shareFile(dto, req.user.userId);
-  }
-
-  @Post('folder/share')
-  async shareFolder(@Body() dto: ShareResourceDto, @Req() req: AccessAuthenticatedRequest) {
-    return this.filesService.shareFolder(dto, req.user.userId);
-  }
-
-  @Post('file/unshare')
-  async unshareFile(@Body() dto: UnshareResourceDto, @Req() req: AccessAuthenticatedRequest) {
-    return this.filesService.unshareFile(dto, req.user.userId);
-  }
-
-  @Post('folder/unshare')
-  async unshareFolder(@Body() dto: UnshareResourceDto, @Req() req: AccessAuthenticatedRequest) {
-    return this.filesService.unshareFolder(dto, req.user.userId);
   }
 }

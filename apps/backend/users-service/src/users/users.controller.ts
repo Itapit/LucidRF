@@ -1,5 +1,10 @@
 import { UserDto } from '@LucidRF/common';
-import { AdminCreateUserPayload, GetUserByIdPayload, USER_PATTERNS } from '@LucidRF/users-contracts';
+import {
+  AdminCreateUserPayload,
+  GetUserByIdPayload,
+  GetUsersByIdsPayload,
+  USER_PATTERNS,
+} from '@LucidRF/users-contracts';
 import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { UserService } from './application';
@@ -16,5 +21,10 @@ export class UserController {
   @MessagePattern(USER_PATTERNS.GET_USER_BY_ID)
   async getUserById(@Payload() payload: GetUserByIdPayload): Promise<UserDto> {
     return this.userService.getUserById(payload.userId);
+  }
+
+  @MessagePattern(USER_PATTERNS.GET_USERS_BY_IDS)
+  async getUsersByIds(@Payload() payload: GetUsersByIdsPayload): Promise<UserDto[]> {
+    return this.userService.getUsersByIds(payload.userIds);
   }
 }

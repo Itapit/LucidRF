@@ -7,6 +7,10 @@ export class CreateFolderPayload {
   userId!: string;
 
   @IsNotEmpty()
+  @IsResourceId()
+  teamId!: string;
+
+  @IsNotEmpty()
   @IsString()
   name!: string;
 

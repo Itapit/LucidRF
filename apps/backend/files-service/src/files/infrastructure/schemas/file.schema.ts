@@ -2,7 +2,6 @@ import { FileStatus } from '@LucidRF/common';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 import { FileEntity } from '../../domain/entities';
-import { PermissionSchema, PermissionSchemaFactory } from './permission.schema';
 
 export type FileDocument = FileSchema & Document;
 
@@ -12,7 +11,7 @@ export class FileSchema extends Document {
   originalFileName: string;
 
   @Prop({ required: true, index: true })
-  ownerId: string;
+  teamId: string;
 
   @Prop({ required: true })
   size: number;
@@ -34,10 +33,6 @@ export class FileSchema extends Document {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Folder', default: null, index: true })
   parentFolderId: MongooseSchema.Types.ObjectId;
 
-  // Embedded Permissions
-  @Prop({ type: [PermissionSchemaFactory], default: [] })
-  permissions: PermissionSchema[];
-
   // Timestamps
   createdAt: Date;
   updatedAt: Date;
@@ -54,11 +49,5 @@ export function toFileEntity(doc: FileDocument): FileEntity {
     ...obj,
     id: obj._id.toString(), // Convert ObjectId -> string
     parentFolderId: obj.parentFolderId?.toString() || null, // Convert ObjectId -> string
-    permissions:
-      obj.permissions?.map((p) => ({
-        subjectId: p.subjectId,
-        subjectType: p.subjectType,
-        role: p.role,
-      })) || [],
   });
 }

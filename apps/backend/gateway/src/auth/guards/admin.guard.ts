@@ -1,4 +1,4 @@
-import { UserRole } from '@LucidRF/common';
+import { SystemRole } from '@LucidRF/common';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -7,6 +7,6 @@ export class AdminGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
 
-    return user && user.role === UserRole.ADMIN;
+    return user && user.role === SystemRole.ADMIN;
   }
 }

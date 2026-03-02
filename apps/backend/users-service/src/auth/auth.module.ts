@@ -1,3 +1,4 @@
+import { TeamClientModule } from '@LucidRF/teams-contracts';
 import {
   JWT_ACCESS_EXPIRES_IN,
   JWT_PENDING_EXPIRES_IN,
@@ -24,6 +25,7 @@ import { JwtTokenService } from './infrastructure/services';
     SecurityModule,
     PassportModule,
     ConfigModule,
+    TeamClientModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({

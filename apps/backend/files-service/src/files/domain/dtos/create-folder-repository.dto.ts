@@ -1,8 +1,5 @@
-import { PermissionEntity } from '../entities';
-
 export class CreateFolderRepoDto {
   name: string;
-  ownerId: string;
+  teamId: string;
   parentFolderId: string | null;
-  permissions: PermissionEntity[];
 }

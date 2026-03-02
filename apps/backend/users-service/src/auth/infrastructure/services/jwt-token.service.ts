@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { UserRole, UserStatus } from '@LucidRF/common';
+import { SystemRole, UserStatus } from '@LucidRF/common';
 import {
   JWT_ACCESS_EXPIRES_IN,
   JWT_PENDING_EXPIRES_IN,
@@ -42,7 +42,7 @@ export class JwtTokenService implements TokenService {
     }
   }
 
-  async generateAuthTokens(userId: string, role: UserRole): Promise<GeneratedTokensDto> {
+  async generateAuthTokens(userId: string, role: SystemRole): Promise<GeneratedTokensDto> {
     const jti = uuidv4();
 
     const refreshExpiresInMs = ms(this.jwtRefreshExpiresIn as any);
@@ -74,7 +74,7 @@ export class JwtTokenService implements TokenService {
     });
   }
 
-  private signAccessToken(userId: string, role: UserRole): Promise<string> {
+  private signAccessToken(userId: string, role: SystemRole): Promise<string> {
     const payload = { sub: userId, role };
 
     return this.jwtService.signAsync(payload, {

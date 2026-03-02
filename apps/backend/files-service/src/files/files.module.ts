@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { GroupsIntegrationModule } from '../integrations/groups/groups-integration.module';
-import { TcpGroupsService } from '../integrations/groups/tcp-groups.service';
+import { TcpTeamsService } from '../integrations/teams/tcp-teams.service';
+import { TeamsIntegrationModule } from '../integrations/teams/teams-integration.module';
 import { STORAGE_BUCKET_NAME } from '../storage/storage.constants';
 import { StorageModule } from '../storage/storage.module';
-import { AclService, FileService, FolderService, PermissionPropagationService, SharingService } from './application';
-import { FileRepository, FolderRepository, GroupsService } from './domain/interfaces';
+import { FileService, FolderService } from './application';
+import { FileRepository, FolderRepository, TeamsService } from './domain/interfaces';
 import { TransactionManager } from './domain/transaction.manager';
 import { FilesController } from './files.controller';
 import { DatabaseContext } from './infrastructure/persistence/database.context';
@@ -22,15 +22,12 @@ import { FileSchema, FileSchemaFactory, FolderSchema, FolderSchemaFactory } from
       { name: FileSchema.name, schema: FileSchemaFactory },
       { name: FolderSchema.name, schema: FolderSchemaFactory },
     ]),
-    GroupsIntegrationModule,
+    TeamsIntegrationModule,
   ],
   controllers: [FilesController],
   providers: [
-    SharingService,
     FileService,
     FolderService,
-    AclService,
-    PermissionPropagationService,
     DatabaseContext,
     {
       provide: TransactionManager,
@@ -45,8 +42,8 @@ import { FileSchema, FileSchemaFactory, FolderSchema, FolderSchemaFactory } from
       useClass: MongoFolderRepository,
     },
     {
-      provide: GroupsService,
-      useExisting: TcpGroupsService,
+      provide: TeamsService,
+      useExisting: TcpTeamsService,
     },
     {
       provide: STORAGE_BUCKET_NAME,

@@ -2,6 +2,7 @@ import { UserDto } from '@LucidRF/common';
 import { AdminCreateUserPayload, GetUserByIdPayload, USER_PATTERNS, USER_SERVICE } from '@LucidRF/users-contracts';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
 import { AdminCreateUserDto } from './dtos/admin-create-user.dto';
 
 @Injectable()
@@ -16,11 +17,11 @@ export class UsersService {
       adminId: adminId,
     };
 
-    return this.usersClient.send<UserDto>(USER_PATTERNS.CREATE_USER, payload).toPromise();
+    return firstValueFrom(this.usersClient.send<UserDto>(USER_PATTERNS.CREATE_USER, payload));
   }
 
   async getMe(userId: string): Promise<UserDto> {
     const payload: GetUserByIdPayload = { userId };
-    return this.usersClient.send<UserDto>(USER_PATTERNS.GET_USER_BY_ID, payload).toPromise();
+    return firstValueFrom(this.usersClient.send<UserDto>(USER_PATTERNS.GET_USER_BY_ID, payload));
   }
 }

@@ -1,4 +1,4 @@
-import { AdminCreateUserRequest, UserRole } from '@LucidRF/common';
+import { AdminCreateUserRequest, SystemRole } from '@LucidRF/common';
 import { Transform } from 'class-transformer';
 import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
@@ -12,6 +12,6 @@ export class AdminCreateUserDto implements AdminCreateUserRequest {
   @Transform(({ value }) => value?.toLowerCase())
   username: string;
 
-  @IsEnum(UserRole)
-  role: UserRole;
+  @IsEnum(SystemRole)
+  role: SystemRole;
 }

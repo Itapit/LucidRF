@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { CanMatchFn } from '@angular/router';
-import { UserRole } from '@LucidRF/common';
+import { SystemRole } from '@LucidRF/common';
 import { filter, map, switchMap, take } from 'rxjs';
 import { NavigationService } from '../../../core/navigation/navigation.service';
 import { AuthFacade } from '../../store/auth.facade';
@@ -19,7 +19,7 @@ export const adminGuard: CanMatchFn = () => {
 
     // Decide
     map((role) => {
-      if (role === UserRole.ADMIN) {
+      if (role === SystemRole.ADMIN) {
         return true;
       }
       // Not an admin? Redirect to root.

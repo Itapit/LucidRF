@@ -1,9 +1,10 @@
 import { FILES_CONFIG } from '@LucidRF/files-contracts';
-import { GROUPS_CONFIG } from '@LucidRF/groups-contracts';
+import { TEAMS_CONFIG } from '@LucidRF/teams-contracts';
 import { USER_CONFIG } from '@LucidRF/users-contracts';
 import { Controller, Get } from '@nestjs/common';
 import { Transport } from '@nestjs/microservices';
 import { HealthCheck, HealthCheckService, MemoryHealthIndicator, MicroserviceHealthIndicator } from '@nestjs/terminus';
+import { MAX_MEMORY_HEAP_BYTES } from './health.constants';
 
 @Controller('health')
 export class HealthController {
@@ -18,9 +19,9 @@ export class HealthController {
   check() {
     return this.health.check([
       // Local checks
-      () => this.memory.checkHeap('memory_heap', 150 * 1024 * 1024),
+      () => this.memory.checkHeap('memory_heap', MAX_MEMORY_HEAP_BYTES),
 
-      // 2. Check Users Microservice using shared constants
+      // Check Users Microservice using shared constants
       () =>
         this.microservice.pingCheck('users_service', {
           transport: Transport.TCP,
@@ -30,16 +31,17 @@ export class HealthController {
           },
         }),
 
-      // 3. Check Groups Microservice using shared constants
+      // Check Teams Microservice using shared constants
       () =>
-        this.microservice.pingCheck('groups_service', {
+        this.microservice.pingCheck('teams_service', {
           transport: Transport.TCP,
           options: {
-            host: GROUPS_CONFIG.HOST,
-            port: GROUPS_CONFIG.PORT,
+            host: TEAMS_CONFIG.HOST,
+            port: TEAMS_CONFIG.PORT,
           },
         }),
 
+      // Check Files Microservice using shared constants
       () =>
         this.microservice.pingCheck('files_service', {
           transport: Transport.TCP,

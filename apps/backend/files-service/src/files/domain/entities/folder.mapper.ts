@@ -5,10 +5,9 @@ export function toFolderDto(entity: FolderEntity): FolderDto {
   return {
     resourceId: entity.id,
     name: entity.name,
-    ownerId: entity.ownerId,
+    teamId: entity.teamId,
     parentFolderId: entity.parentFolderId,
     createdAt: entity.createdAt,
     updatedAt: entity.updatedAt,
-    permissions: entity.permissions || [],
   };
 }

@@ -1,58 +1,103 @@
-<div class="flex justify-content-center align-items-center h-screen">
-  <form [formGroup]="adminCreateForm" (ngSubmit)="onSubmit()">
-    <p-card header="Create New User" [style]="{ width: '400px' }">
-      <div class="field mt-3">
-        <label for="username" class="block mb-2">Username</label>
-        <p-inputGroup>
-          <p-inputGroupAddon>
-            <i class="pi pi-user"></i>
-          </p-inputGroupAddon>
-          <input
-            id="username"
-            type="text"
-            pInputText
-            formControlName="username"
-            placeholder="john.doe"
-            class="w-full"
-          />
-        </p-inputGroup>
-      </div>
+<div class="flex justify-center items-center min-h-screen bg-gray-50">
+  <form
+    [formGroup]="adminCreateForm"
+    (ngSubmit)="onSubmit()"
+    class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md border border-gray-100"
+  >
+    <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">Create New User</h2>
 
-      <div class="field mt-4">
-        <label for="email" class="block mb-2">Email</label>
-        <p-inputGroup>
-          <p-inputGroupAddon>
-            <i class="pi pi-envelope"></i>
-          </p-inputGroupAddon>
-          <input
-            id="email"
-            type="email"
-            pInputText
-            formControlName="email"
-            placeholder="your@email.com"
-            class="w-full"
-          />
-        </p-inputGroup>
+    <div class="mb-4">
+      <label for="username" class="block text-gray-700 text-sm font-semibold mb-2">Username</label>
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <input
+          id="username"
+          type="text"
+          formControlName="username"
+          placeholder="john.doe"
+          class="pl-10 appearance-none border border-gray-300 rounded-md w-full py-2.5 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+        />
       </div>
+    </div>
 
-      <div class="field mt-4">
-        <label for="role" class="block mb-2">Role</label>
-        <p-select id="role" [options]="roles" formControlName="role" styleClass="w-full"></p-select>
+    <div class="mb-4">
+      <label for="email" class="block text-gray-700 text-sm font-semibold mb-2">Email</label>
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+          </svg>
+        </div>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="your@email.com"
+          class="pl-10 appearance-none border border-gray-300 rounded-md w-full py-2.5 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+        />
       </div>
+    </div>
 
-      <ng-container *ngIf="error$ | async as error">
-        <p-message severity="error" [text]="error" styleClass="mt-4 w-full"></p-message>
-      </ng-container>
-
-      <div class="field mt-5">
-        <p-button
-          label="Create User"
-          type="submit"
-          styleClass="w-full"
-          [loading]="(isLoading$ | async) ?? false"
-          [disabled]="adminCreateForm.invalid || ((isLoading$ | async) ?? false)"
-        ></p-button>
+    <div class="mb-6">
+      <label for="role" class="block text-gray-700 text-sm font-semibold mb-2">Role</label>
+      <div class="relative">
+        <select
+          id="role"
+          formControlName="role"
+          class="appearance-none border border-gray-300 rounded-md w-full py-2.5 px-3 text-gray-700 bg-white leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors cursor-pointer"
+        >
+          <option *ngFor="let option of roles" [value]="option.value || option">{{ option.label || option }}</option>
+        </select>
+        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+          <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+          </svg>
+        </div>
       </div>
-    </p-card>
+    </div>
+
+    <div *ngIf="error$ | async as error" class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-md">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm text-red-700">{{ error }}</p>
+        </div>
+      </div>
+    </div>
+
+    <button
+      type="submit"
+      [disabled]="adminCreateForm.invalid || ((isLoading$ | async) ?? false)"
+      class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+    >
+      <svg
+        *ngIf="(isLoading$ | async) ?? false"
+        class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path
+          class="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+        ></path>
+      </svg>
+      Create User
+    </button>
   </form>
 </div>

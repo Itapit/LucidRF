@@ -1,0 +1,4 @@
+export enum TeamType {
+  PERSONAL = 'PERSONAL',
+  COLLABORATIVE = 'COLLABORATIVE',
+}

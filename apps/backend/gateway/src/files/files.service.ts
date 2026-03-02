@@ -7,20 +7,10 @@ import {
   GetContentPayload,
   GetDownloadUrlPayload,
   InitializeUploadPayload,
-  ShareResourcePayload,
-  UnshareResourcePayload,
 } from '@LucidRF/files-contracts';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import {
-  ConfirmUploadDto,
-  CreateFolderDto,
-  DeleteResourceDto,
-  GetDownloadUrlDto,
-  InitUploadDto,
-  ShareResourceDto,
-  UnshareResourceDto,
-} from './dtos';
+import { ConfirmUploadDto, CreateFolderDto, DeleteResourceDto, GetDownloadUrlDto, InitUploadDto } from './dtos';
 
 @Injectable()
 export class FilesService {
@@ -31,7 +21,8 @@ export class FilesService {
       originalFileName: dto.originalFileName,
       size: dto.size,
       mimeType: dto.mimeType,
-      parentFolderId: dto.parentFolderId ?? null, // Contract expects string | null
+      teamId: dto.teamId,
+      parentFolderId: dto.parentFolderId ?? null,
       userId,
     };
     return this.filesClient.send(FILES_PATTERNS.INIT_UPLOAD, payload);
@@ -69,15 +60,17 @@ export class FilesService {
   createFolder(dto: CreateFolderDto, userId: string) {
     const payload: CreateFolderPayload = {
       name: dto.name,
+      teamId: dto.teamId,
       parentFolderId: dto.parentFolderId ?? null,
       userId,
     };
     return this.filesClient.send(FILES_PATTERNS.CREATE_FOLDER, payload);
   }
 
-  listContent(folderId: string | undefined, userId: string) {
+  listContent(teamId: string, folderId: string | undefined, userId: string) {
     const payload: GetContentPayload = {
-      folderId: folderId ?? null, // Contract expects string | null
+      teamId,
+      folderId: folderId ?? null,
       userId,
     };
     return this.filesClient.send(FILES_PATTERNS.LIST_CONTENT, payload);
@@ -89,55 +82,5 @@ export class FilesService {
       userId,
     };
     return this.filesClient.send(FILES_PATTERNS.DELETE_FOLDER, payload);
-  }
-
-  // =================================================================================================
-  //  Sharing / ACL
-  // =================================================================================================
-
-  async getSharedWithMe(userId: string) {
-    return this.filesClient.send(FILES_PATTERNS.GET_SHARED_FILES, userId);
-  }
-
-  shareFile(dto: ShareResourceDto, userId: string) {
-    const payload: ShareResourcePayload = {
-      resourceId: dto.resourceId,
-      subjectId: dto.subjectId,
-      subjectType: dto.subjectType,
-      role: dto.role,
-      userId,
-    };
-    return this.filesClient.send(FILES_PATTERNS.SHARE_FILE, payload);
-  }
-
-  shareFolder(dto: ShareResourceDto, userId: string) {
-    const payload: ShareResourcePayload = {
-      resourceId: dto.resourceId,
-      subjectId: dto.subjectId,
-      subjectType: dto.subjectType,
-      role: dto.role,
-      userId,
-    };
-    return this.filesClient.send(FILES_PATTERNS.SHARE_FOLDER, payload);
-  }
-
-  unshareFile(dto: UnshareResourceDto, userId: string) {
-    const payload: UnshareResourcePayload = {
-      resourceId: dto.resourceId,
-      subjectId: dto.subjectId,
-      subjectType: dto.subjectType,
-      userId,
-    };
-    return this.filesClient.send(FILES_PATTERNS.UNSHARE_FILE, payload);
-  }
-
-  unshareFolder(dto: UnshareResourceDto, userId: string) {
-    const payload: UnshareResourcePayload = {
-      resourceId: dto.resourceId,
-      subjectId: dto.subjectId,
-      subjectType: dto.subjectType,
-      userId,
-    };
-    return this.filesClient.send(FILES_PATTERNS.UNSHARE_FOLDER, payload);
   }
 }

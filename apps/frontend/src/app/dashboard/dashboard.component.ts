@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { GroupsModule } from '../groups/groups-module';
+import { TeamsModule } from '../teams/teams-module';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [GroupsModule],
+  imports: [TeamsModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
 })

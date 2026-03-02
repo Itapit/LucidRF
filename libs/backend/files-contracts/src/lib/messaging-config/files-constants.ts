@@ -16,11 +16,4 @@ export const FILES_PATTERNS = {
   CREATE_FOLDER: 'files.create_folder',
   LIST_CONTENT: 'files.list_content',
   DELETE_FOLDER: 'files.delete_folder',
-
-  // Sharing & ACL
-  GET_SHARED_FILES: 'files.get_shared_with_me',
-  SHARE_FILE: 'files.share_file',
-  UNSHARE_FILE: 'files.unshare_file',
-  SHARE_FOLDER: 'files.share_folder',
-  UNSHARE_FOLDER: 'files.unshare_folder',
 };
