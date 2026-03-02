@@ -24,6 +24,11 @@ export class MongoUserRepository implements UserRepository {
     return doc ? toUserEntity(doc) : null;
   }
 
+  async findByIds(ids: string[]): Promise<UserEntity[]> {
+    const docs = await this.userModel.find({ _id: { $in: ids } }).exec();
+    return docs.map((doc) => toUserEntity(doc));
+  }
+
   /**
    * Explicitly selects the password for authentication checks.
    */

@@ -40,6 +40,7 @@ export class UserService {
       status: UserStatus.PENDING,
     };
     const newUserEntity = await this.userRepository.create(repoDto);
+
     // TODO: add email or smthing
     Logger.log(`Temp password for ${email}: ${tempPassword}`);
 
@@ -55,5 +56,13 @@ export class UserService {
       throw new UserNotFoundException(id);
     }
     return toUserDto(user);
+  }
+
+  /**
+   * Gets multiple users by their IDs.
+   */
+  async getUsersByIds(ids: string[]): Promise<UserDto[]> {
+    const users = await this.userRepository.findByIds(ids);
+    return users.map((u) => toUserDto(u));
   }
 }

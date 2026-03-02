@@ -1,11 +1,11 @@
-import { UserRole, UserStatus } from '@LucidRF/common';
+import { SystemRole, UserStatus } from '@LucidRF/common';
 
 export class UserEntity {
   id: string;
   email: string;
   password?: string;
   username: string;
-  role: UserRole;
+  role: SystemRole;
   status: UserStatus;
 
   createdAt?: Date;

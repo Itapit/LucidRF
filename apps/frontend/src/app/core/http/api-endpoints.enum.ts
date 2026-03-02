@@ -9,6 +9,6 @@ export enum ApiEndpoint {
   USERS = '/users',
   USERS_ME = '/users/me',
 
-  // Groups
-  GROUPS = '/groups',
+  // Teams
+  TEAMS = '/teams',
 }

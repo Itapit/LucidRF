@@ -8,6 +8,7 @@ export abstract class UserRepository {
   abstract findByUsername(username: string): Promise<UserEntity | null>;
 
   abstract findById(id: string): Promise<UserEntity | null>;
+  abstract findByIds(ids: string[]): Promise<UserEntity[]>;
 
   // This is the "unsafe" version for the AuthService ONLY
   // It explicitly selects the password and refresh token
