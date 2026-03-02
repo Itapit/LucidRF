@@ -1,4 +1,4 @@
-export enum GroupsErrorSource {
+export enum TeamsErrorSource {
   LOAD = 'load',
   CREATE = 'create',
   UPDATE = 'update',
