@@ -7,6 +7,10 @@ export class CreateFolderDto implements CreateFolderRequest {
   @IsNotEmpty()
   name!: string;
 
+  @IsNotEmpty()
+  @IsResourceId()
+  teamId!: string;
+
   @IsOptional()
   @IsResourceId()
   parentFolderId?: string;

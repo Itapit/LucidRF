@@ -1,0 +1,1 @@
+export const MAX_MEMORY_HEAP_BYTES = 150 * 1024 * 1024;

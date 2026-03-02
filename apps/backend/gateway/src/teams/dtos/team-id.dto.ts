@@ -1,6 +1,6 @@
 import { IsResourceId } from '@LucidRF/backend-common';
 
-export class GroupIdParamsDto {
+export class TeamIdParamsDto {
   @IsResourceId()
-  groupId: string;
+  teamId: string;
 }
