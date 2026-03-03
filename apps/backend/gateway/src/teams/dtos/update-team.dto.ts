@@ -1,4 +1,4 @@
-import { TeamType, UpdateTeamRequest } from '@LucidRF/common';
+import { TeamColor, TeamType, UpdateTeamRequest } from '@LucidRF/common';
 import { IsEnum, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class UpdateTeamDto implements UpdateTeamRequest {
@@ -15,4 +15,8 @@ export class UpdateTeamDto implements UpdateTeamRequest {
   @IsEnum(TeamType)
   @IsOptional()
   type?: TeamType;
+
+  @IsEnum(TeamColor)
+  @IsOptional()
+  color?: TeamColor;
 }

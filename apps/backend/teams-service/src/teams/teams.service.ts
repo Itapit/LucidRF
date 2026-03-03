@@ -1,4 +1,4 @@
-import { TeamDto, TeamRole, TeamType } from '@LucidRF/common';
+import { TeamColor, TeamDto, TeamRole, TeamType } from '@LucidRF/common';
 import {
   AddMemberPayload,
   CheckTeamMembershipPayload,
@@ -23,10 +23,15 @@ export class TeamsService {
    * Create a new team.
    */
   async create(payload: CreateTeamPayload): Promise<TeamDto> {
+    const color = this.calculateColor(payload.name);
+    const initials = this.calculateInitials(payload.name);
+
     const repoParams: CreateTeamRepoDto = {
       name: payload.name,
       description: payload.description,
       type: payload.type || TeamType.COLLABORATIVE,
+      color,
+      initials,
       members: [{ userId: payload.ownerId, role: TeamRole.OWNER }], // Owner is automatically a member
     };
 
@@ -137,11 +142,24 @@ export class TeamsService {
       throw new TeamPermissionDeniedException('Only the owner or managers can update team details');
     }
 
-    // We pass the payload directly, as it matches Partial<Team> structure for name/desc
-    const updated = await this.teamRepository.update(payload.teamId, {
+    if (payload.color && actorMembership.role !== TeamRole.OWNER) {
+      throw new TeamPermissionDeniedException('Only the owner can update the team color');
+    }
+
+    const updateData: Partial<TeamSchema> = {
       name: payload.name,
       description: payload.description,
-    });
+    };
+
+    if (payload.name && payload.name !== team.name) {
+      updateData.initials = this.calculateInitials(payload.name);
+    }
+
+    if (payload.color) {
+      updateData.color = payload.color;
+    }
+
+    const updated = await this.teamRepository.update(payload.teamId, updateData);
 
     if (!updated) {
       throw new TeamNotFoundException(payload.teamId);
@@ -171,6 +189,35 @@ export class TeamsService {
   }
 
   /**
+   * Calculate team initials from name
+   */
+  private calculateInitials(name: string): string {
+    const words = name.trim().split(/\s+/);
+    if (words.length >= 2) {
+      return (words[0][0] + words[1][0]).toUpperCase();
+    } else if (words.length === 1 && words[0].length >= 2) {
+      return words[0].substring(0, 2).toUpperCase();
+    } else if (words.length === 1 && words[0].length === 1) {
+      return words[0].toUpperCase();
+    }
+    return 'TM'; // Fallback
+  }
+
+  /**
+   * Calculate random preset color based on name hash
+   */
+  private calculateColor(name: string): TeamColor {
+    const colors = Object.values(TeamColor);
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    // Make sure hash is positive
+    const index = Math.abs(hash) % colors.length;
+    return colors[index];
+  }
+
+  /**
    * Maps the Mongoose Document to the clean Shared DTO.
    * Converts ObjectIds to Strings.
    */
@@ -180,6 +227,8 @@ export class TeamsService {
       name: team.name,
       description: team.description,
       type: team.type,
+      color: team.color,
+      initials: team.initials,
       members: team.members.map((m) => ({
         userId: m.userId.toString(),
         role: m.role,

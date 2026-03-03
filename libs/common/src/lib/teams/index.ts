@@ -1,6 +1,7 @@
 export * from './add-member.request';
 export * from './create-team.request';
 export * from './remove-member.request';
+export * from './team-color.enum';
 export * from './team-member.dto';
 export * from './team-role.enum';
 export * from './team-type.enum';
