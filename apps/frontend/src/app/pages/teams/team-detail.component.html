@@ -1,71 +1,49 @@
 <div class="flex-1 flex flex-col h-full bg-white relative animate-fade-in w-full" *ngIf="team$ | async as team">
-      <app-top-header variant="solid" [user]="user$ | async" (logout)="onLogout()">
-        <div left-content class="flex items-center gap-2 text-sm font-medium text-gray-500 font-sans">
-          <button class="hover:text-black transition-colors" (click)="goHome()">Teams</button>
-          <span class="text-gray-300">/</span>
-          <span class="text-black font-medium">{{ team.name }}</span>
-        </div>
-      </app-top-header>
-
-      <div class="flex-1 flex overflow-hidden">
-        <app-folder-sidebar
-          [title]="team.name"
-          [subtitle]="(files$ | async)?.length + ' files'"
-          [initials]="team.initials"
-          [themeColor]="team.color"
-          headerVariant="initials"
-          [folders]="folders$ | async"
-          (folderClick)="onFolderClick($event)"
-        >
-        </app-folder-sidebar>
-
-        <main class="flex-1 flex flex-col overflow-hidden bg-white relative">
-          <app-page-action-bar [title]="team.name" (newFolder)="onNewFolder()" (uploadFile)="onUploadFile()">
-            <div
-              left-actions
-              class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400 ml-4"
-            >
-              <button class="hover:text-black transition-colors">{{ team.name }}</button>
-              <!-- Breadcrumbs for folders could go here -->
-            </div>
-
-            <ng-container right-actions>
-              <button
-                *ngIf="isOwner$ | async"
-                (click)="showSettings = true"
-                class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors font-medium hover:shadow-sm"
-              >
-                Settings
-              </button>
-              <button
-                (click)="showMembers = true"
-                class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors font-medium hover:shadow-sm"
-              >
-                Members
-              </button>
-            </ng-container>
-          </app-page-action-bar>
-
-          <app-file-table [files]="files$ | async"></app-file-table>
-        </main>
-      </div>
-
-      <app-team-form
-        *ngIf="showSettings"
-        [team]="team"
-        [showDangerZone]="true"
-        (cancel)="showSettings = false"
-        (submitForm)="onUpdateTeam(team.id, $event)"
-        (deleteTeam)="onDeleteTeam(team.id)"
-      ></app-team-form>
-
-      <app-member-list
-        *ngIf="showMembers"
-        [team]="team"
-        [isOwner]="(isOwner$ | async) ?? false"
-        [currentUserId]="(user$ | async)?.id || ''"
-        (close)="showMembers = false"
-        (inviteMember)="onInviteMember(team.id, $event)"
-        (removeMember)="onRemoveMember(team.id, $event)"
-      ></app-member-list>
+  <app-top-header variant="solid" [user]="user$ | async" (logout)="onLogout()">
+    <div left-content class="flex items-center gap-2 text-sm font-medium text-gray-500 font-sans">
+      <button class="hover:text-black transition-colors" (click)="goHome()">Teams</button>
+      <span class="text-gray-300">/</span>
+      <span class="text-black font-medium">{{ team.name }}</span>
     </div>
+  </app-top-header>
+
+  <div class="flex-1 flex overflow-hidden">
+    <app-folder-sidebar
+      [title]="team.name"
+      [subtitle]="(files$ | async)?.length + ' files'"
+      [initials]="team.initials"
+      [themeColor]="team.color"
+      headerVariant="initials"
+      [folders]="folders$ | async"
+      (folderClick)="onFolderClick($event)"
+    >
+    </app-folder-sidebar>
+
+    <main class="flex-1 flex flex-col overflow-hidden bg-white relative">
+      <app-page-action-bar [title]="team.name" (newFolder)="onNewFolder()" (uploadFile)="onUploadFile()">
+        <div left-actions class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400 ml-4">
+          <button class="hover:text-black transition-colors">{{ team.name }}</button>
+          <!-- Breadcrumbs for folders could go here -->
+        </div>
+
+        <ng-container right-actions>
+          <button
+            *ngIf="canManageTeam$ | async"
+            (click)="openSettings(team)"
+            class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors font-medium hover:shadow-sm"
+          >
+            Settings
+          </button>
+          <button
+            (click)="openMembers(team)"
+            class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors font-medium hover:shadow-sm"
+          >
+            Members
+          </button>
+        </ng-container>
+      </app-page-action-bar>
+
+      <app-file-table [files]="files$ | async"></app-file-table>
+    </main>
+  </div>
+</div>

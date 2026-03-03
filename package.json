@@ -6,6 +6,7 @@
   "private": true,
   "dependencies": {
     "@angular/animations": "^20.3.2",
+    "@angular/cdk": "^20.2.14",
     "@angular/common": "~20.3.0",
     "@angular/compiler": "~20.3.0",
     "@angular/core": "~20.3.0",
@@ -86,7 +87,6 @@
     "ajv": "^8.0.0",
     "angular-eslint": "^20.3.0",
     "autoprefixer": "^10.4.0",
-    "baseline-browser-mapping": "^2.9.7",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^10.0.0",
     "jasmine-marbles": "~0.9.1",

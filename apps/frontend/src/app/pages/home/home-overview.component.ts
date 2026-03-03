@@ -1,3 +1,4 @@
+import { Dialog, DialogModule } from '@angular/cdk/dialog';
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { AuthFacade } from '../../auth/store/auth.facade';
@@ -10,7 +11,7 @@ import { TeamsFacade } from '../../teams/store/teams.facade';
 @Component({
   selector: 'app-home-overview',
   standalone: true,
-  imports: [CommonModule, TopHeaderComponent, TeamCardComponent, TeamFormComponent],
+  imports: [CommonModule, TopHeaderComponent, TeamCardComponent, TeamFormComponent, DialogModule],
   templateUrl: './home-overview.component.html',
   host: { class: 'flex-1 flex overflow-hidden w-full h-full' },
 })
@@ -22,7 +23,7 @@ export class HomeOverviewComponent {
   teams$ = this.teamsFacade.teams$;
   user$ = this.authFacade.user$;
 
-  showCreateModal = false;
+  private dialog = inject(Dialog);
 
   onLogout() {
     this.authFacade.logout();
@@ -36,9 +37,19 @@ export class HomeOverviewComponent {
     this.navigationService.toTeam(teamId);
   }
 
-  onCreateTeam(data: { name: string; description: string }) {
-    // Assuming type logic is somewhere else, we hardcode or adapt:
-    this.teamsFacade.createTeam({ ...data, type: 'INTERNAL' } as any);
-    this.showCreateModal = false;
+  openCreateTeam() {
+    const dialogRef = this.dialog.open<{ action: string; data?: { name: string; description: string } }>(
+      TeamFormComponent,
+      {
+        data: { team: null, showDangerZone: false },
+        hasBackdrop: false,
+      }
+    );
+
+    dialogRef.closed.subscribe((result: { action: string; data?: any } | undefined) => {
+      if (result?.action === 'submit' && result.data) {
+        this.teamsFacade.createTeam(result.data);
+      }
+    });
   }
 }

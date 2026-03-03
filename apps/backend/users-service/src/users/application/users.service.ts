@@ -59,6 +59,21 @@ export class UserService {
   }
 
   /**
+   * Gets a user's public profile by email or username.
+   */
+  async getUserByIdentifier(identifier: string): Promise<UserDto> {
+    const isEmail = identifier.includes('@');
+    const user = isEmail
+      ? await this.userRepository.findByEmail(identifier.toLowerCase())
+      : await this.userRepository.findByUsername(identifier.toLowerCase());
+
+    if (!user) {
+      throw new UserNotFoundException(identifier);
+    }
+    return toUserDto(user);
+  }
+
+  /**
    * Gets multiple users by their IDs.
    */
   async getUsersByIds(ids: string[]): Promise<UserDto[]> {

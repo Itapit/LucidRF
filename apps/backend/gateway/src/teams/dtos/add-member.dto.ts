@@ -1,11 +1,10 @@
-import { IsResourceId } from '@LucidRF/backend-common';
 import { AddMemberRequest, TeamRole } from '@LucidRF/common';
-import { IsEnum, IsNotEmpty } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
 export class AddMemberDto implements AddMemberRequest {
   @IsNotEmpty()
-  @IsResourceId()
-  targetUserId: string;
+  @IsString()
+  identifier: string;
 
   @IsNotEmpty()
   @IsEnum(TeamRole)

@@ -1,11 +1,12 @@
+import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { UserDto } from '@LucidRF/common';
 
 @Component({
   selector: 'app-top-header',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, OverlayModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './top-header.component.html',
 })
@@ -19,17 +20,11 @@ export class TopHeaderComponent {
 
   isDropdownOpen = false;
 
-  toggleDropdown(event: Event) {
-    event.stopPropagation();
+  toggleDropdown() {
     this.isDropdownOpen = !this.isDropdownOpen;
   }
 
   closeDropdown() {
-    this.isDropdownOpen = false;
-  }
-
-  @HostListener('document:click')
-  onDocumentClick() {
     this.isDropdownOpen = false;
   }
 }

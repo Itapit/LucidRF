@@ -45,7 +45,7 @@ export class MyWorkspaceComponent implements OnInit, OnDestroy {
     this.authFacade.logout();
   }
 
-  onFolderClick(folderId: string | null) {
+  onFolderClick(_folderId: string | null) {
     // Handle folder navigation
   }
 

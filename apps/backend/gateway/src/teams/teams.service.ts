@@ -11,7 +11,7 @@ import {
   UpdateMemberRolePayload,
   UpdateTeamPayload,
 } from '@LucidRF/teams-contracts';
-import { USER_PATTERNS, USER_SERVICE } from '@LucidRF/users-contracts';
+import { GetUserByIdentifierPayload, USER_PATTERNS, USER_SERVICE } from '@LucidRF/users-contracts';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
@@ -109,10 +109,15 @@ export class TeamsService {
   }
 
   async addMember(teamId: string, userId: string, dto: AddMemberDto): Promise<TeamDto> {
+    const userLookupPayload: GetUserByIdentifierPayload = { identifier: dto.identifier };
+    const targetUser = await firstValueFrom(
+      this.usersClient.send<UserDto>(USER_PATTERNS.GET_USER_BY_IDENTIFIER, userLookupPayload)
+    );
+
     const payload: AddMemberPayload = {
       teamId,
       actorId: userId,
-      targetUserId: dto.targetUserId,
+      targetUserId: targetUser.id,
       role: dto.role,
     };
     const team = await firstValueFrom(this.teamsClient.send<TeamDto>(TEAMS_PATTERNS.ADD_MEMBER, payload));

@@ -1,5 +1,17 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Inject,
+  Input,
+  OnDestroy,
+  Output,
+  PLATFORM_ID,
+  Renderer2,
+} from '@angular/core';
 
 @Component({
   selector: 'app-modal-wrapper',
@@ -25,10 +37,26 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
     `,
   ],
 })
-export class ModalWrapperComponent {
+export class ModalWrapperComponent implements AfterViewInit, OnDestroy {
   @Input() title = '';
   @Input() maxWidthClass = 'max-w-md';
   @Input() showFooter = true;
 
   @Output() closeModal = new EventEmitter<void>();
+
+  constructor(private el: ElementRef, private renderer: Renderer2, @Inject(PLATFORM_ID) private platformId: object) {}
+
+  ngAfterViewInit(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.renderer.appendChild(document.body, this.el.nativeElement);
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      if (this.el.nativeElement && this.el.nativeElement.parentNode === document.body) {
+        this.renderer.removeChild(document.body, this.el.nativeElement);
+      }
+    }
+  }
 }

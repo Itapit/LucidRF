@@ -2,6 +2,7 @@ import { UserDto } from '@LucidRF/common';
 import {
   AdminCreateUserPayload,
   GetUserByIdPayload,
+  GetUserByIdentifierPayload,
   GetUsersByIdsPayload,
   USER_PATTERNS,
 } from '@LucidRF/users-contracts';
@@ -21,6 +22,11 @@ export class UserController {
   @MessagePattern(USER_PATTERNS.GET_USER_BY_ID)
   async getUserById(@Payload() payload: GetUserByIdPayload): Promise<UserDto> {
     return this.userService.getUserById(payload.userId);
+  }
+
+  @MessagePattern(USER_PATTERNS.GET_USER_BY_IDENTIFIER)
+  async getUserByIdentifier(@Payload() payload: GetUserByIdentifierPayload): Promise<UserDto> {
+    return this.userService.getUserByIdentifier(payload.identifier);
   }
 
   @MessagePattern(USER_PATTERNS.GET_USERS_BY_IDS)

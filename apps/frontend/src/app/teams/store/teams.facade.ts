@@ -1,5 +1,11 @@
 import { inject, Injectable } from '@angular/core';
-import { AddMemberRequest, CreateTeamRequest, RemoveMemberRequest, UpdateTeamRequest } from '@LucidRF/common';
+import {
+  AddMemberRequest,
+  CreateTeamRequest,
+  RemoveMemberRequest,
+  UpdateMemberRoleRequest,
+  UpdateTeamRequest,
+} from '@LucidRF/common';
 import { Store } from '@ngrx/store';
 import { TeamsActions } from './teams.actions';
 import {
@@ -64,5 +70,10 @@ export class TeamsFacade {
   /** Dispatches the removeMember action */
   removeMember(teamId: string, request: RemoveMemberRequest) {
     this.store.dispatch(TeamsActions.removeMember({ teamId, request }));
+  }
+
+  /** Dispatches the updateMemberRole action */
+  updateMemberRole(teamId: string, targetUserId: string, request: UpdateMemberRoleRequest) {
+    this.store.dispatch(TeamsActions.updateMemberRole({ teamId, targetUserId, request }));
   }
 }

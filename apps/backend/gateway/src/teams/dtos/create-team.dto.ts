@@ -12,7 +12,8 @@ export class CreateTeamDto implements CreateTeamRequest {
   @MaxLength(200)
   description?: string;
 
+  @IsOptional()
   @IsEnum(TeamType)
   @NotEquals(TeamType.PERSONAL, { message: 'Cannot manually create a personal team' })
-  type: TeamType;
+  type?: TeamType = TeamType.COLLABORATIVE;
 }

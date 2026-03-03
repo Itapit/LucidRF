@@ -1,8 +1,9 @@
+import { Dialog, DialogModule } from '@angular/cdk/dialog';
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { TeamDto } from '@LucidRF/common';
-import { Observable } from 'rxjs';
+import { TeamDto, TeamRole } from '@LucidRF/common';
+import { firstValueFrom, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { AuthFacade } from '../../auth/store/auth.facade';
 import { FileTableComponent } from '../../components/files/file-table.component';
@@ -26,6 +27,7 @@ import { TeamsFacade } from '../../teams/store/teams.facade';
     FileTableComponent,
     TeamFormComponent,
     MemberListComponent,
+    DialogModule,
   ],
   templateUrl: './team-detail.component.html',
   host: { class: 'flex-1 flex overflow-hidden w-full h-full' },
@@ -42,25 +44,29 @@ export class TeamDetailComponent implements OnInit, OnDestroy {
   files$ = this.filesFacade.files$;
   folders$ = this.filesFacade.folders$;
   user$ = this.authFacade.user$;
-  isOwner$: Observable<boolean>;
+  currentUserRole$: Observable<TeamRole | null>;
+  canManageTeam$: Observable<boolean>;
 
-  showSettings = false;
-  showMembers = false;
+  private dialog = inject(Dialog);
 
   constructor() {
     this.teamId$ = this.route.params.pipe(map((params) => params['id']));
     this.team$ = this.teamId$.pipe(switchMap((id) => this.teamsFacade.selectTeamById(id)));
 
-    this.isOwner$ = this.team$.pipe(
+    this.currentUserRole$ = this.team$.pipe(
       switchMap((team) =>
         this.user$.pipe(
           map((user) => {
-            if (!team || !user) return false;
+            if (!team || !user) return null;
             const member = team.members.find((m) => m.userId === user.id);
-            return member?.role === 'OWNER';
+            return member ? (member.role as TeamRole) : null;
           })
         )
       )
+    );
+
+    this.canManageTeam$ = this.currentUserRole$.pipe(
+      map((role) => role === TeamRole.OWNER || role === TeamRole.MANAGER)
     );
   }
 
@@ -84,7 +90,7 @@ export class TeamDetailComponent implements OnInit, OnDestroy {
     this.authFacade.logout();
   }
 
-  onFolderClick(folderId: string | null) {
+  onFolderClick(_folderId: string | null) {
     // Navigate or filter
   }
 
@@ -96,21 +102,64 @@ export class TeamDetailComponent implements OnInit, OnDestroy {
     // Open upload flow
   }
 
-  onUpdateTeam(id: string, data: any) {
-    this.teamsFacade.updateTeam(id, data);
-    this.showSettings = false;
+  openSettings(team: TeamDto) {
+    const dialogRef = this.dialog.open<{ action: string; data?: Partial<TeamDto> }>(TeamFormComponent, {
+      data: { team, showDangerZone: true },
+      hasBackdrop: false, // ModalWrapperComponent provides its own backdrop
+    });
+
+    dialogRef.closed.subscribe((result: { action: string; data?: any } | undefined) => {
+      if (!result) return;
+      if (result.action === 'submit' && result.data) {
+        this.onUpdateTeam(team.id, result.data);
+      } else if (result.action === 'delete') {
+        this.onDeleteTeam(team.id);
+      }
+    });
   }
 
-  onDeleteTeam(id: string) {
+  async openMembers(team: TeamDto) {
+    const currentUserRole = await firstValueFrom(this.currentUserRole$).catch(() => null);
+    const user = await firstValueFrom(this.user$).catch(() => null);
+    const currentUserId = user?.id || '';
+
+    const dialogRef = this.dialog.open(MemberListComponent, {
+      data: { team, currentUserRole, currentUserId },
+      hasBackdrop: false, // ModalWrapperComponent provides its own backdrop
+    });
+
+    // Listen to component instance events natively without closing dialog
+    if (dialogRef.componentInstance) {
+      dialogRef.componentInstance.inviteMember.subscribe((identifier: string) => {
+        this.onInviteMember(team.id, identifier);
+      });
+      dialogRef.componentInstance.removeMember.subscribe((userId: string) => {
+        this.onRemoveMember(team.id, userId);
+      });
+      dialogRef.componentInstance.updateRole.subscribe((event: { userId: string; role: TeamRole }) => {
+        this.onUpdateMemberRole(team.id, event);
+      });
+    }
+  }
+
+  private onUpdateTeam(id: string, data: Partial<TeamDto>) {
+    this.teamsFacade.updateTeam(id, data);
+  }
+
+  private onDeleteTeam(id: string) {
     this.teamsFacade.deleteTeam(id);
     this.navigationService.toHome();
   }
 
-  onInviteMember(teamId: string, emailOrId: string) {
-    this.teamsFacade.addMember(teamId, { targetUserId: emailOrId, role: 'MEMBER' as any });
+  private onInviteMember(teamId: string, identifier: string) {
+    this.teamsFacade.addMember(teamId, { identifier, role: TeamRole.MEMBER });
   }
 
-  onRemoveMember(teamId: string, userId: string) {
+  private onUpdateMemberRole(teamId: string, event: { userId: string; role: TeamRole }) {
+    this.teamsFacade.updateMemberRole(teamId, event.userId, { role: event.role });
+  }
+
+  private onRemoveMember(teamId: string, userId: string) {
     this.teamsFacade.removeMember(teamId, { targetUserId: userId });
   }
 }
