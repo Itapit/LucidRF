@@ -46,6 +46,16 @@ export class TeamMongoRepository implements TeamRepository {
       .exec();
   }
 
+  async updateMemberRole(teamId: string, userId: string, role: TeamRole): Promise<TeamSchema | null> {
+    return this.teamModel
+      .findOneAndUpdate(
+        { _id: teamId, 'members.userId': new Types.ObjectId(userId) },
+        { $set: { 'members.$.role': role } },
+        { new: true }
+      )
+      .exec();
+  }
+
   async delete(id: string): Promise<boolean> {
     const result = await this.teamModel.deleteOne({ _id: id }).exec();
     return result.deletedCount === 1;

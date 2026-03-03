@@ -7,6 +7,7 @@ import {
   FindOneTeamPayload,
   GetUserTeamsPayload,
   RemoveMemberPayload,
+  UpdateMemberRolePayload,
   UpdateTeamPayload,
 } from '@LucidRF/teams-contracts';
 import { Injectable } from '@nestjs/common';
@@ -165,6 +166,72 @@ export class TeamsService {
       throw new TeamNotFoundException(payload.teamId);
     }
     return this.mapToDto(updated);
+  }
+
+  /**
+   * Update a member's role.
+   */
+  async updateMemberRole(payload: UpdateMemberRolePayload): Promise<TeamDto> {
+    const team = await this.findOne({ teamId: payload.teamId });
+
+    const actorMembership = team.members.find((m) => m.userId === payload.actorId);
+    const targetMembership = team.members.find((m) => m.userId === payload.targetUserId);
+
+    if (!targetMembership) {
+      throw new InvalidTeamOperationException('User is not a member of this team');
+    }
+
+    if (!actorMembership) {
+      throw new TeamPermissionDeniedException('Actor is not a member of this team');
+    }
+
+    const isSelf = payload.targetUserId === payload.actorId;
+
+    if (isSelf) {
+      // Allow self-demotion from Owner, but ensure there's at least one other Owner
+      if (actorMembership.role === TeamRole.OWNER && payload.role !== TeamRole.OWNER) {
+        const ownerCount = team.members.filter((m) => m.role === TeamRole.OWNER).length;
+        if (ownerCount <= 1) {
+          throw new InvalidTeamOperationException('Cannot demote the last owner of the team');
+        }
+      }
+      // Self-demotion from Manager to Member is fine. Self-promotion shouldn't happen via this path normally,
+      // but let's enforce role checks below anyway.
+    }
+
+    if (actorMembership.role === TeamRole.MEMBER) {
+      throw new TeamPermissionDeniedException('Members cannot change roles');
+    }
+
+    if (actorMembership.role === TeamRole.MANAGER) {
+      // Managers can only manage regular members and other managers (up to manager)
+      // They can't touch Owners.
+      if (targetMembership.role === TeamRole.OWNER) {
+        throw new TeamPermissionDeniedException('Managers cannot change the role of an Owner');
+      }
+      // They also cannot promote anyone to Owner.
+      if (payload.role === TeamRole.OWNER) {
+        throw new TeamPermissionDeniedException('Managers cannot promote someone to Owner');
+      }
+    }
+
+    // Owner can do anything (except we already checked last owner demoting self)
+    if (
+      actorMembership.role === TeamRole.OWNER &&
+      targetMembership.role === TeamRole.OWNER &&
+      payload.role !== TeamRole.OWNER &&
+      !isSelf
+    ) {
+      // An owner can demote another owner, but we must ensure at least 1 owner remains.
+      // Since the actor is an owner and NOT the target, there's at least the actor remaining as owner.
+      // So this is safe.
+    }
+
+    const updatedTeam = await this.teamRepository.updateMemberRole(payload.teamId, payload.targetUserId, payload.role);
+    if (!updatedTeam) {
+      throw new TeamNotFoundException(payload.teamId);
+    }
+    return this.mapToDto(updatedTeam);
   }
 
   /**

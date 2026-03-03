@@ -7,4 +7,5 @@ export * from './team-role.enum';
 export * from './team-type.enum';
 export * from './team.dto';
 export * from './teams-errors.codes';
+export * from './update-member-role.request';
 export * from './update-team.request';

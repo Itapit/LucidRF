@@ -1,8 +1,9 @@
 import {
   AddMemberRequest,
   CreateTeamRequest,
-  TeamDto,
   RemoveMemberRequest,
+  TeamDto,
+  UpdateMemberRoleRequest,
   UpdateTeamRequest,
 } from '@LucidRF/common';
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
@@ -40,5 +41,9 @@ export const TeamsActions = createActionGroup({
     'Remove Member': props<{ teamId: string; request: RemoveMemberRequest }>(),
     'Remove Member Success': props<{ team: TeamDto }>(),
     'Remove Member Failure': props<{ error: ActionError<TeamsErrorSource> }>(),
+
+    'Update Member Role': props<{ teamId: string; targetUserId: string; request: UpdateMemberRoleRequest }>(),
+    'Update Member Role Success': props<{ team: TeamDto }>(),
+    'Update Member Role Failure': props<{ error: ActionError<TeamsErrorSource> }>(),
   },
 });

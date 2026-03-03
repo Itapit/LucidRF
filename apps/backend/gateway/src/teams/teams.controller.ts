@@ -2,7 +2,7 @@ import { TeamDto } from '@LucidRF/common';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AccessAuthenticatedRequest } from '../auth/types/access-jwt.types';
-import { AddMemberDto, CreateTeamDto, TeamMemberParamsDto, UpdateTeamDto } from './dtos';
+import { AddMemberDto, CreateTeamDto, TeamMemberParamsDto, UpdateMemberRoleDto, UpdateTeamDto } from './dtos';
 import { TeamIdParamsDto } from './dtos/team-id.dto';
 import { TeamsService } from './teams.service';
 
@@ -42,6 +42,15 @@ export class TeamsController {
     @Req() req: AccessAuthenticatedRequest
   ): Promise<TeamDto> {
     return this.teamsService.addMember(params.teamId, req.user.userId, dto);
+  }
+
+  @Patch(':teamId/members/:targetUserId/role')
+  async updateMemberRole(
+    @Param() params: TeamMemberParamsDto,
+    @Body() dto: UpdateMemberRoleDto,
+    @Req() req: AccessAuthenticatedRequest
+  ): Promise<TeamDto> {
+    return this.teamsService.updateMemberRole(params.teamId, req.user.userId, params.targetUserId, dto);
   }
 
   @Delete(':teamId/members/:targetUserId')

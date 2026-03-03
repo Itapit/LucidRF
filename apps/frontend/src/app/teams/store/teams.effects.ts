@@ -137,4 +137,22 @@ export class TeamsEffects {
       )
     )
   );
+
+  updateMemberRole$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(TeamsActions.updateMemberRole),
+      concatMap(({ teamId, targetUserId, request }) =>
+        this.teamsService.updateUserRole(teamId, targetUserId, request).pipe(
+          map((team) => TeamsActions.updateMemberRoleSuccess({ team })),
+          catchError((error) =>
+            of(
+              TeamsActions.updateMemberRoleFailure({
+                error: this.errorHandler.classifyActionError(error, TeamsErrorSource.UPDATE_MEMBER),
+              })
+            )
+          )
+        )
+      )
+    )
+  );
 }
