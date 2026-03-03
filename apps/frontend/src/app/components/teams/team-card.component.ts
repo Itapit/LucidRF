@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { TeamDto } from '@LucidRF/common';
+import { TeamDto, TeamType } from '@LucidRF/common';
 
 @Component({
   selector: 'app-team-card',
@@ -12,4 +12,6 @@ import { TeamDto } from '@LucidRF/common';
 export class TeamCardComponent {
   @Input({ required: true }) team!: TeamDto;
   @Output() teamClick = new EventEmitter<string>();
+
+  TeamType = TeamType;
 }

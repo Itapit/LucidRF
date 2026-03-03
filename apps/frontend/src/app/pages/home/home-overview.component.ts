@@ -21,6 +21,8 @@ export class HomeOverviewComponent {
   private navigationService = inject(NavigationService);
 
   teams$ = this.teamsFacade.teams$;
+  personalTeam$ = this.teamsFacade.personalTeam$;
+  collaborativeTeams$ = this.teamsFacade.collaborativeTeams$;
   user$ = this.authFacade.user$;
 
   private dialog = inject(Dialog);

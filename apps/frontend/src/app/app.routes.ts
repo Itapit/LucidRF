@@ -11,7 +11,7 @@ export const appRoutes: Routes = [
 
   {
     path: AppRoute.ADMIN,
-    loadChildren: () => import('./admin/admin.module').then((m) => m.AdminModule),
+    loadComponent: () => import('./pages/admin/admin-create-user.component').then((m) => m.AdminCreateUserComponent),
     canMatch: [adminGuard],
   },
   {

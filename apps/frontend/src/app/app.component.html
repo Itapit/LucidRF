@@ -34,7 +34,7 @@
     <app-global-sidebar
       *ngIf="isLoggedIn$ | async"
       [teams]="(teams$ | async) || []"
-      [isAdmin]="$any(role$ | async) === 'ADMIN'"
+      [isAdmin]="(role$ | async) === SystemRole.ADMIN"
       (goHome)="goHome()"
       (goWorkspace)="goWorkspace()"
       (goTeam)="goTeam($event)"

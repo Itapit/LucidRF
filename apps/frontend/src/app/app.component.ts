@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { SystemRole } from '@LucidRF/common';
 import { AuthFacade } from './auth/store/auth.facade';
 import { NavigationService } from './core/navigation/navigation.service';
 import { CoreFacade } from './core/store/core.facade';
@@ -19,7 +20,8 @@ export class AppComponent {
   isAppLoading$ = this.authFacade.isAppLoading$;
   isLoggedIn$ = this.authFacade.isLoggedIn$;
   role$ = this.authFacade.role$;
-  teams$ = this.teamsFacade.teams$;
+  teams$ = this.teamsFacade.collaborativeTeams$;
+  SystemRole = SystemRole;
 
   reloadApp(): void {
     window.location.reload();

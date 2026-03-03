@@ -9,6 +9,8 @@ import {
 import { Store } from '@ngrx/store';
 import { TeamsActions } from './teams.actions';
 import {
+  selectCollaborativeTeams,
+  selectPersonalTeam,
   selectTeamById,
   selectTeams,
   selectTeamsError,
@@ -34,6 +36,12 @@ export class TeamsFacade {
 
   /** Emits the full list of teams */
   teams$ = this.store.select(selectTeams);
+
+  /** Emits the personal workspace team */
+  personalTeam$ = this.store.select(selectPersonalTeam);
+
+  /** Emits the list of collaborative teams */
+  collaborativeTeams$ = this.store.select(selectCollaborativeTeams);
 
   /** Emits a specific team by ID */
   selectTeamById(teamId: string) {

@@ -9,9 +9,21 @@
   <main class="flex-1 overflow-y-auto px-8 pb-20 hide-scrollbar">
     <!-- Active Teams Strip -->
     <section class="mb-16 mt-4 animate-fade-in-delayed">
-      <h2 class="text-sm font-bold uppercase tracking-widest text-gray-400 font-sans mb-6">Active Teams</h2>
+      <h2 class="text-sm font-bold uppercase tracking-widest text-gray-400 font-sans mb-6">Workspaces & Teams</h2>
       <div class="flex gap-4 overflow-x-auto pb-4 hide-scrollbar">
-        <app-team-card *ngFor="let team of teams$ | async" [team]="team" (teamClick)="goToTeam($event)"></app-team-card>
+        <!-- Personal Workspace -->
+        <app-team-card
+          *ngIf="personalTeam$ | async as personalTeam"
+          [team]="personalTeam"
+          (teamClick)="goToTeam($event)"
+        ></app-team-card>
+
+        <!-- Collaborative Teams -->
+        <app-team-card
+          *ngFor="let team of collaborativeTeams$ | async"
+          [team]="team"
+          (teamClick)="goToTeam($event)"
+        ></app-team-card>
 
         <!-- Create New Team Card -->
         <div
