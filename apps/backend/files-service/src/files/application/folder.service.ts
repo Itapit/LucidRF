@@ -41,22 +41,20 @@ export class FolderService {
   }
 
   async listContent(payload: GetContentPayload) {
-    const { userId, folderId } = payload;
+    const { userId, teamId, folderId } = payload;
     const targetId = folderId || null;
-    let targetTeamIds: string[] = [];
+
+    // Validate the user has access to the requested team
+    await this.validateTeamAccess(userId, teamId);
 
     if (targetId) {
       const folder = await this.folderRepository.findById(targetId);
-      if (!folder) throw new ResourceNotFoundException(targetId);
-
-      await this.validateTeamAccess(userId, folder.teamId);
-      targetTeamIds = [folder.teamId];
-    } else {
-      targetTeamIds = await this.teamsService.getUserTeamIds(userId);
-      if (targetTeamIds.length === 0) {
-        return { files: [], folders: [] };
+      if (!folder || folder.teamId !== teamId) {
+        throw new ResourceNotFoundException(targetId);
       }
     }
+
+    const targetTeamIds = [teamId];
 
     const [files, folders] = await Promise.all([
       this.fileRepository.findByFolder(targetId, targetTeamIds),

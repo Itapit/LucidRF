@@ -56,7 +56,7 @@ export class RefreshInterceptor implements HttpInterceptor {
       // This is a "final failure" (e.g., bad refresh token).
       // We must log the user out.
       this.isRefreshing = false;
-      this.store.dispatch(AuthActions.logoutStart());
+      this.store.dispatch(AuthActions.logout());
       return throwError(() => error);
     }
 
@@ -86,7 +86,7 @@ export class RefreshInterceptor implements HttpInterceptor {
       this.isRefreshing = true;
       this.refreshTokenSubject.next(null); // Mark as in-progress
 
-      this.store.dispatch(AuthActions.refreshStart());
+      this.store.dispatch(AuthActions.refresh());
 
       return this.actions$.pipe(
         ofType(AuthActions.refreshSuccess, AuthActions.refreshFailure),

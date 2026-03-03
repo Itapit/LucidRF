@@ -8,7 +8,7 @@ export const loggedOutGuard: CanActivateFn = () => {
   const nav = inject(NavigationService);
   const authFacade = inject(AuthFacade);
 
-  return authFacade.isInitialized$.pipe(
+  return authFacade.loaded$.pipe(
     // Wait for the App Init (Refresh Token Check) to finish
     filter((isInitialized) => isInitialized),
     take(1),

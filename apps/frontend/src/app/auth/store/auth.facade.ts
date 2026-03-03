@@ -9,7 +9,7 @@ import {
   selectCompleteSetupError,
   selectEmail,
   selectIsAppLoading,
-  selectIsInitialized,
+  selectAuthLoaded,
   selectIsLoggedIn,
   selectIsLoggedOut,
   selectIsPending,
@@ -62,7 +62,7 @@ export class AuthFacade {
   /**
    * True once the initial "Refresh Token" check has finished (success or fail).
    */
-  readonly isInitialized$ = this.store.select(selectIsInitialized);
+  readonly loaded$ = this.store.select(selectAuthLoaded);
 
   // --- Derived Observables ---
 
@@ -91,14 +91,14 @@ export class AuthFacade {
    * @param request The user's email and password.
    */
   login(request: LoginRequest) {
-    this.store.dispatch(AuthActions.loginStart({ request }));
+    this.store.dispatch(AuthActions.login({ request }));
   }
 
   /**Dispatches the admin create user action
    * @param request The new user's email password and role
    */
   adminCreateUser(request: AdminCreateUserRequest) {
-    this.store.dispatch(AuthActions.adminCreateUserStart({ request }));
+    this.store.dispatch(AuthActions.adminCreateUser({ request }));
   }
 
   /**
@@ -106,21 +106,21 @@ export class AuthFacade {
    * @param request The user's new password.
    */
   completeSetup(request: CompleteSetupRequest) {
-    this.store.dispatch(AuthActions.completeSetupStart({ request }));
+    this.store.dispatch(AuthActions.completeSetup({ request }));
   }
 
   /**
    * Dispatches the refresh action (called by the interceptor).
    */
   refresh() {
-    this.store.dispatch(AuthActions.refreshStart());
+    this.store.dispatch(AuthActions.refresh());
   }
 
   /**
    * Dispatches the logout action.
    */
   logout() {
-    this.store.dispatch(AuthActions.logoutStart());
+    this.store.dispatch(AuthActions.logout());
   }
 
   /**

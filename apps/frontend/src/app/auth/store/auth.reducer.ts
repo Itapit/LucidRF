@@ -10,12 +10,12 @@ export const authReducer = createReducer(
 
   // --- API Calls Start ---
   on(
-    AuthActions.loginStart,
-    AuthActions.completeSetupStart,
-    AuthActions.refreshStart,
-    AuthActions.loadMeStart,
-    AuthActions.logoutStart,
-    AuthActions.adminCreateUserStart,
+    AuthActions.login,
+    AuthActions.completeSetup,
+    AuthActions.refresh,
+    AuthActions.loadMe,
+    AuthActions.logout,
+    AuthActions.adminCreateUser,
     (state) => ({
       ...state,
       loading: true,
@@ -40,7 +40,7 @@ export const authReducer = createReducer(
     loading: false,
     error: error,
     sessionStatus: SessionStatus.LOGGED_OUT,
-    isInitialized: true,
+    loaded: true,
   })),
 
   // --- Specific Success Cases ---
@@ -57,7 +57,7 @@ export const authReducer = createReducer(
         loading: false,
         user: null,
         sessionStatus: SessionStatus.PENDING,
-        isInitialized: true,
+        loaded: true,
       };
     }
 
@@ -69,7 +69,7 @@ export const authReducer = createReducer(
       error: null,
       user: loginResponse.user,
       sessionStatus: SessionStatus.ACTIVE,
-      isInitialized: true,
+      loaded: true,
     };
   }),
 
@@ -87,12 +87,12 @@ export const authReducer = createReducer(
     error: null,
     user: user,
     sessionStatus: user.status as unknown as SessionStatus,
-    isInitialized: true,
+    loaded: true,
   })),
 
   /**
    * This action just stops the loading spinner.
-   * The user data is loaded by the 'loadMeStart' effect it dispatches.
+   * The user data is loaded by the 'loadMe' effect it dispatches.
    */
   on(AuthActions.refreshSuccess, (state) => ({
     ...state,

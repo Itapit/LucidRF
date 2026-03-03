@@ -6,7 +6,7 @@ import { TeamsService } from '../services/teams.service';
 import { TeamsActions } from './teams.actions';
 
 import { Action } from '@ngrx/store';
-import { TeamsError } from '../dto/teams-error';
+
 import { TeamsErrorSource } from '../dto/teams-error-source.enum';
 
 @Injectable()
@@ -33,7 +33,7 @@ export class TeamsEffects {
           catchError((error) => {
             return of(
               TeamsActions.loadTeamsFailure({
-                error: this.createError(error, TeamsErrorSource.LOAD),
+                error: this.errorHandler.classifyActionError(error, TeamsErrorSource.LOAD),
               })
             );
           })
@@ -54,7 +54,7 @@ export class TeamsEffects {
           catchError((error) =>
             of(
               TeamsActions.createTeamFailure({
-                error: this.createError(error, TeamsErrorSource.CREATE),
+                error: this.errorHandler.classifyActionError(error, TeamsErrorSource.CREATE),
               })
             )
           )
@@ -73,7 +73,7 @@ export class TeamsEffects {
           catchError((error) =>
             of(
               TeamsActions.updateTeamFailure({
-                error: this.createError(error, TeamsErrorSource.UPDATE),
+                error: this.errorHandler.classifyActionError(error, TeamsErrorSource.UPDATE),
               })
             )
           )
@@ -92,7 +92,7 @@ export class TeamsEffects {
           catchError((error) =>
             of(
               TeamsActions.deleteTeamFailure({
-                error: this.createError(error, TeamsErrorSource.DELETE),
+                error: this.errorHandler.classifyActionError(error, TeamsErrorSource.DELETE),
               })
             )
           )
@@ -111,7 +111,7 @@ export class TeamsEffects {
           catchError((error) =>
             of(
               TeamsActions.addMemberFailure({
-                error: this.createError(error, TeamsErrorSource.ADD_MEMBER),
+                error: this.errorHandler.classifyActionError(error, TeamsErrorSource.ADD_MEMBER),
               })
             )
           )
@@ -129,7 +129,7 @@ export class TeamsEffects {
           catchError((error) =>
             of(
               TeamsActions.removeMemberFailure({
-                error: this.createError(error, TeamsErrorSource.REMOVE_MEMBER),
+                error: this.errorHandler.classifyActionError(error, TeamsErrorSource.REMOVE_MEMBER),
               })
             )
           )
@@ -137,14 +137,4 @@ export class TeamsEffects {
       )
     )
   );
-
-  /**
-   * Helper to construct the TeamsError object using the ErrorHandlerService.
-   */
-  private createError(error: unknown, source: TeamsErrorSource): TeamsError {
-    return {
-      message: this.errorHandler.classifyError(error),
-      source,
-    };
-  }
 }

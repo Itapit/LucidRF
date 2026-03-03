@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import { ActionError } from "./store/action-error.interface";
 import { Store } from '@ngrx/store';
 import { CoreActions } from './store/core.actions';
 
@@ -73,5 +74,13 @@ export class ErrorHandlerService {
    */
   private dispatchGlobalError(error: string): void {
     this.store.dispatch(CoreActions.setGlobalError({ error }));
+  }
+
+
+  public classifyActionError<T>(error: unknown, source: T): ActionError<T> {
+    return {
+      message: this.classifyError(error),
+      source,
+    };
   }
 }
