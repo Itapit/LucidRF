@@ -8,7 +8,6 @@ import { AuthFacade } from '../../auth/store/auth.facade';
   selector: 'app-admin-create-user',
   standalone: false,
   templateUrl: './admin-create-user.component.html',
-  styleUrls: ['./admin-create-user.component.css'],
 })
 export class AdminCreateUserComponent implements OnInit {
   private fb = inject(FormBuilder);

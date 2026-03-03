@@ -7,11 +7,19 @@ import { AppComponent } from './app.component';
 import { appRoutes } from './app.routes';
 import { CredentialsInterceptor } from './auth/infrastructure/interceptors/credentials.interceptor';
 import { RefreshInterceptor } from './auth/infrastructure/interceptors/refresh.interceptor';
+import { GlobalSidebarComponent } from './components/shared/layout/global-sidebar.component';
 import { AppStoreModule } from './state/app-store.module';
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserModule, HttpClientModule, BrowserAnimationsModule, RouterModule.forRoot(appRoutes), AppStoreModule],
+  imports: [
+    BrowserModule,
+    HttpClientModule,
+    BrowserAnimationsModule,
+    RouterModule.forRoot(appRoutes),
+    AppStoreModule,
+    GlobalSidebarComponent,
+  ],
   bootstrap: [AppComponent],
   providers: [
     {

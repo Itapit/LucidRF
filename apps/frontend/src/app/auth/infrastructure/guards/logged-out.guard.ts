@@ -16,9 +16,9 @@ export const loggedOutGuard: CanActivateFn = () => {
     switchMap(() => authFacade.isLoggedIn$),
 
     map((isLoggedIn) => {
-      // If user IS logged in, they shouldn't be here. Send to Dashboard.
+      // If user IS logged in, they shouldn't be here. Send to Home.
       if (isLoggedIn) {
-        return nav.createDashboardUrlTree();
+        return nav.createHomeUrlTree();
       }
 
       // If user is NOT logged in, they are allowed to view the Login page.

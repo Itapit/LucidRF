@@ -1,11 +1,10 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, concatMap, map, mergeMap, of, switchMap } from 'rxjs';
+import { AuthActions } from '../../auth/store/auth.actions';
 import { ErrorHandlerService } from '../../core/error-handler.service';
 import { TeamsService } from '../services/teams.service';
 import { TeamsActions } from './teams.actions';
-
-import { Action } from '@ngrx/store';
 
 import { TeamsErrorSource } from '../dto/teams-error-source.enum';
 
@@ -15,13 +14,13 @@ export class TeamsEffects {
   private teamsService = inject(TeamsService);
   private errorHandler = inject(ErrorHandlerService);
 
-  /**
-   * TRIGGER: Automatically dispatch this action when the effect is initialized.
-   * This ensures teams load as soon as this module is lazy-loaded after login.
-   */
-  ngrxOnInitEffects(): Action {
-    return TeamsActions.loadTeams();
-  }
+  // --- INIT / AUTH ---
+  loadTeamsOnLogin$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.loadMeSuccess),
+      map(() => TeamsActions.loadTeams())
+    )
+  );
 
   // --- LOAD ---
   loadTeams$ = createEffect(() =>

@@ -1,0 +1,54 @@
+<div class="flex-1 flex flex-col overflow-hidden relative animate-fade-in w-full h-full">
+      <app-top-header variant="overview" [user]="user$ | async" (logout)="onLogout()" (editProfile)="onEditProfile()">
+        <ng-container left-content>
+          <h1 class="text-5xl font-normal tracking-tight font-serif text-lrf-dark leading-tight">Overview</h1>
+          <p class="text-gray-500 font-sans mt-2" *ngIf="user$ | async as user">Welcome back, {{ user.username }}.</p>
+        </ng-container>
+      </app-top-header>
+
+      <main class="flex-1 overflow-y-auto px-8 pb-20 hide-scrollbar">
+        <!-- Active Teams Strip -->
+        <section class="mb-16 mt-4 animate-fade-in-delayed">
+          <h2 class="text-sm font-bold uppercase tracking-widest text-gray-400 font-sans mb-6">Active Teams</h2>
+          <div class="flex gap-4 overflow-x-auto pb-4 hide-scrollbar">
+            <app-team-card
+              *ngFor="let team of teams$ | async"
+              [team]="team"
+              (teamClick)="goToTeam($event)"
+            ></app-team-card>
+
+            <!-- Create New Team Card -->
+            <div
+              (click)="showCreateModal = true"
+              class="min-w-[300px] bg-transparent p-6 rounded-2xl border-2 border-dashed border-gray-300 hover:border-black hover:bg-black/5 hover:shadow-md transition-all cursor-pointer flex flex-col items-center justify-center text-gray-400 hover:text-black team active:scale-95"
+            >
+              <div
+                class="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center mb-4 team-hover:scale-110 team-hover:bg-black team-hover:text-white transition-all"
+              >
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+              </div>
+              <span class="font-sans font-medium text-sm tracking-wide">Create New Team</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Recent Activity Grid Placeholder -->
+        <section class="animate-fade-in-delayed" style="animation-delay: 0.15s">
+          <div class="flex justify-between items-end mb-8 border-b border-gray-200 pb-4">
+            <h2 class="text-3xl font-medium tracking-tight">Recent Activity</h2>
+          </div>
+          <div class="text-center py-12 text-gray-500 bg-white border border-gray-200 border-dashed rounded-2xl">
+            Recent activity will appear here once you interact with files.
+          </div>
+        </section>
+      </main>
+
+      <app-team-form
+        *ngIf="showCreateModal"
+        [team]="null"
+        (cancel)="showCreateModal = false"
+        (submitForm)="onCreateTeam($event)"
+      ></app-team-form>
+    </div>

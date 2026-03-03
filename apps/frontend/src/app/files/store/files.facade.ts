@@ -18,6 +18,10 @@ export class FilesFacade {
   folders$ = this.store.select(selectFolders);
 
   // --- Action Dispatchers ---
+  clearContent() {
+    this.store.dispatch(FilesActions.clearContent());
+  }
+
   loadContent(teamId: string, folderId?: string) {
     this.store.dispatch(FilesActions.loadContent({ teamId, folderId }));
   }

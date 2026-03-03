@@ -1,13 +1,12 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { AuthFacade } from '../store/auth.facade';
+import { AuthFacade } from '../../../auth/store/auth.facade';
 
 @Component({
   selector: 'app-complete-setup',
   standalone: false,
   templateUrl: './complete-setup.component.html',
-  styleUrl: './complete-setup.component.css',
 })
 export class CompleteSetupComponent implements OnInit {
   private fb = inject(FormBuilder);

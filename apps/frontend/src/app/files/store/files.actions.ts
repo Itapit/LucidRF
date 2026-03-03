@@ -6,13 +6,16 @@ import {
   InitUploadResponse,
   ListContentResponse,
 } from '@LucidRF/common';
-import { createActionGroup, props } from '@ngrx/store';
+import { createActionGroup, emptyProps, props } from '@ngrx/store';
 import { ActionError } from '../../core/store/action-error.interface';
 import { FilesErrorSource } from '../dto/files-error-source.enum';
 
 export const FilesActions = createActionGroup({
   source: 'Files',
   events: {
+    // --- CLEAR CONTENT ---
+    'Clear Content': emptyProps(),
+
     // --- LOAD CONTENT ---
     'Load Content': props<{ teamId: string; folderId?: string }>(),
     'Load Content Success': props<{ response: ListContentResponse }>(),

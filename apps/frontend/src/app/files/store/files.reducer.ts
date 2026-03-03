@@ -1,16 +1,22 @@
 import { FileDto } from '@LucidRF/common';
 import { createFeature, createReducer, on } from '@ngrx/store';
+import { AuthActions } from '../../auth/store/auth.actions';
 import { FilesActions } from './files.actions';
 import { FILES_FEATURE_KEY, initialFilesState } from './files.state';
 
 export const filesReducer = createReducer(
   initialFilesState,
 
+  // --- GLOBAL ---
+  on(AuthActions.logoutSuccess, FilesActions.clearContent, () => initialFilesState),
+
   // --- LOAD CONTENT ---
   on(FilesActions.loadContent, (state) => ({
     ...state,
     loading: true,
     error: null,
+    files: [],
+    folders: [],
   })),
   on(FilesActions.loadContentSuccess, (state, { response }) => ({
     ...state,

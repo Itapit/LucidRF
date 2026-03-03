@@ -106,6 +106,7 @@ export const authReducer = createReducer(
   on(AuthActions.logoutSuccess, () => ({
     ...initialAuthState,
     sessionStatus: SessionStatus.LOGGED_OUT,
+    loaded: true,
   })),
 
   /**

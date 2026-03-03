@@ -1,9 +1,13 @@
 import { createFeature, createReducer, on } from '@ngrx/store';
+import { AuthActions } from '../../auth/store/auth.actions';
 import { TeamsActions } from './teams.actions';
 import { TEAMS_FEATURE_KEY, initialTeamsState } from './teams.state';
 
 export const teamsReducer = createReducer(
   initialTeamsState,
+
+  // --- GLOBAL ---
+  on(AuthActions.logoutSuccess, () => initialTeamsState),
 
   // --- LOAD ---
   on(TeamsActions.loadTeams, (state) => ({

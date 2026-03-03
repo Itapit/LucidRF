@@ -1,0 +1,25 @@
+<div class="px-8 py-4 flex justify-between items-center bg-lrf-sidebar border-b border-lrf-border">
+      <div class="flex items-center gap-2">
+        <h1 class="text-3xl font-medium tracking-tight" *ngIf="title">{{ title }}</h1>
+        <ng-content select="[left-actions]"></ng-content>
+      </div>
+      <div class="flex gap-3 font-sans text-sm">
+        <ng-content select="[right-actions]"></ng-content>
+
+        <!-- Default buttons -->
+        <button
+          *ngIf="showNewFolder"
+          (click)="newFolder.emit()"
+          class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors font-medium hover:shadow-sm"
+        >
+          New Folder
+        </button>
+        <button
+          *ngIf="showUpload"
+          (click)="uploadFile.emit()"
+          class="px-4 py-2 bg-black text-white rounded hover:bg-gray-800 transition-colors font-medium shadow-sm active:scale-95"
+        >
+          Upload File
+        </button>
+      </div>
+    </div>

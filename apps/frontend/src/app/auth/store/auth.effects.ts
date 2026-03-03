@@ -66,10 +66,22 @@ export class AuthEffects {
           }
           // It's a LoginResponse
           this.tokenService.setToken(response.accessToken);
-          this.navigationService.toDashboard();
+          this.navigationService.toHome();
         })
       ),
     { dispatch: false }
+  );
+
+  loadMeOnLoginSuccess$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.loginSuccess),
+      switchMap(({ response }) => {
+        if (isPendingLoginResponse(response)) {
+          return EMPTY;
+        }
+        return of(AuthActions.loadMe());
+      })
+    )
   );
 
   completeSetup$ = createEffect(() =>

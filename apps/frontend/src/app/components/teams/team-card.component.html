@@ -1,0 +1,41 @@
+<div
+      class="min-w-[300px] p-6 rounded-2xl border transition-all cursor-pointer relative overflow-hidden team hover:shadow-xl bg-white border-gray-200 hover:border-black"
+      (click)="teamClick.emit(team.id)"
+    >
+      <!-- Decorative corner blob -->
+      <div
+        class="absolute top-0 right-0 w-24 h-24 rounded-bl-full -mr-4 -mt-4 team-hover:scale-110 transition-transform opacity-20"
+        [style.background-color]="team.color"
+      ></div>
+
+      <div class="flex justify-between items-start mb-12">
+        <!-- Team Initials Avatar -->
+        <div
+          class="w-12 h-12 rounded-full text-white flex items-center justify-center font-bold text-lg z-10 team-hover:scale-105 transition-transform shadow-[0_4px_12px_rgba(0,0,0,0.2)]"
+          [style.background-color]="team.color"
+        >
+          {{ team.initials }}
+        </div>
+
+        <!-- Member Avatars -->
+        <div class="flex -space-x-3 z-10" *ngIf="team.members.length">
+          <ng-container *ngFor="let member of team.members | slice : 0 : 3">
+            <img
+              *ngIf="member.user"
+              [src]="'https://ui-avatars.com/api/?name=' + member.user.username + '&background=random'"
+              [alt]="member.user.username"
+              class="w-8 h-8 rounded-full border-2 border-white"
+            />
+          </ng-container>
+          <div
+            *ngIf="team.members.length > 3"
+            class="w-8 h-8 rounded-full bg-gray-100 border-2 border-white flex items-center justify-center text-[10px] font-sans text-black"
+          >
+            +{{ team.members.length - 3 }}
+          </div>
+        </div>
+      </div>
+
+      <h3 class="text-2xl font-medium mb-1">{{ team.name }}</h3>
+      <p class="font-sans text-sm text-gray-500">{{ team.members.length }} members</p>
+    </div>
