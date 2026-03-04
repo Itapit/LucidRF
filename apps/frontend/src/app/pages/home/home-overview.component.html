@@ -1,10 +1,10 @@
 <div class="flex-1 flex flex-col overflow-hidden relative animate-fade-in w-full h-full">
-  <app-top-header variant="overview" [user]="user$ | async" (logout)="onLogout()" (editProfile)="onEditProfile()">
+  <ui-top-header variant="overview" [user]="user$ | async" (logout)="onLogout()" (editProfile)="onEditProfile()">
     <ng-container left-content>
       <h1 class="text-5xl font-normal tracking-tight font-serif text-lrf-dark leading-tight">Overview</h1>
       <p class="text-gray-500 font-sans mt-2" *ngIf="user$ | async as user">Welcome back, {{ user.username }}.</p>
     </ng-container>
-  </app-top-header>
+  </ui-top-header>
 
   <main class="flex-1 overflow-y-auto px-8 pb-20 hide-scrollbar">
     <!-- Active Teams Strip -->
@@ -12,18 +12,18 @@
       <h2 class="text-sm font-bold uppercase tracking-widest text-gray-400 font-sans mb-6">Workspaces & Teams</h2>
       <div class="flex gap-4 overflow-x-auto pb-4 hide-scrollbar">
         <!-- Personal Workspace -->
-        <app-team-card
+        <ui-team-card
           *ngIf="personalTeam$ | async as personalTeam"
           [team]="personalTeam"
           (teamClick)="goToTeam($event)"
-        ></app-team-card>
+        ></ui-team-card>
 
         <!-- Collaborative Teams -->
-        <app-team-card
+        <ui-team-card
           *ngFor="let team of collaborativeTeams$ | async"
           [team]="team"
           (teamClick)="goToTeam($event)"
-        ></app-team-card>
+        ></ui-team-card>
 
         <!-- Create New Team Card -->
         <div

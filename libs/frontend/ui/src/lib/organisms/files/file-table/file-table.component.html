@@ -1,0 +1,91 @@
+<div class="flex-1 overflow-auto p-8 h-full hide-scrollbar">
+  <table class="w-full text-left font-sans text-sm border-collapse">
+    <thead class="sticky top-0 bg-white z-10 shadow-[0_1px_0_0_#e5e7eb]">
+      <tr class="text-gray-400 select-none">
+        <th class="py-3 font-medium px-4">File Name</th>
+        <th class="py-3 font-medium px-4">Size</th>
+        <th class="py-3 font-medium px-4">Pipeline Status</th>
+        <th class="py-3 font-medium px-4">Date Uploaded</th>
+        <th class="py-3 font-medium px-4 w-24">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="text-gray-700">
+      @for (file of files(); track file.resourceId) {
+      <tr
+        class="border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer team"
+        (click)="fileClick.emit(file)"
+      >
+        <!-- File Name -->
+        <td class="py-4 px-4 flex items-center gap-3">
+          <svg
+            class="w-6 h-6 team-hover:scale-110 transition-transform text-gray-400"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
+            />
+          </svg>
+          <span class="font-medium text-black transition-colors">{{ file.originalFileName }}</span>
+        </td>
+
+        <!-- Size -->
+        <td class="py-4 px-4 font-mono text-xs">{{ formatBytes(file.size) }}</td>
+
+        <!-- Status -->
+        <td class="py-4 px-4">
+          <span
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border shadow-sm"
+            [ngClass]="getStatusClasses(file.status)"
+          >
+            <span class="w-1.5 h-1.5 rounded-full" [ngClass]="getDotClasses(file.status)"></span>
+            {{ file.status | titlecase }}
+          </span>
+        </td>
+
+        <!-- Date -->
+        <td class="py-4 px-4 text-gray-500">{{ file.createdAt | date : 'mediumDate' }}</td>
+
+        <!-- Actions -->
+        <td class="py-4 px-4 text-right relative">
+          <button
+            class="text-gray-400 hover:text-black opacity-0 team-hover:opacity-100 transition-all p-1 hover:bg-gray-200 rounded"
+            (click)="toggleMenu($event, file.resourceId)"
+          >
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+              />
+            </svg>
+          </button>
+
+          @if (activeMenuId === file.resourceId) {
+          <div
+            class="absolute right-8 top-10 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50 animate-fade-in"
+            tabindex="0"
+            (keyup.enter)="$event.stopPropagation()"
+            (click)="$event.stopPropagation()"
+          >
+            <button
+              class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+              (click)="download.emit(file); closeMenu()"
+            >
+              Download
+            </button>
+            <button
+              class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+              (click)="delete.emit(file); closeMenu()"
+            >
+              Delete
+            </button>
+          </div>
+          }
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+</div>

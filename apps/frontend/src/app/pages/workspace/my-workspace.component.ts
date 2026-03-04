@@ -1,17 +1,25 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import {
+  FileTableComponent,
+  FolderSidebarComponent,
+  PageActionBarComponent,
+  TopHeaderComponent,
+} from '@LucidRF/ui';
 import { AuthFacade } from '../../auth/store/auth.facade';
-import { FileTableComponent } from '../../components/files/file-table.component';
-import { FolderSidebarComponent } from '../../components/files/folder-sidebar.component';
-import { PageActionBarComponent } from '../../components/shared/layout/page-action-bar.component';
-import { TopHeaderComponent } from '../../components/shared/layout/top-header.component';
 import { NavigationService } from '../../core/navigation/navigation.service';
 import { FilesFacade } from '../../files/store/files.facade';
 
 @Component({
   selector: 'app-my-workspace',
   standalone: true,
-  imports: [CommonModule, TopHeaderComponent, FolderSidebarComponent, PageActionBarComponent, FileTableComponent],
+  imports: [
+    CommonModule,
+    TopHeaderComponent,
+    FolderSidebarComponent,
+    PageActionBarComponent,
+    FileTableComponent,
+  ],
   templateUrl: './my-workspace.component.html',
   host: { class: 'flex-1 flex overflow-hidden w-full h-full' },
 })

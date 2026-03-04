@@ -1,0 +1,182 @@
+<nav
+  class="w-20 border-r border-lrf-border bg-white flex flex-col items-center py-6 z-30 shadow-[4px_0_24px_rgba(0,0,0,0.02)] shrink-0 h-full"
+>
+  <!-- Logo / Home Button -->
+  <div
+    class="relative flex justify-center w-full team cursor-pointer mb-6"
+    tabindex="0"
+    (keyup.enter)="goHome.emit()"
+    (click)="goHome.emit()"
+  >
+    <div
+      class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-2 bg-gray-300 rounded-r-full opacity-0 team-hover:opacity-100 transition-all team-hover:h-4"
+      [class.bg-black]="activeItem() === SidebarItem.HOME"
+      [class.opacity-100]="activeItem() === SidebarItem.HOME"
+      [class.h-6]="activeItem() === SidebarItem.HOME"
+    ></div>
+    <button
+      class="w-12 h-12 flex items-center justify-center rounded-xl font-bold tracking-tighter transition-all"
+      [class.bg-black]="activeItem() === SidebarItem.HOME"
+      [class.text-white]="activeItem() === SidebarItem.HOME"
+      [class.bg-gray-100]="activeItem() !== SidebarItem.HOME"
+      [class.text-black]="activeItem() !== SidebarItem.HOME"
+      [class.hover:bg-gray-800]="activeItem() !== SidebarItem.HOME"
+      [class.hover:text-white]="activeItem() !== SidebarItem.HOME"
+    >
+      LRF
+    </button>
+    <div
+      class="absolute left-16 bg-black text-white text-xs px-2 py-1 rounded opacity-0 team-hover:opacity-100 transition-opacity whitespace-nowrap z-50 top-1/2 -translate-y-1/2 pointer-events-none shadow-lg"
+    >
+      Overview
+    </div>
+  </div>
+
+  <!-- Global Upload Button -->
+  <div
+    class="relative flex justify-center w-full team cursor-pointer"
+    tabindex="0"
+    (keyup.enter)="uploadClick.emit()"
+    (click)="uploadClick.emit()"
+  >
+    <div
+      class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-2 bg-gray-300 rounded-r-full opacity-0 team-hover:opacity-100 transition-all team-hover:h-4"
+    ></div>
+    <button
+      class="w-10 h-10 rounded-full bg-orange-500 text-white shadow-[0_4px_12px_rgba(249,115,22,0.3)] flex items-center justify-center hover:-translate-y-0.5 active:scale-95 transition-all"
+    >
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      </svg>
+    </button>
+    <div
+      class="absolute left-16 bg-black text-white text-xs px-2 py-1 rounded opacity-0 team-hover:opacity-100 transition-opacity whitespace-nowrap z-50 top-1/2 -translate-y-1/2 pointer-events-none shadow-lg"
+    >
+      Upload File
+    </div>
+  </div>
+
+  <!-- Divider -->
+  <div class="w-8 h-px bg-gray-200 my-4"></div>
+
+  <!-- Teams Switcher -->
+  <div class="flex flex-col gap-4 w-full items-center">
+    <!-- Private Workspace Button -->
+    <div
+      class="relative flex justify-center w-full team cursor-pointer"
+      tabindex="0"
+      (keyup.enter)="goWorkspace.emit()"
+      (click)="goWorkspace.emit()"
+    >
+      <div
+        class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-2 bg-gray-300 rounded-r-full opacity-0 team-hover:opacity-100 transition-all team-hover:h-4"
+        [class.bg-black]="activeItem() === SidebarItem.WORKSPACE"
+        [class.opacity-100]="activeItem() === SidebarItem.WORKSPACE"
+        [class.h-6]="activeItem() === SidebarItem.WORKSPACE"
+      ></div>
+      <button
+        class="w-10 h-10 rounded-full flex items-center justify-center transition-all border"
+        [class.bg-gray-800]="activeItem() === SidebarItem.WORKSPACE"
+        [class.text-white]="activeItem() === SidebarItem.WORKSPACE"
+        [class.border-gray-800]="activeItem() === SidebarItem.WORKSPACE"
+        [class.shadow-md]="activeItem() === SidebarItem.WORKSPACE"
+        [class.bg-gray-100]="activeItem() !== SidebarItem.WORKSPACE"
+        [class.text-gray-600]="activeItem() !== SidebarItem.WORKSPACE"
+        [class.border-gray-200]="activeItem() !== SidebarItem.WORKSPACE"
+        [class.hover:bg-gray-200]="activeItem() !== SidebarItem.WORKSPACE"
+        [class.hover:text-black]="activeItem() !== SidebarItem.WORKSPACE"
+      >
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+          />
+        </svg>
+      </button>
+      <div
+        class="absolute left-16 bg-black text-white text-xs px-2 py-1 rounded opacity-0 team-hover:opacity-100 transition-opacity whitespace-nowrap z-50 top-1/2 -translate-y-1/2 pointer-events-none shadow-lg"
+      >
+        My Workspace
+      </div>
+    </div>
+
+    <!-- Team Items -->
+    <div
+      *ngFor="let team of teams()"
+      class="relative flex justify-center w-full team cursor-pointer"
+      tabindex="0"
+      (keyup.enter)="goTeam.emit(team.id)"
+      (click)="goTeam.emit(team.id)"
+    >
+      <div
+        class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-2 bg-gray-300 rounded-r-full opacity-0 team-hover:opacity-100 transition-all team-hover:h-4"
+        [class.bg-black]="activeTeamId() === team.id"
+        [class.opacity-100]="activeTeamId() === team.id"
+        [class.h-6]="activeTeamId() === team.id"
+      ></div>
+
+      <button
+        class="w-10 h-10 rounded-full text-white flex items-center justify-center font-bold text-sm transition-all hover:opacity-100 hover:border-2"
+        [style.background-color]="team.color"
+        [class.opacity-100]="activeTeamId() === team.id"
+        [class.border-2]="activeTeamId() === team.id"
+        [class.border-black]="activeTeamId() === team.id"
+        [class.shadow-[0_4px_12px_rgba(0,0,0,0.2)]]="activeTeamId() === team.id"
+        [class.opacity-90]="activeTeamId() !== team.id"
+        [class.shadow-sm]="activeTeamId() !== team.id"
+        [class.hover:border-black]="activeTeamId() !== team.id"
+      >
+        {{ team.initials }}
+      </button>
+
+      <div
+        class="absolute left-16 bg-black text-white text-xs px-2 py-1 rounded opacity-0 team-hover:opacity-100 transition-opacity whitespace-nowrap z-50 top-1/2 -translate-y-1/2 pointer-events-none shadow-lg"
+      >
+        {{ team.name }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Spacer pushes bottom items down -->
+  <div class="mt-auto"></div>
+
+  <!-- Admin Portal (only visible to admin users) -->
+  <div
+    *ngIf="isAdmin()"
+    class="relative flex justify-center w-full team cursor-pointer mb-2"
+    tabindex="0"
+    (keyup.enter)="goAdmin.emit()"
+    (click)="goAdmin.emit()"
+  >
+    <div
+      class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-2 bg-gray-300 rounded-r-full opacity-0 team-hover:opacity-100 transition-all team-hover:h-4"
+      [class.bg-black]="activeItem() === SidebarItem.ADMIN"
+      [class.opacity-100]="activeItem() === SidebarItem.ADMIN"
+      [class.h-6]="activeItem() === SidebarItem.ADMIN"
+    ></div>
+    <button
+      class="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
+      [class.bg-black]="activeItem() === SidebarItem.ADMIN"
+      [class.text-white]="activeItem() === SidebarItem.ADMIN"
+      [class.hover:bg-gray-100]="activeItem() !== SidebarItem.ADMIN"
+      [class.text-gray-500]="activeItem() !== SidebarItem.ADMIN"
+      [class.hover:text-black]="activeItem() !== SidebarItem.ADMIN"
+    >
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="1.5"
+          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+        />
+      </svg>
+    </button>
+    <div
+      class="absolute left-16 bg-black text-white text-xs px-2 py-1 rounded opacity-0 team-hover:opacity-100 transition-opacity whitespace-nowrap z-50 top-1/2 -translate-y-1/2 pointer-events-none shadow-lg"
+    >
+      Admin Portal
+    </div>
+  </div>
+</nav>

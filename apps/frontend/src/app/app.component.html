@@ -31,7 +31,7 @@
 <ng-template #shell>
   <div class="flex h-screen w-full bg-white overflow-hidden">
     <!-- Sidebar -->
-    <app-global-sidebar
+    <ui-global-sidebar
       *ngIf="isLoggedIn$ | async"
       [teams]="(teams$ | async) || []"
       [isAdmin]="(role$ | async) === SystemRole.ADMIN"
@@ -41,7 +41,7 @@
       (goAdmin)="goAdmin()"
       (uploadClick)="openUpload()"
     >
-    </app-global-sidebar>
+    </ui-global-sidebar>
 
     <!-- Main Content -->
     <main class="flex-1 flex flex-col overflow-hidden w-full h-full relative z-0 bg-white">

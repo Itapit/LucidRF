@@ -3,16 +3,19 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TeamDto, TeamRole } from '@LucidRF/common';
+import {
+  DialogAction,
+  DialogResult,
+  FileTableComponent,
+  FolderSidebarComponent,
+  MemberListComponent,
+  PageActionBarComponent,
+  TeamFormComponent,
+  TopHeaderComponent,
+} from '@LucidRF/ui';
 import { firstValueFrom, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { AuthFacade } from '../../auth/store/auth.facade';
-import { FileTableComponent } from '../../components/files/file-table.component';
-import { FolderSidebarComponent } from '../../components/files/folder-sidebar.component';
-import { PageActionBarComponent } from '../../components/shared/layout/page-action-bar.component';
-import { TopHeaderComponent } from '../../components/shared/layout/top-header.component';
-import { DialogAction, DialogResult } from '../../components/shared/modals/dialog.types';
-import { MemberListComponent } from '../../components/teams/member-list.component';
-import { TeamFormComponent } from '../../components/teams/team-form.component';
 import { NavigationService } from '../../core/navigation/navigation.service';
 import { FilesFacade } from '../../files/store/files.facade';
 import { TeamsFacade } from '../../teams/store/teams.facade';

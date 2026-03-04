@@ -1,11 +1,14 @@
 import { Dialog, DialogModule } from '@angular/cdk/dialog';
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import {
+  DialogAction,
+  DialogResult,
+  TeamCardComponent,
+  TeamFormComponent,
+  TopHeaderComponent,
+} from '@LucidRF/ui';
 import { AuthFacade } from '../../auth/store/auth.facade';
-import { TopHeaderComponent } from '../../components/shared/layout/top-header.component';
-import { DialogAction, DialogResult } from '../../components/shared/modals/dialog.types';
-import { TeamCardComponent } from '../../components/teams/team-card.component';
-import { TeamFormComponent } from '../../components/teams/team-form.component';
 import { NavigationService } from '../../core/navigation/navigation.service';
 import { TeamsFacade } from '../../teams/store/teams.facade';
 

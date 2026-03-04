@@ -1,14 +1,14 @@
 <div class="flex-1 flex flex-col h-full bg-white relative animate-fade-in w-full">
-  <app-top-header variant="solid" [user]="user$ | async" (logout)="onLogout()">
+  <ui-top-header variant="solid" [user]="user$ | async" (logout)="onLogout()">
     <div left-content class="flex items-center gap-2 text-sm font-medium text-gray-500 font-sans">
       <button class="hover:text-black transition-colors" (click)="goHome()">Teams</button>
       <span class="text-gray-300">/</span>
       <span class="text-black font-medium">My Workspace</span>
     </div>
-  </app-top-header>
+  </ui-top-header>
 
   <div class="flex-1 flex overflow-hidden">
-    <app-folder-sidebar
+    <ui-folder-sidebar
       title="My Workspace"
       [subtitle]="((files$ | async)?.length || 0) + ' files'"
       initials="ME"
@@ -17,16 +17,16 @@
       [folders]="folders$ | async"
       (folderClick)="onFolderClick()"
     >
-    </app-folder-sidebar>
+    </ui-folder-sidebar>
 
     <main class="flex-1 flex flex-col overflow-hidden bg-white relative">
-      <app-page-action-bar title="My Workspace" (newFolder)="onNewFolder()" (uploadFile)="onUploadFile()">
+      <ui-page-action-bar title="My Workspace" (newFolder)="onNewFolder()" (uploadFile)="onUploadFile()">
         <div left-actions class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400 ml-4">
           <button class="hover:text-black transition-colors">My Workspace</button>
         </div>
-      </app-page-action-bar>
+      </ui-page-action-bar>
 
-      <app-file-table [files]="files$ | async"></app-file-table>
+      <ui-file-table [files]="files$ | async"></ui-file-table>
     </main>
   </div>
 </div>
