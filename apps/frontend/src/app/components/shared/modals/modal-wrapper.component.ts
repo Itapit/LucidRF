@@ -5,12 +5,12 @@ import {
   Component,
   ElementRef,
   EventEmitter,
-  Inject,
   Input,
   OnDestroy,
   Output,
   PLATFORM_ID,
   Renderer2,
+  inject,
 } from '@angular/core';
 
 @Component({
@@ -44,7 +44,9 @@ export class ModalWrapperComponent implements AfterViewInit, OnDestroy {
 
   @Output() closeModal = new EventEmitter<void>();
 
-  constructor(private el: ElementRef, private renderer: Renderer2, @Inject(PLATFORM_ID) private platformId: object) {}
+  private el = inject(ElementRef);
+  private renderer = inject(Renderer2);
+  private platformId = inject(PLATFORM_ID);
 
   ngAfterViewInit(): void {
     if (isPlatformBrowser(this.platformId)) {

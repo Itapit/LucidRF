@@ -4,6 +4,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output
 import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TeamDto, TeamRole } from '@LucidRF/common';
 import { ModalWrapperComponent } from '../../components/shared/modals/modal-wrapper.component';
+import { DialogResult } from '../shared/modals/dialog.types';
 
 @Component({
   selector: 'app-member-list',
@@ -25,17 +26,17 @@ export class MemberListComponent implements OnInit {
   @Input() currentUserRole: TeamRole | null = null;
   @Input() currentUserId = '';
 
-  @Output() close = new EventEmitter<void>();
+  @Output() closeList = new EventEmitter<void>();
   @Output() inviteMember = new EventEmitter<string>();
   @Output() removeMember = new EventEmitter<string>();
   @Output() updateRole = new EventEmitter<{ userId: string; role: TeamRole }>();
 
   identifierInput = new FormControl('', { nonNullable: true, validators: [Validators.required] });
 
-  dialogRef = inject<DialogRef<any>>(DialogRef as any, { optional: true });
-  data: { team: TeamDto | null; currentUserRole: TeamRole | null; currentUserId: string } = inject(DIALOG_DATA, {
+  dialogRef = inject<DialogRef<DialogResult>>(DialogRef, { optional: true });
+  data: { team: TeamDto | null; currentUserRole: TeamRole | null; currentUserId: string } | null = inject(DIALOG_DATA, {
     optional: true,
-  }) as any;
+  });
 
   ngOnInit() {
     if (this.data) {
@@ -46,7 +47,7 @@ export class MemberListComponent implements OnInit {
   }
 
   onClose() {
-    this.close.emit();
+    this.closeList.emit();
     if (this.dialogRef) {
       this.dialogRef.close();
     }

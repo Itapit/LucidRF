@@ -4,6 +4,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TeamDto } from '@LucidRF/common';
 import { ModalWrapperComponent } from '../../components/shared/modals/modal-wrapper.component';
+import { DialogAction, DialogResult } from '../shared/modals/dialog.types';
 
 @Component({
   selector: 'app-team-form',
@@ -18,7 +19,7 @@ export class TeamFormComponent implements OnInit {
   }
   @Input() showDangerZone = false;
 
-  @Output() cancel = new EventEmitter<void>();
+  @Output() cancelForm = new EventEmitter<void>();
   @Output() submitForm = new EventEmitter<{ name: string; description: string }>();
   @Output() deleteTeam = new EventEmitter<void>();
 
@@ -29,10 +30,10 @@ export class TeamFormComponent implements OnInit {
     description: new FormControl('', { nonNullable: true }),
   });
 
-  dialogRef = inject<DialogRef<any>>(DialogRef as any, { optional: true });
-  data: { team: TeamDto | null; showDangerZone?: boolean } = inject(DIALOG_DATA, {
+  dialogRef = inject<DialogRef<DialogResult>>(DialogRef, { optional: true });
+  data: { team: TeamDto | null; showDangerZone?: boolean } | null = inject(DIALOG_DATA, {
     optional: true,
-  }) as any;
+  });
 
   ngOnInit() {
     if (this.data) {
@@ -54,7 +55,7 @@ export class TeamFormComponent implements OnInit {
   }
 
   onCancel() {
-    this.cancel.emit();
+    this.cancelForm.emit();
     if (this.dialogRef) {
       this.dialogRef.close();
     }
@@ -63,7 +64,7 @@ export class TeamFormComponent implements OnInit {
   onDeleteTeam() {
     this.deleteTeam.emit();
     if (this.dialogRef) {
-      this.dialogRef.close({ action: 'delete' });
+      this.dialogRef.close({ action: DialogAction.DELETE });
     }
   }
 
@@ -72,7 +73,7 @@ export class TeamFormComponent implements OnInit {
       const value = this.form.getRawValue();
       this.submitForm.emit(value);
       if (this.dialogRef) {
-        this.dialogRef.close({ action: 'submit', data: value });
+        this.dialogRef.close({ action: DialogAction.SUBMIT, data: value });
       }
     }
   }

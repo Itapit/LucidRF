@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { TeamDto } from '@LucidRF/common';
+import { SidebarItem } from './sidebar.types';
 
 @Component({
   selector: 'app-global-sidebar',
@@ -14,7 +15,7 @@ export class GlobalSidebarComponent {
   @Input() isAdmin = false;
 
   // Navigation active state
-  @Input() activeItem: 'home' | 'workspace' | 'admin' | 'team' = 'home';
+  @Input() activeItem: SidebarItem = SidebarItem.HOME;
   @Input() activeTeamId?: string;
 
   @Output() goHome = new EventEmitter<void>();

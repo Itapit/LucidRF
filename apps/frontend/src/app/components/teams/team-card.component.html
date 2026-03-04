@@ -1,5 +1,7 @@
 <div
   class="min-w-[300px] p-6 rounded-2xl border transition-all cursor-pointer relative overflow-hidden team hover:shadow-xl bg-white border-gray-200 hover:border-black"
+  tabindex="0"
+  (keyup.enter)="teamClick.emit(team.id)"
   (click)="teamClick.emit(team.id)"
 >
   <!-- Decorative corner blob -->

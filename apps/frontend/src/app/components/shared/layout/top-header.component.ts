@@ -14,7 +14,7 @@ export class TopHeaderComponent {
   @Input() variant: 'overview' | 'solid' = 'solid';
   @Input() user: UserDto | null = null;
 
-  @Output() search = new EventEmitter<string>();
+  @Output() searchQuery = new EventEmitter<string>();
   @Output() logout = new EventEmitter<void>();
   @Output() editProfile = new EventEmitter<void>();
 

@@ -10,6 +10,7 @@ import { FileTableComponent } from '../../components/files/file-table.component'
 import { FolderSidebarComponent } from '../../components/files/folder-sidebar.component';
 import { PageActionBarComponent } from '../../components/shared/layout/page-action-bar.component';
 import { TopHeaderComponent } from '../../components/shared/layout/top-header.component';
+import { DialogAction, DialogResult } from '../../components/shared/modals/dialog.types';
 import { MemberListComponent } from '../../components/teams/member-list.component';
 import { TeamFormComponent } from '../../components/teams/team-form.component';
 import { NavigationService } from '../../core/navigation/navigation.service';
@@ -25,8 +26,6 @@ import { TeamsFacade } from '../../teams/store/teams.facade';
     FolderSidebarComponent,
     PageActionBarComponent,
     FileTableComponent,
-    TeamFormComponent,
-    MemberListComponent,
     DialogModule,
   ],
   templateUrl: './team-detail.component.html',
@@ -90,7 +89,7 @@ export class TeamDetailComponent implements OnInit, OnDestroy {
     this.authFacade.logout();
   }
 
-  onFolderClick(_folderId: string | null) {
+  onFolderClick() {
     // Navigate or filter
   }
 
@@ -103,16 +102,16 @@ export class TeamDetailComponent implements OnInit, OnDestroy {
   }
 
   openSettings(team: TeamDto) {
-    const dialogRef = this.dialog.open<{ action: string; data?: Partial<TeamDto> }>(TeamFormComponent, {
+    const dialogRef = this.dialog.open<DialogResult<Partial<TeamDto>>>(TeamFormComponent, {
       data: { team, showDangerZone: true },
       hasBackdrop: false, // ModalWrapperComponent provides its own backdrop
     });
 
-    dialogRef.closed.subscribe((result: { action: string; data?: any } | undefined) => {
+    dialogRef.closed.subscribe((result: DialogResult | undefined) => {
       if (!result) return;
-      if (result.action === 'submit' && result.data) {
-        this.onUpdateTeam(team.id, result.data);
-      } else if (result.action === 'delete') {
+      if (result.action === DialogAction.SUBMIT && result.data) {
+        this.onUpdateTeam(team.id, result.data as Partial<TeamDto>);
+      } else if (result.action === DialogAction.DELETE) {
         this.onDeleteTeam(team.id);
       }
     });
