@@ -2,7 +2,14 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SystemRole } from '@LucidRF/common';
-import { AlertComponent, ButtonComponent, FormFieldComponent, InputDirective, SelectDirective } from '@LucidRF/ui';
+import {
+  AlertComponent,
+  ButtonComponent,
+  FormFieldComponent,
+  InputDirective,
+  SelectDirective,
+  SpinnerComponent,
+} from '@LucidRF/ui';
 import { Observable } from 'rxjs';
 import { AuthFacade } from '../../auth/store/auth.facade';
 
@@ -17,6 +24,7 @@ import { AuthFacade } from '../../auth/store/auth.facade';
     SelectDirective,
     ButtonComponent,
     AlertComponent,
+    SpinnerComponent,
   ],
   templateUrl: './admin-create-user.component.html',
 })

@@ -1,14 +1,22 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AlertComponent, ButtonComponent, FormFieldComponent, InputDirective } from '@LucidRF/ui';
+import { AlertComponent, ButtonComponent, FormFieldComponent, InputDirective, SpinnerComponent } from '@LucidRF/ui';
 import { Observable } from 'rxjs';
 import { AuthFacade } from '../../../auth/store/auth.facade';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormFieldComponent, InputDirective, ButtonComponent, AlertComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FormFieldComponent,
+    InputDirective,
+    ButtonComponent,
+    AlertComponent,
+    SpinnerComponent,
+  ],
   templateUrl: './login.component.html',
 })
 export class LoginComponent implements OnInit {

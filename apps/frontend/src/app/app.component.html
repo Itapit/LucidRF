@@ -1,6 +1,6 @@
 <ng-container *ngIf="isAppLoading$ | async; else appContent">
   <div class="flex items-center justify-center fixed inset-0 z-50 bg-white/80">
-    <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+    <ui-spinner size="lg" variant="default"></ui-spinner>
   </div>
 </ng-container>
 

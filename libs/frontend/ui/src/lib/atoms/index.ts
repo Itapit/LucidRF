@@ -3,3 +3,4 @@ export * from './badge/badge.component';
 export * from './button/button.component';
 export * from './input/input.directive';
 export * from './select/select.directive';
+export * from './spinner/spinner.component';
