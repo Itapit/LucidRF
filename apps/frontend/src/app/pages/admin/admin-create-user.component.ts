@@ -5,6 +5,7 @@ import { SystemRole } from '@LucidRF/common';
 import {
   AlertComponent,
   ButtonComponent,
+  CenteredLayoutComponent,
   FormFieldComponent,
   InputDirective,
   SelectDirective,
@@ -25,6 +26,7 @@ import { AuthFacade } from '../../auth/store/auth.facade';
     ButtonComponent,
     AlertComponent,
     SpinnerComponent,
+    CenteredLayoutComponent,
   ],
   templateUrl: './admin-create-user.component.html',
 })

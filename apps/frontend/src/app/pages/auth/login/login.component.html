@@ -1,30 +1,19 @@
-<div class="flex justify-center items-center min-h-screen bg-gray-50">
-  <div class="w-full max-w-sm px-6">
-    <div class="mb-8 text-center">
-      <h1 class="text-3xl font-extrabold text-black tracking-tight mb-2">LucidRF</h1>
-      <p class="text-gray-500 text-sm">Sign in to your account</p>
-    </div>
+<ui-centered-layout title="LucidRF" subtitle="Sign in to your account">
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="contents">
+    <ui-form-field label="Email" forId="email">
+      <input id="email" type="email" formControlName="email" placeholder="name@company.com" uiInput />
+    </ui-form-field>
 
-    <form
-      [formGroup]="loginForm"
-      (ngSubmit)="onSubmit()"
-      class="bg-white p-8 rounded-xl shadow-sm border border-gray-200 flex flex-col gap-5"
-    >
-      <ui-form-field label="Email" forId="email">
-        <input id="email" type="email" formControlName="email" placeholder="name@company.com" uiInput />
-      </ui-form-field>
+    <ui-form-field label="Password" forId="password">
+      <input id="password" type="password" formControlName="password" placeholder="••••••••" uiInput />
+    </ui-form-field>
 
-      <ui-form-field label="Password" forId="password">
-        <input id="password" type="password" formControlName="password" placeholder="••••••••" uiInput />
-      </ui-form-field>
+    <ui-alert *ngIf="error$ | async as error" type="error" [message]="error"></ui-alert>
 
-      <ui-alert *ngIf="error$ | async as error" type="error" [message]="error"></ui-alert>
-
-      <ui-button type="submit" [disabled]="loginForm.invalid || ((isLoading$ | async) ?? false)" [fullWidth]="true">
-        <ui-spinner *ngIf="(isLoading$ | async) ?? false" size="sm" class="mr-2"></ui-spinner>
-        <span *ngIf="!((isLoading$ | async) ?? false)">Sign In</span>
-        <span *ngIf="(isLoading$ | async) ?? false">Signing in...</span>
-      </ui-button>
-    </form>
-  </div>
-</div>
+    <ui-button type="submit" [disabled]="loginForm.invalid || ((isLoading$ | async) ?? false)" [fullWidth]="true">
+      <ui-spinner *ngIf="(isLoading$ | async) ?? false" size="sm" class="mr-2"></ui-spinner>
+      <span *ngIf="!((isLoading$ | async) ?? false)">Sign In</span>
+      <span *ngIf="(isLoading$ | async) ?? false">Signing in...</span>
+    </ui-button>
+  </form>
+</ui-centered-layout>

@@ -1,7 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AlertComponent, ButtonComponent, FormFieldComponent, InputDirective, SpinnerComponent } from '@LucidRF/ui';
+import {
+  AlertComponent,
+  ButtonComponent,
+  CenteredLayoutComponent,
+  FormFieldComponent,
+  InputDirective,
+  SpinnerComponent,
+} from '@LucidRF/ui';
 import { Observable } from 'rxjs';
 import { AuthFacade } from '../../../auth/store/auth.facade';
 
@@ -16,6 +23,7 @@ import { AuthFacade } from '../../../auth/store/auth.facade';
     ButtonComponent,
     AlertComponent,
     SpinnerComponent,
+    CenteredLayoutComponent,
   ],
   templateUrl: './login.component.html',
 })

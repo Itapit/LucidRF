@@ -1,33 +1,22 @@
-<div class="flex justify-center items-center min-h-screen bg-gray-50">
-  <div class="w-full max-w-sm px-6">
-    <div class="mb-8 text-center">
-      <h1 class="text-3xl font-extrabold text-black tracking-tight mb-2">LucidRF</h1>
-      <p class="text-gray-500 text-sm">Set your password to activate your account</p>
-    </div>
+<ui-centered-layout title="LucidRF" subtitle="Set your password to activate your account">
+  <form [formGroup]="setupForm" (ngSubmit)="onSubmit()" class="contents">
+    <ui-form-field label="New Password" forId="password" [error]="passwordError">
+      <input
+        id="password"
+        type="password"
+        formControlName="password"
+        placeholder="Enter new password"
+        uiInput
+        [hasError]="!!passwordError"
+      />
+    </ui-form-field>
 
-    <form
-      [formGroup]="setupForm"
-      (ngSubmit)="onSubmit()"
-      class="bg-white p-8 rounded-xl shadow-sm border border-gray-200 flex flex-col gap-5"
-    >
-      <ui-form-field label="New Password" forId="password" [error]="passwordError">
-        <input
-          id="password"
-          type="password"
-          formControlName="password"
-          placeholder="Enter new password"
-          uiInput
-          [hasError]="!!passwordError"
-        />
-      </ui-form-field>
+    <ui-alert *ngIf="error$ | async as err" type="error" [message]="err"></ui-alert>
 
-      <ui-alert *ngIf="error$ | async as err" type="error" [message]="err"></ui-alert>
-
-      <ui-button type="submit" [disabled]="setupForm.invalid || ((isLoading$ | async) ?? false)" [fullWidth]="true">
-        <ui-spinner *ngIf="(isLoading$ | async) ?? false" size="sm" class="mr-2"></ui-spinner>
-        <span *ngIf="!((isLoading$ | async) ?? false)">Activate Account</span>
-        <span *ngIf="(isLoading$ | async) ?? false">Activating...</span>
-      </ui-button>
-    </form>
-  </div>
-</div>
+    <ui-button type="submit" [disabled]="setupForm.invalid || ((isLoading$ | async) ?? false)" [fullWidth]="true">
+      <ui-spinner *ngIf="(isLoading$ | async) ?? false" size="sm" class="mr-2"></ui-spinner>
+      <span *ngIf="!((isLoading$ | async) ?? false)">Activate Account</span>
+      <span *ngIf="(isLoading$ | async) ?? false">Activating...</span>
+    </ui-button>
+  </form>
+</ui-centered-layout>

@@ -1,11 +1,5 @@
-<div class="flex justify-center items-center min-h-screen bg-gray-50">
-  <form
-    [formGroup]="adminCreateForm"
-    (ngSubmit)="onSubmit()"
-    class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md border border-gray-100 flex flex-col gap-5"
-  >
-    <h2 class="text-2xl font-bold text-gray-800 text-center mb-2">Create New User</h2>
-
+<ui-centered-layout title="Create New User">
+  <form [formGroup]="adminCreateForm" (ngSubmit)="onSubmit()" class="contents">
     <ui-form-field label="Username" forId="username">
       <input id="username" type="text" formControlName="username" placeholder="john.doe" uiInput />
     </ui-form-field>
@@ -27,4 +21,4 @@
       Create User
     </ui-button>
   </form>
-</div>
+</ui-centered-layout>
