@@ -1,0 +1,14 @@
+<div class="flex-1 flex flex-col h-full bg-white relative animate-fade-in w-full">
+  <!-- Top Header Slot -->
+  <ng-content select="[layout-header]"></ng-content>
+
+  <div class="flex-1 flex overflow-hidden w-full">
+    <!-- Sidebar Slot -->
+    <ng-content select="[layout-sidebar]"></ng-content>
+
+    <!-- Main Content Slot -->
+    <main class="flex-1 flex flex-col overflow-hidden bg-white relative w-full h-full">
+      <ng-content></ng-content>
+    </main>
+  </div>
+</div>

@@ -1,30 +1,27 @@
-<div class="flex-1 flex flex-col h-full bg-white relative animate-fade-in w-full">
-  <ui-top-header variant="solid" [user]="user$ | async" (logout)="onLogout()">
+<ui-dashboard-layout>
+  <ui-top-header layout-header variant="solid" [user]="user$ | async" (logout)="onLogout()">
     <div left-content>
       <ui-breadcrumbs [items]="breadcrumbs" (itemClick)="onBreadcrumbClick($event)"></ui-breadcrumbs>
     </div>
   </ui-top-header>
 
-  <div class="flex-1 flex overflow-hidden">
-    <ui-folder-sidebar
-      title="My Workspace"
-      [subtitle]="((files$ | async)?.length || 0) + ' files'"
-      initials="ME"
-      themeColor="BLUE"
-      headerVariant="initials"
-      [folders]="folders$ | async"
-      (folderClick)="onFolderClick()"
-    >
-    </ui-folder-sidebar>
+  <ui-folder-sidebar
+    layout-sidebar
+    title="My Workspace"
+    [subtitle]="((files$ | async)?.length || 0) + ' files'"
+    initials="ME"
+    themeColor="BLUE"
+    headerVariant="initials"
+    [folders]="folders$ | async"
+    (folderClick)="onFolderClick()"
+  >
+  </ui-folder-sidebar>
 
-    <main class="flex-1 flex flex-col overflow-hidden bg-white relative">
-      <ui-page-action-bar title="My Workspace" (newFolder)="onNewFolder()" (uploadFile)="onUploadFile()">
-        <div left-actions class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400 ml-4">
-          <button class="hover:text-black transition-colors">My Workspace</button>
-        </div>
-      </ui-page-action-bar>
+  <ui-page-action-bar title="My Workspace" (newFolder)="onNewFolder()" (uploadFile)="onUploadFile()">
+    <div left-actions class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400 ml-4">
+      <button class="hover:text-black transition-colors">My Workspace</button>
+    </div>
+  </ui-page-action-bar>
 
-      <ui-file-table [files]="files$ | async"></ui-file-table>
-    </main>
-  </div>
-</div>
+  <ui-file-table [files]="files$ | async"></ui-file-table>
+</ui-dashboard-layout>

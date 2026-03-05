@@ -1,0 +1,5 @@
+<ui-dashboard-layout>
+  <ui-top-header layout-header variant="solid" [user]="user$ | async" (logout)="onLogout()"></ui-top-header>
+  <ui-admin-sidebar layout-sidebar [activeTab]="activeTab" (tabClick)="onTabClick($event)"></ui-admin-sidebar>
+  <router-outlet></router-outlet>
+</ui-dashboard-layout>

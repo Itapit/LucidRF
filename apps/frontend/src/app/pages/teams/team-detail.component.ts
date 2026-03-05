@@ -6,6 +6,7 @@ import { TeamDto, TeamRole } from '@LucidRF/common';
 import {
   BreadcrumbItem,
   BreadcrumbsComponent,
+  DashboardLayoutComponent,
   DialogAction,
   DialogResult,
   FileTableComponent,
@@ -33,6 +34,7 @@ import { TeamsFacade } from '../../teams/store/teams.facade';
     FileTableComponent,
     DialogModule,
     BreadcrumbsComponent,
+    DashboardLayoutComponent,
   ],
   templateUrl: './team-detail.component.html',
   host: { class: 'flex-1 flex overflow-hidden w-full h-full' },

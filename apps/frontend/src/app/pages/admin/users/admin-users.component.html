@@ -1,0 +1,39 @@
+<ui-page-action-bar title="User Management" [showNewFolder]="false" [showUpload]="false"></ui-page-action-bar>
+
+<div class="flex-1 overflow-y-auto p-8 flex justify-center bg-gray-50">
+  <div class="w-full max-w-md bg-white p-8 rounded-xl shadow-sm border border-gray-200 h-fit mt-8">
+    <div class="mb-6 text-center">
+      <h2 class="text-2xl font-bold text-gray-800">Create New User</h2>
+      <p class="text-sm text-gray-500 mt-1">Add a new user to the system</p>
+    </div>
+
+    <form [formGroup]="adminCreateForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-5">
+      <ui-form-field label="Username" forId="username">
+        <input id="username" type="text" formControlName="username" placeholder="john.doe" uiInput />
+      </ui-form-field>
+
+      <ui-form-field label="Email" forId="email">
+        <input id="email" type="email" formControlName="email" placeholder="your@email.com" uiInput />
+      </ui-form-field>
+
+      <ui-form-field label="Role" forId="role">
+        <select id="role" formControlName="role" uiSelect>
+          <option *ngFor="let option of roles" [value]="option.value || option">
+            {{ option.label || option }}
+          </option>
+        </select>
+      </ui-form-field>
+
+      <ui-alert *ngIf="error$ | async as error" type="error" [message]="error"></ui-alert>
+
+      <ui-button
+        type="submit"
+        [disabled]="adminCreateForm.invalid || ((isLoading$ | async) ?? false)"
+        [fullWidth]="true"
+      >
+        <ui-spinner *ngIf="(isLoading$ | async) ?? false" size="sm" class="mr-3 -ml-1"></ui-spinner>
+        Create User
+      </ui-button>
+    </form>
+  </div>
+</div>

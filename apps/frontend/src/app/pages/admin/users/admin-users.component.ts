@@ -5,17 +5,17 @@ import { SystemRole } from '@LucidRF/common';
 import {
   AlertComponent,
   ButtonComponent,
-  CenteredLayoutComponent,
   FormFieldComponent,
   InputDirective,
+  PageActionBarComponent,
   SelectDirective,
   SpinnerComponent,
 } from '@LucidRF/ui';
 import { Observable } from 'rxjs';
-import { AuthFacade } from '../../auth/store/auth.facade';
+import { AuthFacade } from '../../../auth/store/auth.facade';
 
 @Component({
-  selector: 'app-admin-create-user',
+  selector: 'app-admin-users',
   standalone: true,
   imports: [
     CommonModule,
@@ -26,11 +26,12 @@ import { AuthFacade } from '../../auth/store/auth.facade';
     ButtonComponent,
     AlertComponent,
     SpinnerComponent,
-    CenteredLayoutComponent,
+    PageActionBarComponent,
   ],
-  templateUrl: './admin-create-user.component.html',
+  templateUrl: './admin-users.component.html',
+  host: { class: 'flex-1 flex flex-col h-full' },
 })
-export class AdminCreateUserComponent implements OnInit {
+export class AdminUsersComponent implements OnInit {
   private fb = inject(FormBuilder);
   private authFacade = inject(AuthFacade);
 

@@ -3,6 +3,7 @@ import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import {
   BreadcrumbItem,
   BreadcrumbsComponent,
+  DashboardLayoutComponent,
   FileTableComponent,
   FolderSidebarComponent,
   PageActionBarComponent,
@@ -22,6 +23,7 @@ import { FilesFacade } from '../../files/store/files.facade';
     PageActionBarComponent,
     FileTableComponent,
     BreadcrumbsComponent,
+    DashboardLayoutComponent,
   ],
   templateUrl: './my-workspace.component.html',
   host: { class: 'flex-1 flex overflow-hidden w-full h-full' },
