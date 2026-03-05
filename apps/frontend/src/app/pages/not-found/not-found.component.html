@@ -1,26 +1,31 @@
-<ui-centered-layout title="404" subtitle="Page Not Found">
-  <div header-icon class="flex justify-center mb-6">
-    <div class="p-3 bg-white rounded-full border border-gray-200 shadow-sm">
-      <svg
-        class="h-10 w-10 text-gray-400"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7"
-        />
-      </svg>
-    </div>
-  </div>
+<div
+  class="min-h-screen w-full flex flex-col items-center justify-center bg-gray-50 px-6 relative overflow-hidden animate-fade-in"
+>
+  <!-- Decorative background elements -->
+  <div
+    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-tr from-gray-100 to-gray-50 rounded-full blur-3xl opacity-50 pointer-events-none -z-10"
+  ></div>
 
-  <div class="text-center flex flex-col gap-5 contents">
-    <p class="text-gray-500 text-sm leading-relaxed">The page you're looking for doesn't exist or has been moved.</p>
+  <div class="relative z-10 flex flex-col items-center text-center max-w-md">
+    <!-- 404 Typographic Treatement -->
+    <h1 class="text-9xl font-serif text-lrf-dark font-light tracking-tighter opacity-10 select-none -mb-4">404</h1>
 
-    <ui-button [fullWidth]="true" (clicked)="goHome()"> Return to Homepage </ui-button>
+    <!-- Title -->
+    <h2 class="text-3xl font-medium text-gray-900 tracking-tight mb-3">Page not found</h2>
+
+    <!-- Description -->
+    <p class="text-gray-500 text-base leading-relaxed mb-10 max-w-xs mx-auto">
+      The page you're looking for doesn't exist, has been moved, or you don't have permission to view it.
+    </p>
+
+    <!-- Call to Action -->
+    <ui-button (clicked)="goHome()" size="lg" class="hover:-translate-y-0.5 transition-transform duration-300">
+      <div class="flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Return to Homepage
+      </div>
+    </ui-button>
   </div>
-</ui-centered-layout>
+</div>
