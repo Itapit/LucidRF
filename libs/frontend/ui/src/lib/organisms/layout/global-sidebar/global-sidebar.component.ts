@@ -1,14 +1,13 @@
-import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { TeamDto, UserDto } from '@LucidRF/common';
-import { AvatarComponent } from '../../../atoms';
+import { ProfileMenuComponent } from '../profile-menu/profile-menu.component';
 import { SidebarItem } from '../types/sidebar.types';
 
 @Component({
   selector: 'ui-global-sidebar',
   standalone: true,
-  imports: [CommonModule, OverlayModule, AvatarComponent],
+  imports: [CommonModule, ProfileMenuComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './global-sidebar.component.html',
 })
@@ -30,14 +29,4 @@ export class GlobalSidebarComponent {
   editProfile = output<void>();
 
   SidebarItem = SidebarItem;
-
-  isDropdownOpen = false;
-
-  toggleDropdown() {
-    this.isDropdownOpen = !this.isDropdownOpen;
-  }
-
-  closeDropdown() {
-    this.isDropdownOpen = false;
-  }
 }

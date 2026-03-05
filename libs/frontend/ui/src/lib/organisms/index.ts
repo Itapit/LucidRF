@@ -2,6 +2,7 @@
 export * from './layout/admin-sidebar/admin-sidebar.component';
 export * from './layout/global-sidebar/global-sidebar.component';
 export * from './layout/page-action-bar/page-action-bar.component';
+export * from './layout/profile-menu/profile-menu.component';
 export * from './layout/types/sidebar.types';
 
 // Files
