@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import {
+  BreadcrumbItem,
+  BreadcrumbsComponent,
   FileTableComponent,
   FolderSidebarComponent,
   PageActionBarComponent,
@@ -19,6 +21,7 @@ import { FilesFacade } from '../../files/store/files.facade';
     FolderSidebarComponent,
     PageActionBarComponent,
     FileTableComponent,
+    BreadcrumbsComponent,
   ],
   templateUrl: './my-workspace.component.html',
   host: { class: 'flex-1 flex overflow-hidden w-full h-full' },
@@ -31,6 +34,21 @@ export class MyWorkspaceComponent implements OnInit, OnDestroy {
   files$ = this.filesFacade.files$;
   folders$ = this.filesFacade.folders$;
   user$ = this.authFacade.user$;
+
+  get breadcrumbs(): BreadcrumbItem[] {
+    return [
+      { id: 'home', label: 'Home', icon: 'home' },
+      { id: 'workspace-root', label: 'My Workspace' },
+    ];
+  }
+
+  onBreadcrumbClick(item: BreadcrumbItem) {
+    if (item.id === 'home') {
+      this.goHome();
+    } else if (item.id === 'workspace-root') {
+      // Navigate to workspace root if implemented
+    }
+  }
 
   ngOnInit() {
     this.authFacade.user$.subscribe((user) => {

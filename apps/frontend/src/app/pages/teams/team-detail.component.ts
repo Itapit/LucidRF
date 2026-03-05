@@ -4,6 +4,8 @@ import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TeamDto, TeamRole } from '@LucidRF/common';
 import {
+  BreadcrumbItem,
+  BreadcrumbsComponent,
   DialogAction,
   DialogResult,
   FileTableComponent,
@@ -30,6 +32,7 @@ import { TeamsFacade } from '../../teams/store/teams.facade';
     PageActionBarComponent,
     FileTableComponent,
     DialogModule,
+    BreadcrumbsComponent,
   ],
   templateUrl: './team-detail.component.html',
   host: { class: 'flex-1 flex overflow-hidden w-full h-full' },
@@ -70,6 +73,22 @@ export class TeamDetailComponent implements OnInit, OnDestroy {
     this.canManageTeam$ = this.currentUserRole$.pipe(
       map((role) => role === TeamRole.OWNER || role === TeamRole.MANAGER)
     );
+  }
+
+  getBreadcrumbs(team: TeamDto | null): BreadcrumbItem[] {
+    if (!team) return [];
+    return [
+      { id: 'home', label: 'Home', icon: 'home' },
+      { id: team.id, label: team.name },
+    ];
+  }
+
+  onBreadcrumbClick(item: BreadcrumbItem) {
+    if (item.id === 'home') {
+      this.goHome();
+    } else {
+      // Navigate to team root if we implement nested folders
+    }
   }
 
   ngOnInit() {
