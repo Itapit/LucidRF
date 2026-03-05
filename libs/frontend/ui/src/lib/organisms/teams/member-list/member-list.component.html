@@ -73,7 +73,7 @@
                 <select
                   [ngModel]="member.role"
                   (ngModelChange)="onRoleChange(member.userId, $event)"
-                  uiSelect
+                  uiSelect [size]="'sm'"
                   class="!py-0.5 !px-1.5 !text-xs !bg-gray-50 w-auto min-w-[80px]"
                 >
                   @for (role of getAvailableRoles(); track role) {

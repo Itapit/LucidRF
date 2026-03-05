@@ -36,6 +36,6 @@ export const appRoutes: Routes = [
   },
   {
     path: AppRoute.NOT_FOUND,
-    loadComponent: () => import('./not-found/not-found.component').then((m) => m.NotFoundComponent),
+    loadComponent: () => import('./pages/not-found/not-found.component').then((m) => m.NotFoundComponent),
   },
 ];

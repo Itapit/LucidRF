@@ -2,13 +2,22 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SystemRole } from '@LucidRF/common';
+import { AlertComponent, ButtonComponent, FormFieldComponent, InputDirective, SelectDirective } from '@LucidRF/ui';
 import { Observable } from 'rxjs';
 import { AuthFacade } from '../../auth/store/auth.facade';
 
 @Component({
   selector: 'app-admin-create-user',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    FormFieldComponent,
+    InputDirective,
+    SelectDirective,
+    ButtonComponent,
+    AlertComponent,
+  ],
   templateUrl: './admin-create-user.component.html',
 })
 export class AdminCreateUserComponent implements OnInit {

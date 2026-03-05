@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
-import { GlobalSidebarComponent } from '@LucidRF/ui';
+import { GlobalErrorComponent, GlobalSidebarComponent } from '@LucidRF/ui';
 import { AppComponent } from './app.component';
 import { appRoutes } from './app.routes';
 import { CredentialsInterceptor } from './auth/infrastructure/interceptors/credentials.interceptor';
@@ -19,6 +19,7 @@ import { AppStoreModule } from './state/app-store.module';
     RouterModule.forRoot(appRoutes),
     AppStoreModule,
     GlobalSidebarComponent,
+    GlobalErrorComponent,
   ],
   bootstrap: [AppComponent],
   providers: [

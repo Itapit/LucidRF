@@ -8,63 +8,22 @@
     <form
       [formGroup]="loginForm"
       (ngSubmit)="onSubmit()"
-      class="bg-white p-8 rounded-xl shadow-sm border border-gray-200"
+      class="bg-white p-8 rounded-xl shadow-sm border border-gray-200 flex flex-col gap-5"
     >
-      <div class="mb-5">
-        <label for="email" class="block text-gray-700 text-xs font-bold mb-2 uppercase tracking-wide">Email</label>
-        <div class="relative">
-          <input
-            id="email"
-            type="email"
-            formControlName="email"
-            placeholder="name@company.com"
-            class="appearance-none border border-gray-300 rounded-md w-full py-2.5 px-3 text-gray-900 text-sm focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-colors"
-          />
-        </div>
-      </div>
+      <ui-form-field label="Email" forId="email">
+        <input id="email" type="email" formControlName="email" placeholder="name@company.com" uiInput />
+      </ui-form-field>
 
-      <div class="mb-6">
-        <label for="password" class="block text-gray-700 text-xs font-bold mb-2 uppercase tracking-wide"
-          >Password</label
-        >
-        <div class="relative">
-          <input
-            id="password"
-            type="password"
-            formControlName="password"
-            placeholder="••••••••"
-            class="appearance-none border border-gray-300 rounded-md w-full py-2.5 px-3 text-gray-900 text-sm focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-colors"
-          />
-        </div>
-      </div>
+      <ui-form-field label="Password" forId="password">
+        <input id="password" type="password" formControlName="password" placeholder="••••••••" uiInput />
+      </ui-form-field>
 
-      <div
-        *ngIf="error$ | async as error"
-        class="bg-red-50 border border-red-200 p-3 mb-6 rounded-md flex items-start gap-2"
-      >
-        <svg
-          class="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-            clip-rule="evenodd"
-          />
-        </svg>
-        <p class="text-xs text-red-700 font-medium leading-relaxed">{{ error }}</p>
-      </div>
+      <ui-alert *ngIf="error$ | async as error" type="error" [message]="error"></ui-alert>
 
-      <button
-        type="submit"
-        [disabled]="loginForm.invalid || ((isLoading$ | async) ?? false)"
-        class="w-full flex justify-center items-center gap-2 py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-semibold text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-      >
+      <ui-button type="submit" [disabled]="loginForm.invalid || ((isLoading$ | async) ?? false)" [fullWidth]="true">
         <svg
           *ngIf="(isLoading$ | async) ?? false"
-          class="animate-spin h-4 w-4 text-white"
+          class="animate-spin h-4 w-4 mr-2"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -78,7 +37,7 @@
         </svg>
         <span *ngIf="!((isLoading$ | async) ?? false)">Sign In</span>
         <span *ngIf="(isLoading$ | async) ?? false">Signing in...</span>
-      </button>
+      </ui-button>
     </form>
   </div>
 </div>
