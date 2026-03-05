@@ -1,5 +1,4 @@
 <ui-dashboard-layout>
-  <ui-top-header layout-header variant="solid" [user]="user$ | async" (logout)="onLogout()"></ui-top-header>
   <ui-admin-sidebar layout-sidebar [activeTab]="activeTab" (tabClick)="onTabClick($event)"></ui-admin-sidebar>
 
   <ui-page-action-bar title="User Management" [showNewFolder]="false" [showUpload]="false"></ui-page-action-bar>

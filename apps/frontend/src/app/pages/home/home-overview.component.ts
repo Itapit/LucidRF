@@ -7,7 +7,6 @@ import {
   DialogResult,
   TeamCardComponent,
   TeamFormComponent,
-  TopHeaderComponent,
 } from '@LucidRF/ui';
 import { AuthFacade } from '../../auth/store/auth.facade';
 import { NavigationService } from '../../core/navigation/navigation.service';
@@ -16,7 +15,7 @@ import { TeamsFacade } from '../../teams/store/teams.facade';
 @Component({
   selector: 'app-home-overview',
   standalone: true,
-  imports: [CommonModule, TopHeaderComponent, TeamCardComponent, DialogModule, DashboardLayoutComponent],
+  imports: [CommonModule, TeamCardComponent, DialogModule, DashboardLayoutComponent],
   templateUrl: './home-overview.component.html',
   host: { class: 'flex-1 flex overflow-hidden w-full h-full' },
 })
@@ -31,14 +30,6 @@ export class HomeOverviewComponent {
   user$ = this.authFacade.user$;
 
   private dialog = inject(Dialog);
-
-  onLogout() {
-    this.authFacade.logout();
-  }
-
-  onEditProfile() {
-    // Navigate or open modal
-  }
 
   goToTeam(teamId: string) {
     this.navigationService.toTeam(teamId);

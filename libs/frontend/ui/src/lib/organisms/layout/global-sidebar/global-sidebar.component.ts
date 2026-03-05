@@ -1,18 +1,21 @@
+import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { TeamDto } from '@LucidRF/common';
+import { TeamDto, UserDto } from '@LucidRF/common';
+import { AvatarComponent } from '../../../atoms';
 import { SidebarItem } from '../types/sidebar.types';
 
 @Component({
   selector: 'ui-global-sidebar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, OverlayModule, AvatarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './global-sidebar.component.html',
 })
 export class GlobalSidebarComponent {
   teams = input<TeamDto[]>([]);
   isAdmin = input<boolean>(false);
+  user = input<UserDto | null>(null);
 
   // Navigation active state
   activeItem = input<SidebarItem>(SidebarItem.HOME);
@@ -23,6 +26,18 @@ export class GlobalSidebarComponent {
   goTeam = output<string>();
   goAdmin = output<void>();
   uploadClick = output<void>();
+  logout = output<void>();
+  editProfile = output<void>();
 
   SidebarItem = SidebarItem;
+
+  isDropdownOpen = false;
+
+  toggleDropdown() {
+    this.isDropdownOpen = !this.isDropdownOpen;
+  }
+
+  closeDropdown() {
+    this.isDropdownOpen = false;
+  }
 }

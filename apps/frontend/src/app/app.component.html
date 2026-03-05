@@ -17,11 +17,14 @@
       *ngIf="isLoggedIn$ | async"
       [teams]="(teams$ | async) || []"
       [isAdmin]="(role$ | async) === SystemRole.ADMIN"
+      [user]="user$ | async"
       (goHome)="goHome()"
       (goWorkspace)="goWorkspace()"
       (goTeam)="goTeam($event)"
       (goAdmin)="goAdmin()"
       (uploadClick)="openUpload()"
+      (logout)="logout()"
+      (editProfile)="editProfile()"
     >
     </ui-global-sidebar>
 

@@ -7,7 +7,6 @@ import {
   FileTableComponent,
   FolderSidebarComponent,
   PageActionBarComponent,
-  TopHeaderComponent,
 } from '@LucidRF/ui';
 import { AuthFacade } from '../../auth/store/auth.facade';
 import { NavigationService } from '../../core/navigation/navigation.service';
@@ -18,7 +17,6 @@ import { FilesFacade } from '../../files/store/files.facade';
   standalone: true,
   imports: [
     CommonModule,
-    TopHeaderComponent,
     FolderSidebarComponent,
     PageActionBarComponent,
     FileTableComponent,
@@ -67,10 +65,6 @@ export class MyWorkspaceComponent implements OnInit, OnDestroy {
 
   goHome() {
     this.navigationService.toHome();
-  }
-
-  onLogout() {
-    this.authFacade.logout();
   }
 
   onFolderClick() {

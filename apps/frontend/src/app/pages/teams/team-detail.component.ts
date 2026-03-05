@@ -14,7 +14,6 @@ import {
   MemberListComponent,
   PageActionBarComponent,
   TeamFormComponent,
-  TopHeaderComponent,
 } from '@LucidRF/ui';
 import { firstValueFrom, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
@@ -28,7 +27,6 @@ import { TeamsFacade } from '../../teams/store/teams.facade';
   standalone: true,
   imports: [
     CommonModule,
-    TopHeaderComponent,
     FolderSidebarComponent,
     PageActionBarComponent,
     FileTableComponent,
@@ -107,10 +105,6 @@ export class TeamDetailComponent implements OnInit, OnDestroy {
 
   goHome() {
     this.navigationService.toHome();
-  }
-
-  onLogout() {
-    this.authFacade.logout();
   }
 
   onFolderClick() {

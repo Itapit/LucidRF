@@ -20,6 +20,7 @@ export class AppComponent {
   isAppLoading$ = this.authFacade.isAppLoading$;
   isLoggedIn$ = this.authFacade.isLoggedIn$;
   role$ = this.authFacade.role$;
+  user$ = this.authFacade.user$;
   teams$ = this.teamsFacade.collaborativeTeams$;
   SystemRole = SystemRole;
 
@@ -46,5 +47,13 @@ export class AppComponent {
 
   openUpload() {
     // Open upload modal or logic
+  }
+
+  logout() {
+    this.authFacade.logout();
+  }
+
+  editProfile() {
+    // Navigate or open modal
   }
 }

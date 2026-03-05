@@ -12,7 +12,6 @@ import {
   PageActionBarComponent,
   SelectDirective,
   SpinnerComponent,
-  TopHeaderComponent,
 } from '@LucidRF/ui';
 import { Observable } from 'rxjs';
 import { AuthFacade } from '../../../auth/store/auth.facade';
@@ -32,7 +31,6 @@ import { NavigationService } from '../../../core/navigation/navigation.service';
     SpinnerComponent,
     PageActionBarComponent,
     DashboardLayoutComponent,
-    TopHeaderComponent,
     AdminSidebarComponent,
   ],
   templateUrl: './admin-users.component.html',
@@ -76,10 +74,6 @@ export class AdminUsersComponent implements OnInit {
     } else {
       this.navigationService.toAdminSettings();
     }
-  }
-
-  onLogout() {
-    this.authFacade.logout();
   }
 
   onSubmit(): void {

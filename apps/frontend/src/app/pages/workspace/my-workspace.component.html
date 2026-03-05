@@ -1,10 +1,4 @@
 <ui-dashboard-layout>
-  <ui-top-header layout-header variant="solid" [user]="user$ | async" (logout)="onLogout()">
-    <div left-content>
-      <ui-breadcrumbs [items]="breadcrumbs" (itemClick)="onBreadcrumbClick($event)"></ui-breadcrumbs>
-    </div>
-  </ui-top-header>
-
   <ui-folder-sidebar
     layout-sidebar
     title="My Workspace"
@@ -17,9 +11,9 @@
   >
   </ui-folder-sidebar>
 
-  <ui-page-action-bar title="My Workspace" (newFolder)="onNewFolder()" (uploadFile)="onUploadFile()">
-    <div left-actions class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400 ml-4">
-      <button class="hover:text-black transition-colors">My Workspace</button>
+  <ui-page-action-bar (newFolder)="onNewFolder()" (uploadFile)="onUploadFile()">
+    <div left-actions class="flex items-center ml-2">
+      <ui-breadcrumbs [items]="breadcrumbs" (itemClick)="onBreadcrumbClick($event)"></ui-breadcrumbs>
     </div>
   </ui-page-action-bar>
 
