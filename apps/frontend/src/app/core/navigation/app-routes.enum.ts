@@ -12,6 +12,10 @@ export enum AppRoute {
   // Children of Auth
   LOGIN = 'login',
   COMPLETE_SETUP = 'complete-setup',
+
+  // Children of Admin
+  ADMIN_USERS = 'users',
+  ADMIN_SETTINGS = 'settings',
 }
 
 // Helper to construct full paths for use in Services/Effects
@@ -24,5 +28,9 @@ export const AppPaths = {
     login: `/${AppRoute.AUTH}/${AppRoute.LOGIN}`,
     completeSetup: `/${AppRoute.AUTH}/${AppRoute.COMPLETE_SETUP}`,
   },
-  admin: `/${AppRoute.ADMIN}`,
+  admin: {
+    root: `/${AppRoute.ADMIN}`,
+    users: `/${AppRoute.ADMIN}/${AppRoute.ADMIN_USERS}`,
+    settings: `/${AppRoute.ADMIN}/${AppRoute.ADMIN_SETTINGS}`,
+  },
 };

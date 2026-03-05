@@ -11,15 +11,18 @@ export const appRoutes: Routes = [
 
   {
     path: AppRoute.ADMIN,
-    loadComponent: () => import('./pages/admin/layout/admin-layout.component').then((m) => m.AdminLayoutComponent),
     canActivate: [loggedInGuard],
     canMatch: [adminGuard],
     children: [
-      { path: '', redirectTo: 'users', pathMatch: 'full' },
+      { path: '', redirectTo: AppRoute.ADMIN_USERS, pathMatch: 'full' },
       {
-        path: 'users',
+        path: AppRoute.ADMIN_USERS,
         loadComponent: () => import('./pages/admin/users/admin-users.component').then((m) => m.AdminUsersComponent),
       },
+      // {
+      //   path: AppRoute.ADMIN_SETTINGS,
+      //   loadComponent: () => import('./pages/admin/settings/admin-settings.component').then((m) => m.AdminSettingsComponent),
+      // },
     ],
   },
   {

@@ -19,7 +19,19 @@ export class NavigationService {
   }
 
   toAdmin(): void {
-    this.router.navigate([AppPaths.admin]);
+    this.toAdminUsers();
+  }
+
+  toAdminUsers(): void {
+    this.router.navigate([AppPaths.admin.users]);
+  }
+
+  toAdminSettings(): void {
+    this.router.navigate([AppPaths.admin.settings]);
+  }
+
+  isActiveAdminTab(tab: 'users' | 'settings'): boolean {
+    return this.router.url.includes(AppPaths.admin[tab]);
   }
 
   toLogin(): void {
