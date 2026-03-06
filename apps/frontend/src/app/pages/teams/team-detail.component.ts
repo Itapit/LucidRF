@@ -1,6 +1,7 @@
 import { Dialog, DialogModule } from '@angular/cdk/dialog';
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, effect, inject, OnDestroy } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { TeamDto, TeamRole } from '@LucidRF/common';
 import {
@@ -15,12 +16,9 @@ import {
   PageActionBarComponent,
   TeamFormComponent,
 } from '@LucidRF/ui';
-import { firstValueFrom, Observable } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
-import { AuthFacade } from '../../auth/store/auth.facade';
+import { map } from 'rxjs/operators';
 import { NavigationService } from '../../core/navigation/navigation.service';
-import { FilesFacade } from '../../files/store/files.facade';
-import { TeamsFacade } from '../../teams/store/teams.facade';
+import { TeamDetailStore } from './team-detail.store';
 
 @Component({
   selector: 'app-team-detail',
@@ -34,45 +32,28 @@ import { TeamsFacade } from '../../teams/store/teams.facade';
     BreadcrumbsComponent,
     DashboardLayoutComponent,
   ],
+  providers: [TeamDetailStore],
   templateUrl: './team-detail.component.html',
   host: { class: 'flex-1 flex overflow-hidden w-full h-full' },
 })
-export class TeamDetailComponent implements OnInit, OnDestroy {
+export class TeamDetailComponent implements OnDestroy {
   private route = inject(ActivatedRoute);
   private navigationService = inject(NavigationService);
-  private teamsFacade = inject(TeamsFacade);
-  private filesFacade = inject(FilesFacade);
-  private authFacade = inject(AuthFacade);
-
-  teamId$: Observable<string>;
-  team$: Observable<TeamDto | null>;
-  files$ = this.filesFacade.files$;
-  folders$ = this.filesFacade.folders$;
-  user$ = this.authFacade.user$;
-  currentUserRole$: Observable<TeamRole | null>;
-  canManageTeam$: Observable<boolean>;
-
   private dialog = inject(Dialog);
 
+  // Inject our newly created local store
+  readonly store = inject(TeamDetailStore);
+
+  // Convert Route Param to Signal
+  private teamIdParam = toSignal(this.route.params.pipe(map((params) => params['id'])));
+
   constructor() {
-    this.teamId$ = this.route.params.pipe(map((params) => params['id']));
-    this.team$ = this.teamId$.pipe(switchMap((id) => this.teamsFacade.selectTeamById(id)));
-
-    this.currentUserRole$ = this.team$.pipe(
-      switchMap((team) =>
-        this.user$.pipe(
-          map((user) => {
-            if (!team || !user) return null;
-            const member = team.members.find((m) => m.userId === user.id);
-            return member ? (member.role as TeamRole) : null;
-          })
-        )
-      )
-    );
-
-    this.canManageTeam$ = this.currentUserRole$.pipe(
-      map((role) => role === TeamRole.OWNER || role === TeamRole.MANAGER)
-    );
+    effect(() => {
+      const id = this.teamIdParam();
+      if (id) {
+        this.store.setTeamId(id);
+      }
+    });
   }
 
   getBreadcrumbs(team: TeamDto | null): BreadcrumbItem[] {
@@ -91,16 +72,8 @@ export class TeamDetailComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnInit() {
-    this.teamId$.subscribe((id) => {
-      if (id) {
-        this.filesFacade.loadContent(id);
-      }
-    });
-  }
-
   ngOnDestroy() {
-    this.filesFacade.clearContent();
+    this.store.clearContent();
   }
 
   goHome() {
@@ -122,7 +95,7 @@ export class TeamDetailComponent implements OnInit, OnDestroy {
   openSettings(team: TeamDto) {
     const dialogRef = this.dialog.open<DialogResult<Partial<TeamDto>>>(TeamFormComponent, {
       data: { team, showDangerZone: true },
-      hasBackdrop: false, // ModalWrapperComponent provides its own backdrop
+      hasBackdrop: false,
     });
 
     dialogRef.closed.subscribe((result: DialogResult | undefined) => {
@@ -135,17 +108,16 @@ export class TeamDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  async openMembers(team: TeamDto) {
-    const currentUserRole = await firstValueFrom(this.currentUserRole$).catch(() => null);
-    const user = await firstValueFrom(this.user$).catch(() => null);
-    const currentUserId = user?.id || '';
+  openMembers(team: TeamDto) {
+    const role = this.store.currentUserRole();
+    const currentUser = this.store.user();
+    const currentUserId = currentUser?.id || '';
 
     const dialogRef = this.dialog.open(MemberListComponent, {
-      data: { team, currentUserRole, currentUserId },
-      hasBackdrop: false, // ModalWrapperComponent provides its own backdrop
+      data: { team, currentUserRole: role, currentUserId },
+      hasBackdrop: false,
     });
 
-    // Listen to component instance events natively without closing dialog
     if (dialogRef.componentInstance) {
       dialogRef.componentInstance.inviteMember.subscribe((identifier: string) => {
         this.onInviteMember(team.id, identifier);
@@ -160,23 +132,23 @@ export class TeamDetailComponent implements OnInit, OnDestroy {
   }
 
   private onUpdateTeam(id: string, data: Partial<TeamDto>) {
-    this.teamsFacade.updateTeam(id, data);
+    this.store.updateTeam(id, data);
   }
 
   private onDeleteTeam(id: string) {
-    this.teamsFacade.deleteTeam(id);
+    this.store.deleteTeam(id);
     this.navigationService.toHome();
   }
 
   private onInviteMember(teamId: string, identifier: string) {
-    this.teamsFacade.addMember(teamId, { identifier, role: TeamRole.MEMBER });
+    this.store.inviteMember(teamId, identifier);
   }
 
   private onUpdateMemberRole(teamId: string, event: { userId: string; role: TeamRole }) {
-    this.teamsFacade.updateMemberRole(teamId, event.userId, { role: event.role });
+    this.store.updateMemberRole(teamId, event.userId, event.role);
   }
 
   private onRemoveMember(teamId: string, userId: string) {
-    this.teamsFacade.removeMember(teamId, { targetUserId: userId });
+    this.store.removeMember(teamId, userId);
   }
 }

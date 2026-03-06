@@ -1,31 +1,33 @@
-<ui-dashboard-layout *ngIf="team$ | async as team">
+@if (store.team(); as t) {
+<ui-dashboard-layout>
   <ui-folder-sidebar
     layout-sidebar
-    [title]="team.name"
-    [subtitle]="(files$ | async)?.length + ' files'"
-    [initials]="team.initials"
-    [themeColor]="team.color"
+    [title]="t.name"
+    [subtitle]="(store.files().length || 0) + ' files'"
+    [initials]="t.initials"
+    [themeColor]="t.color"
     headerVariant="initials"
-    [folders]="folders$ | async"
+    [folders]="store.folders()"
     (folderClick)="onFolderClick()"
   >
   </ui-folder-sidebar>
 
   <ui-page-action-bar (newFolder)="onNewFolder()" (uploadFile)="onUploadFile()">
     <div left-actions class="flex items-center ml-2">
-      <ui-breadcrumbs [items]="getBreadcrumbs(team)" (itemClick)="onBreadcrumbClick($event)"></ui-breadcrumbs>
+      <ui-breadcrumbs [items]="getBreadcrumbs(t)" (itemClick)="onBreadcrumbClick($event)"></ui-breadcrumbs>
     </div>
 
     <ng-container right-actions>
+      @if (store.canManageTeam()) {
       <button
-        *ngIf="canManageTeam$ | async"
-        (click)="openSettings(team)"
+        (click)="openSettings(t)"
         class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors font-medium hover:shadow-sm"
       >
         Settings
       </button>
+      }
       <button
-        (click)="openMembers(team)"
+        (click)="openMembers(t)"
         class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors font-medium hover:shadow-sm"
       >
         Members
@@ -33,5 +35,6 @@
     </ng-container>
   </ui-page-action-bar>
 
-  <ui-file-table [files]="files$ | async"></ui-file-table>
+  <ui-file-table [files]="store.files()"></ui-file-table>
 </ui-dashboard-layout>
+}

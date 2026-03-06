@@ -2,11 +2,11 @@
   <ui-folder-sidebar
     layout-sidebar
     title="My Workspace"
-    [subtitle]="((files$ | async)?.length || 0) + ' files'"
+    [subtitle]="(files().length || 0) + ' files'"
     initials="ME"
     themeColor="BLUE"
     headerVariant="initials"
-    [folders]="folders$ | async"
+    [folders]="folders()"
     (folderClick)="onFolderClick()"
   >
   </ui-folder-sidebar>
@@ -17,5 +17,5 @@
     </div>
   </ui-page-action-bar>
 
-  <ui-file-table [files]="files$ | async"></ui-file-table>
+  <ui-file-table [files]="files()"></ui-file-table>
 </ui-dashboard-layout>

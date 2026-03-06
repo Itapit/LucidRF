@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SystemRole } from '@LucidRF/common';
 import {
@@ -13,7 +14,6 @@ import {
   SelectDirective,
   SpinnerComponent,
 } from '@LucidRF/ui';
-import { Observable } from 'rxjs';
 import { AuthFacade } from '../../../auth/store/auth.facade';
 import { NavigationService } from '../../../core/navigation/navigation.service';
 
@@ -47,14 +47,10 @@ export class AdminUsersComponent implements OnInit {
   ];
 
   adminCreateForm!: FormGroup;
-  isLoading$: Observable<boolean>;
-  error$: Observable<string | null>;
-  user$ = this.authFacade.user$;
 
-  constructor() {
-    this.isLoading$ = this.authFacade.loading$;
-    this.error$ = this.authFacade.adminCreateUserError$;
-  }
+  isLoading = toSignal(this.authFacade.loading$, { initialValue: false });
+  error = toSignal(this.authFacade.adminCreateUserError$, { initialValue: null });
+  user = toSignal(this.authFacade.user$, { initialValue: null });
 
   ngOnInit(): void {
     this.adminCreateForm = this.fb.group({

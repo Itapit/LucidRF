@@ -27,15 +27,14 @@
           </select>
         </ui-form-field>
 
-        <ui-alert *ngIf="error$ | async as error" type="error" [message]="error"></ui-alert>
+        @if (error(); as e) {
+        <ui-alert type="error" [message]="e"></ui-alert>
+        }
 
-        <ui-button
-          type="submit"
-          [disabled]="adminCreateForm.invalid || ((isLoading$ | async) ?? false)"
-          [fullWidth]="true"
-        >
-          <ui-spinner *ngIf="(isLoading$ | async) ?? false" size="sm" class="mr-3 -ml-1"></ui-spinner>
-          Create User
+        <ui-button type="submit" [disabled]="adminCreateForm.invalid || isLoading()" [fullWidth]="true">
+          @if (isLoading()) {
+          <ui-spinner size="sm" class="mr-3 -ml-1"></ui-spinner>
+          } Create User
         </ui-button>
       </form>
     </div>

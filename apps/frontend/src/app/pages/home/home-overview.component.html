@@ -3,9 +3,9 @@
     <!-- Header Section -->
     <header class="pt-12 pb-8 animate-fade-in">
       <h1 class="text-5xl font-normal tracking-tight font-serif text-lrf-dark leading-tight">Overview</h1>
-      <p class="text-gray-500 font-sans mt-2 text-lg" *ngIf="user$ | async as user">
-        Welcome back, {{ user.username }}.
-      </p>
+      @if (user(); as u) {
+      <p class="text-gray-500 font-sans mt-2 text-lg">Welcome back, {{ u.username }}.</p>
+      }
     </header>
 
     <!-- Active Teams Strip -->
@@ -13,15 +13,13 @@
       <h2 class="text-sm font-bold uppercase tracking-widest text-gray-400 font-sans mb-6">Workspaces & Teams</h2>
       <div class="flex gap-4 overflow-x-auto pb-4 hide-scrollbar">
         <!-- Personal Workspace -->
-        <ui-team-card
-          *ngIf="personalTeam$ | async as personalTeam"
-          [team]="personalTeam"
-          (teamClick)="goToTeam($event)"
-        ></ui-team-card>
+        @if (personalTeam(); as pTeam) {
+        <ui-team-card [team]="pTeam" (teamClick)="goToTeam($event)"></ui-team-card>
+        }
 
         <!-- Collaborative Teams -->
         <ui-team-card
-          *ngFor="let team of collaborativeTeams$ | async"
+          *ngFor="let team of collaborativeTeams()"
           [team]="team"
           (teamClick)="goToTeam($event)"
         ></ui-team-card>

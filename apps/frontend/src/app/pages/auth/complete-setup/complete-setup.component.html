@@ -11,12 +11,18 @@
       />
     </ui-form-field>
 
-    <ui-alert *ngIf="error$ | async as err" type="error" [message]="err"></ui-alert>
+    @if (error(); as err) {
+    <ui-alert type="error" [message]="err"></ui-alert>
+    }
 
-    <ui-button type="submit" [disabled]="setupForm.invalid || ((isLoading$ | async) ?? false)" [fullWidth]="true">
-      <ui-spinner *ngIf="(isLoading$ | async) ?? false" size="sm" class="mr-2"></ui-spinner>
-      <span *ngIf="!((isLoading$ | async) ?? false)">Activate Account</span>
-      <span *ngIf="(isLoading$ | async) ?? false">Activating...</span>
+    <ui-button type="submit" [disabled]="setupForm.invalid || isLoading()" [fullWidth]="true">
+      @if (isLoading()) {
+      <ui-spinner size="sm" class="mr-2"></ui-spinner>
+      } @if (!isLoading()) {
+      <span>Activate Account</span>
+      } @if (isLoading()) {
+      <span>Activating...</span>
+      }
     </ui-button>
   </form>
 </ui-centered-layout>

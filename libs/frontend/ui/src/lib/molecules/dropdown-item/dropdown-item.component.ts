@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 
 @Component({
   selector: 'ui-dropdown-item',
@@ -9,6 +9,6 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
   templateUrl: './dropdown-item.component.html',
 })
 export class DropdownItemComponent {
-  @Input() variant: 'default' | 'danger' = 'default';
-  @Output() itemClick = new EventEmitter<MouseEvent>();
+  variant = input<'default' | 'danger'>('default');
+  itemClick = output<MouseEvent>();
 }

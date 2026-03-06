@@ -1,36 +1,31 @@
-<ng-container *ngIf="isAppLoading$ | async; else appContent">
-  <div class="flex items-center justify-center fixed inset-0 z-50 bg-white/80">
-    <ui-spinner size="lg" variant="default"></ui-spinner>
-  </div>
-</ng-container>
+@if (isAppLoading()) {
+<div class="flex items-center justify-center fixed inset-0 z-50 bg-white/80">
+  <ui-spinner size="lg" variant="default"></ui-spinner>
+</div>
+} @else { @if (globalError(); as error) {
+<ui-global-error [error]="error" (retry)="reloadApp()"></ui-global-error>
+} @else {
+<div class="flex h-screen w-full bg-white overflow-hidden">
+  <!-- Sidebar -->
+  @if (isLoggedIn()) {
+  <ui-global-sidebar
+    [teams]="teams() || []"
+    [isAdmin]="role() === SystemRole.ADMIN"
+    [user]="user()"
+    (goHome)="goHome()"
+    (goWorkspace)="goWorkspace()"
+    (goTeam)="goTeam($event)"
+    (goAdmin)="goAdmin()"
+    (uploadClick)="openUpload()"
+    (logout)="logout()"
+    (editProfile)="editProfile()"
+  >
+  </ui-global-sidebar>
+  }
 
-<ng-template #appContent>
-  <ng-container *ngIf="globalError$ | async as error; else shell">
-    <ui-global-error [error]="error" (retry)="reloadApp()"></ui-global-error>
-  </ng-container>
-</ng-template>
-
-<ng-template #shell>
-  <div class="flex h-screen w-full bg-white overflow-hidden">
-    <!-- Sidebar -->
-    <ui-global-sidebar
-      *ngIf="isLoggedIn$ | async"
-      [teams]="(teams$ | async) || []"
-      [isAdmin]="(role$ | async) === SystemRole.ADMIN"
-      [user]="user$ | async"
-      (goHome)="goHome()"
-      (goWorkspace)="goWorkspace()"
-      (goTeam)="goTeam($event)"
-      (goAdmin)="goAdmin()"
-      (uploadClick)="openUpload()"
-      (logout)="logout()"
-      (editProfile)="editProfile()"
-    >
-    </ui-global-sidebar>
-
-    <!-- Main Content -->
-    <main class="flex-1 flex flex-col overflow-hidden w-full h-full relative z-0 bg-white">
-      <router-outlet></router-outlet>
-    </main>
-  </div>
-</ng-template>
+  <!-- Main Content -->
+  <main class="flex-1 flex flex-col overflow-hidden w-full h-full relative z-0 bg-white">
+    <router-outlet></router-outlet>
+  </main>
+</div>
+} }

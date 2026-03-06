@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 
 @Component({
   selector: 'ui-alert',
@@ -11,7 +11,7 @@ export class AlertComponent {
   type = input<'error' | 'warning' | 'info' | 'success'>('error');
   message = input<string | null>(null);
 
-  get classes() {
+  classes = computed(() => {
     const baseClasses = 'border p-3 mb-6 rounded-md flex items-start gap-2';
     switch (this.type()) {
       case 'error':
@@ -25,9 +25,9 @@ export class AlertComponent {
       default:
         return baseClasses;
     }
-  }
+  });
 
-  get iconClasses() {
+  iconClasses = computed(() => {
     const base = 'h-4 w-4 mt-0.5 flex-shrink-0';
     switch (this.type()) {
       case 'error':
@@ -41,9 +41,9 @@ export class AlertComponent {
       default:
         return base;
     }
-  }
+  });
 
-  get textClasses() {
+  textClasses = computed(() => {
     const base = 'text-xs font-medium leading-relaxed';
     switch (this.type()) {
       case 'error':
@@ -57,5 +57,5 @@ export class AlertComponent {
       default:
         return base;
     }
-  }
+  });
 }

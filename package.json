@@ -29,6 +29,7 @@
     "@ngrx/effects": "^20.0.0",
     "@ngrx/entity": "^20.0.0",
     "@ngrx/router-store": "^20.0.0",
+    "@ngrx/signals": "^20.1.0",
     "@ngrx/store": "^20.0.0",
     "@willsoto/nestjs-prometheus": "^6.0.2",
     "bcrypt": "^6.0.0",

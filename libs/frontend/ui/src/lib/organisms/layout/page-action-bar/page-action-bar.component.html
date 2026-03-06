@@ -1,13 +1,18 @@
 <div class="px-8 py-4 flex justify-between items-center bg-lrf-sidebar border-b border-lrf-border">
   <div class="flex items-center gap-2">
-    <h1 class="text-3xl font-medium tracking-tight" *ngIf="title()">{{ title() }}</h1>
+    @if (title()) {
+    <h1 class="text-3xl font-medium tracking-tight">{{ title() }}</h1>
+    }
     <ng-content select="[left-actions]"></ng-content>
   </div>
   <div class="flex gap-3 font-sans text-sm">
     <ng-content select="[right-actions]"></ng-content>
 
     <!-- Default buttons -->
-    <ui-button *ngIf="showNewFolder()" variant="secondary" (clicked)="newFolder.emit()"> New Folder </ui-button>
-    <ui-button *ngIf="showUpload()" variant="primary" (clicked)="uploadFile.emit()"> Upload File </ui-button>
+    @if (showNewFolder()) {
+    <ui-button variant="secondary" (clicked)="newFolder.emit()"> New Folder </ui-button>
+    } @if (showUpload()) {
+    <ui-button variant="primary" (clicked)="uploadFile.emit()"> Upload File </ui-button>
+    }
   </div>
 </div>

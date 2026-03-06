@@ -2,8 +2,8 @@
   <!-- Trigger -->
   <div dropdown-trigger class="flex justify-center w-full mt-2">
     <ui-avatar
-      [src]="'https://ui-avatars.com/api/?name=' + (user?.username || 'User') + '&background=random'"
-      [alt]="user?.username || 'User'"
+      [src]="'https://ui-avatars.com/api/?name=' + (user()?.username || 'User') + '&background=random'"
+      [alt]="user()?.username || 'User'"
       size="md"
       [bordered]="true"
     ></ui-avatar>
@@ -15,21 +15,22 @@
     <div class="px-6 py-5 border-b border-gray-100 bg-gray-50/50">
       <div class="flex items-center gap-4">
         <ui-avatar
-          [src]="'https://ui-avatars.com/api/?name=' + (user?.username || 'User') + '&background=random'"
-          [alt]="user?.username || 'User'"
+          [src]="'https://ui-avatars.com/api/?name=' + (user()?.username || 'User') + '&background=random'"
+          [alt]="user()?.username || 'User'"
           size="lg"
         ></ui-avatar>
         <div class="flex flex-col overflow-hidden">
-          <span class="font-bold text-base text-gray-900 truncate">{{ user?.username }}</span>
-          <span class="text-sm text-gray-500 truncate">{{ user?.email }}</span>
+          <span class="font-bold text-base text-gray-900 truncate">{{ user()?.username }}</span>
+          <span class="text-sm text-gray-500 truncate">{{ user()?.email }}</span>
         </div>
       </div>
+      @if ($any(user()?.role) === 'ADMIN') {
       <div
-        *ngIf="$any(user?.role) === 'ADMIN'"
         class="mt-4 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-black text-white uppercase"
       >
         Admin
       </div>
+      }
     </div>
 
     <!-- Actions -->

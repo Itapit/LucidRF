@@ -8,12 +8,18 @@
       <input id="password" type="password" formControlName="password" placeholder="••••••••" uiInput />
     </ui-form-field>
 
-    <ui-alert *ngIf="error$ | async as error" type="error" [message]="error"></ui-alert>
+    @if (error(); as err) {
+    <ui-alert type="error" [message]="err"></ui-alert>
+    }
 
-    <ui-button type="submit" [disabled]="loginForm.invalid || ((isLoading$ | async) ?? false)" [fullWidth]="true">
-      <ui-spinner *ngIf="(isLoading$ | async) ?? false" size="sm" class="mr-2"></ui-spinner>
-      <span *ngIf="!((isLoading$ | async) ?? false)">Sign In</span>
-      <span *ngIf="(isLoading$ | async) ?? false">Signing in...</span>
+    <ui-button type="submit" [disabled]="loginForm.invalid || isLoading()" [fullWidth]="true">
+      @if (isLoading()) {
+      <ui-spinner size="sm" class="mr-2"></ui-spinner>
+      } @if (!isLoading()) {
+      <span>Sign In</span>
+      } @if (isLoading()) {
+      <span>Signing in...</span>
+      }
     </ui-button>
   </form>
 </ui-centered-layout>

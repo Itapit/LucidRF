@@ -1,19 +1,27 @@
 <div class="w-full flex flex-col gap-1.5">
-  <label *ngIf="label()" [for]="forId()" class="block text-sm font-semibold text-gray-700">
+  @if (label()) {
+  <label [for]="forId()" class="block text-sm font-semibold text-gray-700">
     {{ label() }}
-    <span *ngIf="required()" class="text-red-500">*</span>
+    @if (required()) {
+    <span class="text-red-500">*</span>
+    }
   </label>
+  }
 
   <!-- Input Projection -->
   <ng-content></ng-content>
 
   <!-- Error Message -->
-  <p *ngIf="error()" class="text-xs text-red-500 font-medium mt-1 animate-fade-in">
+  @if (error()) {
+  <p class="text-xs text-red-500 font-medium mt-1 animate-fade-in">
     {{ error() }}
   </p>
+  }
 
   <!-- Hint/Helper Text -->
-  <p *ngIf="hint() && !error()" class="text-xs text-gray-500 mt-1">
+  @if (hint() && !error()) {
+  <p class="text-xs text-gray-500 mt-1">
     {{ hint() }}
   </p>
+  }
 </div>

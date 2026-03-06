@@ -3,7 +3,9 @@
     <div class="mb-8 text-center">
       <ng-content select="[header-icon]"></ng-content>
       <h1 class="text-3xl font-extrabold text-black tracking-tight mb-2">{{ title() }}</h1>
-      <p class="text-gray-500 text-sm" *ngIf="subtitle()">{{ subtitle() }}</p>
+      @if (subtitle()) {
+      <p class="text-gray-500 text-sm">{{ subtitle() }}</p>
+      }
     </div>
 
     <!-- The wrapper card with standardized styling. Form tags will use display: contents to inherit flex gaps -->

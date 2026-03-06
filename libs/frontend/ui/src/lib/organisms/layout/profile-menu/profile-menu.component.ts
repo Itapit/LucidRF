@@ -1,6 +1,6 @@
 import { ConnectedPosition } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output, ViewChild } from '@angular/core';
 import { UserDto } from '@LucidRF/common';
 import { AvatarComponent } from '../../../atoms/avatar/avatar.component';
 import { DropdownItemComponent } from '../../../molecules/dropdown-item/dropdown-item.component';
@@ -14,9 +14,9 @@ import { DropdownComponent } from '../../../molecules/dropdown/dropdown.componen
   templateUrl: './profile-menu.component.html',
 })
 export class ProfileMenuComponent {
-  @Input() user: UserDto | null = null;
-  @Output() logout = new EventEmitter<void>();
-  @Output() editProfile = new EventEmitter<void>();
+  user = input<UserDto | null>(null);
+  logout = output<void>();
+  editProfile = output<void>();
 
   @ViewChild(DropdownComponent) dropdown!: DropdownComponent;
 

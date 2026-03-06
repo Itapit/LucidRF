@@ -1,9 +1,10 @@
-<div *ngIf="message()" [ngClass]="classes">
+@if (message()) {
+<div [ngClass]="classes()">
   <ng-container [ngSwitch]="type()">
     <!-- Error Icon -->
     <svg
       *ngSwitchCase="'error'"
-      [ngClass]="iconClasses"
+      [ngClass]="iconClasses()"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 20 20"
       fill="currentColor"
@@ -17,7 +18,7 @@
     <!-- Warning Icon -->
     <svg
       *ngSwitchCase="'warning'"
-      [ngClass]="iconClasses"
+      [ngClass]="iconClasses()"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 20 20"
       fill="currentColor"
@@ -31,7 +32,7 @@
     <!-- Info Icon -->
     <svg
       *ngSwitchCase="'info'"
-      [ngClass]="iconClasses"
+      [ngClass]="iconClasses()"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 20 20"
       fill="currentColor"
@@ -45,7 +46,7 @@
     <!-- Success Icon -->
     <svg
       *ngSwitchCase="'success'"
-      [ngClass]="iconClasses"
+      [ngClass]="iconClasses()"
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 20 20"
       fill="currentColor"
@@ -57,5 +58,6 @@
       />
     </svg>
   </ng-container>
-  <p [ngClass]="textClasses">{{ message() }}</p>
+  <p [ngClass]="textClasses()">{{ message() }}</p>
 </div>
+}

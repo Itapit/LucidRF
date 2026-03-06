@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, effect, inject, OnDestroy } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import {
   BreadcrumbItem,
   BreadcrumbsComponent,
@@ -26,14 +27,14 @@ import { FilesFacade } from '../../files/store/files.facade';
   templateUrl: './my-workspace.component.html',
   host: { class: 'flex-1 flex overflow-hidden w-full h-full' },
 })
-export class MyWorkspaceComponent implements OnInit, OnDestroy {
+export class MyWorkspaceComponent implements OnDestroy {
   private navigationService = inject(NavigationService);
   private filesFacade = inject(FilesFacade);
   private authFacade = inject(AuthFacade);
 
-  files$ = this.filesFacade.files$;
-  folders$ = this.filesFacade.folders$;
-  user$ = this.authFacade.user$;
+  files = toSignal(this.filesFacade.files$, { initialValue: [] });
+  folders = toSignal(this.filesFacade.folders$, { initialValue: [] });
+  user = toSignal(this.authFacade.user$, { initialValue: null });
 
   get breadcrumbs(): BreadcrumbItem[] {
     return [
@@ -42,21 +43,21 @@ export class MyWorkspaceComponent implements OnInit, OnDestroy {
     ];
   }
 
+  constructor() {
+    effect(() => {
+      const u = this.user();
+      if (u?.id) {
+        this.filesFacade.loadContent(u.id);
+      }
+    });
+  }
+
   onBreadcrumbClick(item: BreadcrumbItem) {
     if (item.id === 'home') {
       this.goHome();
     } else if (item.id === 'workspace-root') {
       // Navigate to workspace root if implemented
     }
-  }
-
-  ngOnInit() {
-    this.authFacade.user$.subscribe((user) => {
-      if (user?.id) {
-        // Assume workspace ID is the user ID or use a specific load action
-        this.filesFacade.loadContent(user.id);
-      }
-    });
   }
 
   ngOnDestroy() {

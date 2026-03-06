@@ -143,8 +143,8 @@
   <div class="mt-auto"></div>
 
   <!-- Admin Portal (only visible to admin users) -->
+  @if (isAdmin()) {
   <div
-    *ngIf="isAdmin()"
     class="relative flex justify-center w-full team cursor-pointer mb-4"
     tabindex="0"
     (keyup.enter)="goAdmin.emit()"
@@ -179,6 +179,7 @@
       Admin Portal
     </div>
   </div>
+  }
 
   <!-- Profile Menu -->
   <ui-profile-menu [user]="user()" (logout)="logout.emit()" (editProfile)="editProfile.emit()"></ui-profile-menu>

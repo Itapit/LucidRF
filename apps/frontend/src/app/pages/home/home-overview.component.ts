@@ -1,6 +1,7 @@
 import { Dialog, DialogModule } from '@angular/cdk/dialog';
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import {
   DashboardLayoutComponent,
   DialogAction,
@@ -24,10 +25,10 @@ export class HomeOverviewComponent {
   private authFacade = inject(AuthFacade);
   private navigationService = inject(NavigationService);
 
-  teams$ = this.teamsFacade.teams$;
-  personalTeam$ = this.teamsFacade.personalTeam$;
-  collaborativeTeams$ = this.teamsFacade.collaborativeTeams$;
-  user$ = this.authFacade.user$;
+  teams = toSignal(this.teamsFacade.teams$, { initialValue: [] });
+  personalTeam = toSignal(this.teamsFacade.personalTeam$, { initialValue: null });
+  collaborativeTeams = toSignal(this.teamsFacade.collaborativeTeams$, { initialValue: [] });
+  user = toSignal(this.authFacade.user$, { initialValue: null });
 
   private dialog = inject(Dialog);
 

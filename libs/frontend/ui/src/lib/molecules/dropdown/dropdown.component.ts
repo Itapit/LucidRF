@@ -1,6 +1,6 @@
 import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
 
 @Component({
   selector: 'ui-dropdown',
@@ -10,17 +10,17 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
   templateUrl: './dropdown.component.html',
 })
 export class DropdownComponent {
-  @Input() positions: ConnectedPosition[] = [
+  positions = input<ConnectedPosition[]>([
     { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 8 },
-  ];
+  ]);
 
-  isOpen = false;
+  isOpen = signal(false);
 
   toggle() {
-    this.isOpen = !this.isOpen;
+    this.isOpen.update((v) => !v);
   }
 
   close() {
-    this.isOpen = false;
+    this.isOpen.set(false);
   }
 }

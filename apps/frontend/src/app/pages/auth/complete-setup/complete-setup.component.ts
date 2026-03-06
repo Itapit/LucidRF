@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   AlertComponent,
@@ -9,7 +10,6 @@ import {
   InputDirective,
   SpinnerComponent,
 } from '@LucidRF/ui';
-import { Observable } from 'rxjs';
 import { AuthFacade } from '../../../auth/store/auth.facade';
 
 @Component({
@@ -32,13 +32,9 @@ export class CompleteSetupComponent implements OnInit {
   private authFacade = inject(AuthFacade);
 
   setupForm!: FormGroup;
-  isLoading$: Observable<boolean>;
-  error$: Observable<string | null>;
 
-  constructor() {
-    this.isLoading$ = this.authFacade.loading$;
-    this.error$ = this.authFacade.completeSetupError$;
-  }
+  isLoading = toSignal(this.authFacade.loading$, { initialValue: false });
+  error = toSignal(this.authFacade.completeSetupError$, { initialValue: null });
 
   ngOnInit(): void {
     this.setupForm = this.fb.group({

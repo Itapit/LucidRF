@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { SystemRole } from '@LucidRF/common';
 import { AuthFacade } from './auth/store/auth.facade';
 import { NavigationService } from './core/navigation/navigation.service';
@@ -16,12 +17,13 @@ export class AppComponent {
   private teamsFacade = inject(TeamsFacade);
   private navigationService = inject(NavigationService);
 
-  globalError$ = this.coreFacade.globalError$;
-  isAppLoading$ = this.authFacade.isAppLoading$;
-  isLoggedIn$ = this.authFacade.isLoggedIn$;
-  role$ = this.authFacade.role$;
-  user$ = this.authFacade.user$;
-  teams$ = this.teamsFacade.collaborativeTeams$;
+  globalError = toSignal(this.coreFacade.globalError$, { initialValue: null });
+  isAppLoading = toSignal(this.authFacade.isAppLoading$, { initialValue: true });
+  isLoggedIn = toSignal(this.authFacade.isLoggedIn$, { initialValue: false });
+  role = toSignal(this.authFacade.role$, { initialValue: null });
+  user = toSignal(this.authFacade.user$, { initialValue: null });
+  teams = toSignal(this.teamsFacade.collaborativeTeams$, { initialValue: [] });
+
   SystemRole = SystemRole;
 
   reloadApp(): void {
