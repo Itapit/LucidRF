@@ -1,16 +1,19 @@
 import { CommonModule } from '@angular/common';
 import { Component, input, output } from '@angular/core';
+import { SpinnerComponent } from '../spinner/spinner.component';
 
 @Component({
   selector: 'ui-button',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, SpinnerComponent],
   templateUrl: './button.component.html',
 })
 export class ButtonComponent {
   variant = input<'primary' | 'secondary' | 'ghost' | 'danger'>('primary');
   size = input<'sm' | 'md' | 'lg'>('md');
   disabled = input<boolean>(false);
+  loading = input<boolean>(false);
+  loadingText = input<string>('Loading...');
   type = input<'button' | 'submit'>('button');
   fullWidth = input<boolean>(false);
 
@@ -37,8 +40,12 @@ export class ButtonComponent {
     return `${baseClasses} ${sizeClasses} ${variantClasses} ${widthClass}`;
   }
 
+  get isDisabled() {
+    return this.disabled() || this.loading();
+  }
+
   onClick(event: MouseEvent) {
-    if (!this.disabled()) {
+    if (!this.isDisabled) {
       this.clicked.emit(event);
     }
   }

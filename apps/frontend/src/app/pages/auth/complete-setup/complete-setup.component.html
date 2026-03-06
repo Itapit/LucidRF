@@ -15,14 +15,14 @@
     <ui-alert type="error" [message]="err"></ui-alert>
     }
 
-    <ui-button type="submit" [disabled]="setupForm.invalid || isLoading()" [fullWidth]="true">
-      @if (isLoading()) {
-      <ui-spinner size="sm" class="mr-2"></ui-spinner>
-      } @if (!isLoading()) {
+    <ui-button
+      type="submit"
+      [disabled]="setupForm.invalid"
+      [loading]="isLoading()"
+      loadingText="Activating..."
+      [fullWidth]="true"
+    >
       <span>Activate Account</span>
-      } @if (isLoading()) {
-      <span>Activating...</span>
-      }
     </ui-button>
   </form>
 </ui-centered-layout>

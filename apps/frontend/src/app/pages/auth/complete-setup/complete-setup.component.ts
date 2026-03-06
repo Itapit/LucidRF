@@ -8,7 +8,6 @@ import {
   CenteredLayoutComponent,
   FormFieldComponent,
   InputDirective,
-  SpinnerComponent,
 } from '@LucidRF/ui';
 import { AuthFacade } from '../../../auth/store/auth.facade';
 
@@ -22,7 +21,6 @@ import { AuthFacade } from '../../../auth/store/auth.facade';
     InputDirective,
     ButtonComponent,
     AlertComponent,
-    SpinnerComponent,
     CenteredLayoutComponent,
   ],
   templateUrl: './complete-setup.component.html',

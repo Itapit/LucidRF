@@ -12,7 +12,6 @@ import {
   InputDirective,
   PageActionBarComponent,
   SelectDirective,
-  SpinnerComponent,
 } from '@LucidRF/ui';
 import { AuthFacade } from '../../../auth/store/auth.facade';
 import { NavigationService } from '../../../core/navigation/navigation.service';
@@ -28,7 +27,6 @@ import { NavigationService } from '../../../core/navigation/navigation.service';
     SelectDirective,
     ButtonComponent,
     AlertComponent,
-    SpinnerComponent,
     PageActionBarComponent,
     DashboardLayoutComponent,
     AdminSidebarComponent,
