@@ -1,40 +1,32 @@
 @if (store.team(); as t) {
-<ui-dashboard-layout>
-  <ui-folder-sidebar
-    layout-sidebar
-    [title]="t.name"
-    [subtitle]="(store.files().length || 0) + ' files'"
-    [initials]="t.initials"
-    [themeColor]="t.color"
-    headerVariant="initials"
-    [folders]="store.folders()"
-    (folderClick)="onFolderClick()"
-  >
-  </ui-folder-sidebar>
-
-  <ui-page-action-bar (newFolder)="onNewFolder()" (uploadFile)="onUploadFile()">
-    <div left-actions class="flex items-center ml-2">
-      <ui-breadcrumbs [items]="getBreadcrumbs(t)" (itemClick)="onBreadcrumbClick($event)"></ui-breadcrumbs>
-    </div>
-
-    <ng-container right-actions>
-      @if (store.canManageTeam()) {
-      <button
-        (click)="openSettings(t)"
-        class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors font-medium hover:shadow-sm"
-      >
-        Settings
-      </button>
-      }
-      <button
-        (click)="openMembers(t)"
-        class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors font-medium hover:shadow-sm"
-      >
-        Members
-      </button>
-    </ng-container>
-  </ui-page-action-bar>
-
-  <ui-file-table [files]="store.files()"></ui-file-table>
-</ui-dashboard-layout>
+<app-workspace-shell
+  [title]="t.name"
+  [subtitle]="t.description || ''"
+  [initials]="t.initials"
+  [themeColor]="t.color"
+  [breadcrumbs]="getBreadcrumbs(t)"
+  [files]="store.files()"
+  [folders]="store.folders()"
+  (folderClick)="store.onFolderClick()"
+  (newFolder)="store.onNewFolder()"
+  (uploadFile)="store.onUploadFile()"
+  (breadcrumbClick)="onBreadcrumbClick($event)"
+>
+  <ng-container right-actions>
+    @if (store.canManageTeam()) {
+    <button
+      (click)="openSettings(t)"
+      class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors font-medium hover:shadow-sm"
+    >
+      Settings
+    </button>
+    }
+    <button
+      (click)="openMembers(t)"
+      class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors font-medium hover:shadow-sm"
+    >
+      Members
+    </button>
+  </ng-container>
+</app-workspace-shell>
 }

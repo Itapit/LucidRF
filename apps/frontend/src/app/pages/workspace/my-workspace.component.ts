@@ -1,40 +1,22 @@
 import { CommonModule } from '@angular/common';
 import { Component, effect, inject, OnDestroy } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import {
-  BreadcrumbItem,
-  BreadcrumbsComponent,
-  DashboardLayoutComponent,
-  FileTableComponent,
-  FolderSidebarComponent,
-  PageActionBarComponent,
-} from '@LucidRF/ui';
-import { AuthFacade } from '../../auth/store/auth.facade';
-import { NavigationService } from '../../core/navigation/navigation.service';
-import { FilesFacade } from '../../files/store/files.facade';
+import { TeamColor } from '@LucidRF/common';
+import { BreadcrumbItem } from '@LucidRF/ui';
+import { WorkspaceShellComponent } from '../../shared/workspace/workspace-shell/workspace-shell.component';
+import { MyWorkspaceStore } from './my-workspace.store';
 
 @Component({
   selector: 'app-my-workspace',
   standalone: true,
-  imports: [
-    CommonModule,
-    FolderSidebarComponent,
-    PageActionBarComponent,
-    FileTableComponent,
-    BreadcrumbsComponent,
-    DashboardLayoutComponent,
-  ],
+  imports: [CommonModule, WorkspaceShellComponent],
   templateUrl: './my-workspace.component.html',
   host: { class: 'flex-1 flex overflow-hidden w-full h-full' },
+  providers: [MyWorkspaceStore],
 })
 export class MyWorkspaceComponent implements OnDestroy {
-  private navigationService = inject(NavigationService);
-  private filesFacade = inject(FilesFacade);
-  private authFacade = inject(AuthFacade);
+  readonly store = inject(MyWorkspaceStore);
 
-  files = toSignal(this.filesFacade.files$, { initialValue: [] });
-  folders = toSignal(this.filesFacade.folders$, { initialValue: [] });
-  user = toSignal(this.authFacade.user$, { initialValue: null });
+  defaultColor = TeamColor.SIGNAL_BLUE;
 
   get breadcrumbs(): BreadcrumbItem[] {
     return [
@@ -45,38 +27,19 @@ export class MyWorkspaceComponent implements OnDestroy {
 
   constructor() {
     effect(() => {
-      const u = this.user();
-      if (u?.id) {
-        this.filesFacade.loadContent(u.id);
-      }
+      this.store.initWorkspace();
     });
   }
 
   onBreadcrumbClick(item: BreadcrumbItem) {
     if (item.id === 'home') {
-      this.goHome();
+      this.store.goHome();
     } else if (item.id === 'workspace-root') {
       // Navigate to workspace root if implemented
     }
   }
 
   ngOnDestroy() {
-    this.filesFacade.clearContent();
-  }
-
-  goHome() {
-    this.navigationService.toHome();
-  }
-
-  onFolderClick() {
-    // Handle folder navigation
-  }
-
-  onNewFolder() {
-    // Open new folder modal
-  }
-
-  onUploadFile() {
-    // Open upload flow
+    this.store.clearWorkspaceContent();
   }
 }

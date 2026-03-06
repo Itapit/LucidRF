@@ -1,0 +1,25 @@
+<ui-dashboard-layout>
+  <ui-folder-sidebar
+    layout-sidebar
+    [title]="title"
+    [subtitle]="subtitle"
+    [initials]="initials"
+    [themeColor]="themeColor"
+    headerVariant="initials"
+    [folders]="folders"
+    (folderClick)="folderClick.emit()"
+  >
+  </ui-folder-sidebar>
+
+  <ui-page-action-bar (newFolder)="newFolder.emit()" (uploadFile)="uploadFile.emit()">
+    <div left-actions class="flex items-center ml-2">
+      <ui-breadcrumbs [items]="breadcrumbs" (itemClick)="breadcrumbClick.emit($event)"></ui-breadcrumbs>
+    </div>
+
+    <ng-container right-actions>
+      <ng-content select="[right-actions]"></ng-content>
+    </ng-container>
+  </ui-page-action-bar>
+
+  <ui-file-table [files]="files"></ui-file-table>
+</ui-dashboard-layout>

@@ -3,7 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { TeamDto, TeamRole } from '@LucidRF/common';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { AuthFacade } from '../../auth/store/auth.facade';
-import { FilesFacade } from '../../files/store/files.facade';
+import { withWorkspace } from '../../shared/workspace/with-workspace.feature';
 import { TeamsFacade } from '../../teams/store/teams.facade';
 
 export interface TeamDetailState {
@@ -16,15 +16,13 @@ const initialState: TeamDetailState = {
 
 export const TeamDetailStore = signalStore(
   withState(initialState),
+  withWorkspace(),
   withComputed((store) => {
     const authFacade = inject(AuthFacade);
     const teamsFacade = inject(TeamsFacade);
-    const filesFacade = inject(FilesFacade);
 
     const user = toSignal(authFacade.user$, { initialValue: null });
     const teams = toSignal(teamsFacade.teams$, { initialValue: [] });
-    const files = toSignal(filesFacade.files$, { initialValue: [] });
-    const folders = toSignal(filesFacade.folders$, { initialValue: [] });
 
     const team = computed<TeamDto | null>(() => {
       const id = store.teamId();
@@ -49,28 +47,22 @@ export const TeamDetailStore = signalStore(
     return {
       user,
       teams,
-      files,
-      folders,
       team,
       currentUserRole,
       canManageTeam,
     };
   }),
   withMethods((store) => {
-    const filesFacade = inject(FilesFacade);
     const teamsFacade = inject(TeamsFacade);
 
     return {
       setTeamId: (teamId: string) => {
         patchState(store, { teamId });
         if (teamId) {
-          filesFacade.loadContent(teamId);
+          store.loadWorkspaceContent(teamId);
         } else {
-          filesFacade.clearContent();
+          store.clearWorkspaceContent();
         }
-      },
-      clearContent: () => {
-        filesFacade.clearContent();
       },
       updateTeam: (id: string, data: Partial<TeamDto>) => {
         teamsFacade.updateTeam(id, data);

@@ -4,44 +4,24 @@ import { Component, effect, inject, OnDestroy } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { TeamDto, TeamRole } from '@LucidRF/common';
-import {
-  BreadcrumbItem,
-  BreadcrumbsComponent,
-  DashboardLayoutComponent,
-  DialogAction,
-  DialogResult,
-  FileTableComponent,
-  FolderSidebarComponent,
-  MemberListComponent,
-  PageActionBarComponent,
-  TeamFormComponent,
-} from '@LucidRF/ui';
+import { BreadcrumbItem, DialogAction, DialogResult, MemberListComponent, TeamFormComponent } from '@LucidRF/ui';
 import { map } from 'rxjs/operators';
-import { NavigationService } from '../../core/navigation/navigation.service';
+import { WorkspaceShellComponent } from '../../shared/workspace/workspace-shell/workspace-shell.component';
 import { TeamDetailStore } from './team-detail.store';
 
 @Component({
   selector: 'app-team-detail',
   standalone: true,
-  imports: [
-    CommonModule,
-    FolderSidebarComponent,
-    PageActionBarComponent,
-    FileTableComponent,
-    DialogModule,
-    BreadcrumbsComponent,
-    DashboardLayoutComponent,
-  ],
+  imports: [CommonModule, DialogModule, WorkspaceShellComponent],
   providers: [TeamDetailStore],
   templateUrl: './team-detail.component.html',
   host: { class: 'flex-1 flex overflow-hidden w-full h-full' },
 })
 export class TeamDetailComponent implements OnDestroy {
   private route = inject(ActivatedRoute);
-  private navigationService = inject(NavigationService);
   private dialog = inject(Dialog);
 
-  // Inject our newly created local store
+  // Inject our local store
   readonly store = inject(TeamDetailStore);
 
   // Convert Route Param to Signal
@@ -66,30 +46,14 @@ export class TeamDetailComponent implements OnDestroy {
 
   onBreadcrumbClick(item: BreadcrumbItem) {
     if (item.id === 'home') {
-      this.goHome();
+      this.store.goHome();
     } else {
       // Navigate to team root if we implement nested folders
     }
   }
 
   ngOnDestroy() {
-    this.store.clearContent();
-  }
-
-  goHome() {
-    this.navigationService.toHome();
-  }
-
-  onFolderClick() {
-    // Navigate or filter
-  }
-
-  onNewFolder() {
-    // Open modal to create folder
-  }
-
-  onUploadFile() {
-    // Open upload flow
+    this.store.clearWorkspaceContent();
   }
 
   openSettings(team: TeamDto) {
@@ -101,9 +65,10 @@ export class TeamDetailComponent implements OnDestroy {
     dialogRef.closed.subscribe((result: DialogResult | undefined) => {
       if (!result) return;
       if (result.action === DialogAction.SUBMIT && result.data) {
-        this.onUpdateTeam(team.id, result.data as Partial<TeamDto>);
+        this.store.updateTeam(team.id, result.data as Partial<TeamDto>);
       } else if (result.action === DialogAction.DELETE) {
-        this.onDeleteTeam(team.id);
+        this.store.deleteTeam(team.id);
+        this.store.goHome();
       }
     });
   }
@@ -120,35 +85,14 @@ export class TeamDetailComponent implements OnDestroy {
 
     if (dialogRef.componentInstance) {
       dialogRef.componentInstance.inviteMember.subscribe((identifier: string) => {
-        this.onInviteMember(team.id, identifier);
+        this.store.inviteMember(team.id, identifier);
       });
       dialogRef.componentInstance.removeMember.subscribe((userId: string) => {
-        this.onRemoveMember(team.id, userId);
+        this.store.removeMember(team.id, userId);
       });
       dialogRef.componentInstance.updateRole.subscribe((event: { userId: string; role: TeamRole }) => {
-        this.onUpdateMemberRole(team.id, event);
+        this.store.updateMemberRole(team.id, event.userId, event.role);
       });
     }
-  }
-
-  private onUpdateTeam(id: string, data: Partial<TeamDto>) {
-    this.store.updateTeam(id, data);
-  }
-
-  private onDeleteTeam(id: string) {
-    this.store.deleteTeam(id);
-    this.navigationService.toHome();
-  }
-
-  private onInviteMember(teamId: string, identifier: string) {
-    this.store.inviteMember(teamId, identifier);
-  }
-
-  private onUpdateMemberRole(teamId: string, event: { userId: string; role: TeamRole }) {
-    this.store.updateMemberRole(teamId, event.userId, event.role);
-  }
-
-  private onRemoveMember(teamId: string, userId: string) {
-    this.store.removeMember(teamId, userId);
   }
 }
