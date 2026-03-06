@@ -1,5 +1,5 @@
 @if (store.team(); as t) {
-<app-workspace-shell
+<ui-workspace-shell
   [title]="t.name"
   [subtitle]="t.description || ''"
   [initials]="t.initials"
@@ -9,7 +9,7 @@
   [folders]="store.folders()"
   (folderClick)="store.onFolderClick()"
   (newFolder)="store.onNewFolder()"
-  (uploadFile)="store.onUploadFile()"
+  (uploadFile)="store.onUploadFile(t.id, $event)"
   (breadcrumbClick)="onBreadcrumbClick($event)"
 >
   <ng-container right-actions>
@@ -28,5 +28,5 @@
       Members
     </button>
   </ng-container>
-</app-workspace-shell>
+</ui-workspace-shell>
 }

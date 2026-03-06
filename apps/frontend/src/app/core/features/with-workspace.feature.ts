@@ -36,9 +36,17 @@ export function withWorkspace() {
           // Open new folder modal
           console.log('New folder requested');
         },
-        onUploadFile: () => {
-          // Open upload flow
-          console.log('Upload file requested');
+        onUploadFile: (teamId: string, file: File, parentFolderId?: string) => {
+          filesFacade.uploadFile(
+            {
+              originalFileName: file.name,
+              size: file.size,
+              mimeType: file.type || 'application/octet-stream',
+              teamId,
+              parentFolderId,
+            },
+            file
+          );
         },
       };
     })

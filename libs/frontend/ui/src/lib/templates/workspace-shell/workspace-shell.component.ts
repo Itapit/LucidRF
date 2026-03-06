@@ -1,17 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FileDto, FolderDto, TeamColor } from '@LucidRF/common';
-import {
-  BreadcrumbItem,
-  BreadcrumbsComponent,
-  DashboardLayoutComponent,
-  FileTableComponent,
-  FolderSidebarComponent,
-  PageActionBarComponent,
-} from '@LucidRF/ui';
+import { BreadcrumbItem, BreadcrumbsComponent } from '../../molecules';
+import { FileTableComponent, FolderSidebarComponent, PageActionBarComponent } from '../../organisms';
+import { DashboardLayoutComponent } from '../dashboard-layout/dashboard-layout.component';
 
 @Component({
-  selector: 'app-workspace-shell',
+  selector: 'ui-workspace-shell',
   standalone: true,
   imports: [
     CommonModule,
@@ -35,6 +30,6 @@ export class WorkspaceShellComponent {
 
   @Output() folderClick = new EventEmitter<void>();
   @Output() newFolder = new EventEmitter<void>();
-  @Output() uploadFile = new EventEmitter<void>();
+  @Output() uploadFile = new EventEmitter<File>();
   @Output() breadcrumbClick = new EventEmitter<BreadcrumbItem>();
 }

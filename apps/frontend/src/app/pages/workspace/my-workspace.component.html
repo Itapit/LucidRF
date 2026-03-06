@@ -1,4 +1,4 @@
-<app-workspace-shell
+<ui-workspace-shell
   title="My Workspace"
   [subtitle]="store.team()?.description || ''"
   initials="ME"
@@ -8,7 +8,7 @@
   [folders]="store.folders()"
   (folderClick)="store.onFolderClick()"
   (newFolder)="store.onNewFolder()"
-  (uploadFile)="store.onUploadFile()"
+  (uploadFile)="store.team()?.id && store.onUploadFile(store.team()!.id, $event)"
   (breadcrumbClick)="onBreadcrumbClick($event)"
 >
-</app-workspace-shell>
+</ui-workspace-shell>

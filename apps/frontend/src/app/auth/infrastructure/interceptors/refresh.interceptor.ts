@@ -3,6 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { BehaviorSubject, Observable, catchError, filter, switchMap, take, throwError } from 'rxjs';
+import { environment } from '../../../environments/environment';
 import { AccessTokenService } from '../../services/access-token.service';
 import { AuthActions } from '../../store/auth.actions';
 import { AuthState } from '../../store/auth.state';
@@ -21,6 +22,10 @@ export class RefreshInterceptor implements HttpInterceptor {
    * Main intercept logic.
    */
   intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    if (!req.url.startsWith(environment.BACKEND_BASE_URL)) {
+      return next.handle(req);
+    }
+
     const token = this.tokenService.getToken();
 
     if (token) {

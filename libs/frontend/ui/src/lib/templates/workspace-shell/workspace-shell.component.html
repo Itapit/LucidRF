@@ -11,7 +11,7 @@
   >
   </ui-folder-sidebar>
 
-  <ui-page-action-bar (newFolder)="newFolder.emit()" (uploadFile)="uploadFile.emit()">
+  <ui-page-action-bar (newFolder)="newFolder.emit()" (uploadFile)="uploadFile.emit($event)">
     <div left-actions class="flex items-center ml-2">
       <ui-breadcrumbs [items]="breadcrumbs" (itemClick)="breadcrumbClick.emit($event)"></ui-breadcrumbs>
     </div>

@@ -4,9 +4,15 @@ import { Component, effect, inject, OnDestroy } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { TeamDto, TeamRole } from '@LucidRF/common';
-import { BreadcrumbItem, DialogAction, DialogResult, MemberListComponent, TeamFormComponent } from '@LucidRF/ui';
+import {
+  BreadcrumbItem,
+  DialogAction,
+  DialogResult,
+  MemberListComponent,
+  TeamFormComponent,
+  WorkspaceShellComponent,
+} from '@LucidRF/ui';
 import { map } from 'rxjs/operators';
-import { WorkspaceShellComponent } from '../../shared/workspace/workspace-shell/workspace-shell.component';
 import { TeamDetailStore } from './team-detail.store';
 
 @Component({

@@ -3,7 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { TeamDto, TeamRole } from '@LucidRF/common';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { AuthFacade } from '../../auth/store/auth.facade';
-import { withWorkspace } from '../../shared/workspace/with-workspace.feature';
+import { withWorkspace } from '../../core/features/with-workspace.feature';
 import { TeamsFacade } from '../../teams/store/teams.facade';
 
 export interface TeamDetailState {

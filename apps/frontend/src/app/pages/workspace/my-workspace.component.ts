@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, effect, inject, OnDestroy } from '@angular/core';
 import { TeamColor } from '@LucidRF/common';
-import { BreadcrumbItem } from '@LucidRF/ui';
-import { WorkspaceShellComponent } from '../../shared/workspace/workspace-shell/workspace-shell.component';
+import { BreadcrumbItem, WorkspaceShellComponent } from '@LucidRF/ui';
 import { MyWorkspaceStore } from './my-workspace.store';
 
 @Component({

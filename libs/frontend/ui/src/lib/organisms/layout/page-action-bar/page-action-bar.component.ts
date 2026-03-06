@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, ViewChild, input, output } from '@angular/core';
 import { ButtonComponent } from '../../../atoms';
 
 @Component({
@@ -15,5 +15,20 @@ export class PageActionBarComponent {
   showUpload = input<boolean>(true);
 
   newFolder = output<void>();
-  uploadFile = output<void>();
+  uploadFile = output<File>();
+
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+
+  onUploadClick() {
+    this.fileInput.nativeElement.click();
+  }
+
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.uploadFile.emit(input.files[0]);
+      // Reset the input so the same file can be selected again
+      input.value = '';
+    }
+  }
 }
