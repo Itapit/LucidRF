@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Component, effect, inject, OnDestroy } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
-import { TeamDto, TeamRole } from '@LucidRF/common';
+import { FolderDto, TeamDto, TeamRole } from '@LucidRF/common';
 import {
   BreadcrumbItem,
   DialogAction,
@@ -44,17 +44,38 @@ export class TeamDetailComponent implements OnDestroy {
 
   getBreadcrumbs(team: TeamDto | null): BreadcrumbItem[] {
     if (!team) return [];
-    return [
+    const baseBreadcrumbs: BreadcrumbItem[] = [
       { id: 'home', label: 'Home', icon: 'home' },
       { id: team.id, label: team.name },
     ];
+
+    const ancestors = this.store.ancestors?.() || [];
+    const currentFolder = this.store.currentFolder?.();
+
+    const ancestorBreadcrumbs = ancestors.map((folder: FolderDto) => ({
+      id: folder.resourceId,
+      label: folder.name,
+    }));
+
+    if (currentFolder) {
+      ancestorBreadcrumbs.push({ id: currentFolder.resourceId, label: currentFolder.name });
+    }
+
+    return [...baseBreadcrumbs, ...ancestorBreadcrumbs];
   }
 
   onBreadcrumbClick(item: BreadcrumbItem) {
     if (item.id === 'home') {
       this.store.goHome();
     } else {
-      // Navigate to team root if we implement nested folders
+      const teamId = this.teamIdParam();
+      if (!teamId) return;
+
+      if (item.id === teamId) {
+        this.store.loadWorkspaceContent(teamId, undefined);
+      } else {
+        this.store.loadWorkspaceContent(teamId, item.id);
+      }
     }
   }
 

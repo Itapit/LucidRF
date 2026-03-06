@@ -11,16 +11,18 @@ export function withWorkspace() {
 
       const files = toSignal(filesFacade.files$, { initialValue: [] });
       const folders = toSignal(filesFacade.folders$, { initialValue: [] });
+      const ancestors = toSignal(filesFacade.ancestors$, { initialValue: [] });
+      const currentFolder = toSignal(filesFacade.currentFolder$, { initialValue: null });
 
-      return { files, folders };
+      return { files, folders, ancestors, currentFolder };
     }),
-    withMethods((store) => {
+    withMethods(() => {
       const filesFacade = inject(FilesFacade);
       const navigationService = inject(NavigationService);
 
       return {
-        loadWorkspaceContent: (ownerId: string) => {
-          filesFacade.loadContent(ownerId);
+        loadWorkspaceContent: (ownerId: string, folderId?: string) => {
+          filesFacade.loadContent(ownerId, folderId);
         },
         clearWorkspaceContent: () => {
           filesFacade.clearContent();
@@ -28,9 +30,8 @@ export function withWorkspace() {
         goHome: () => {
           navigationService.toHome();
         },
-        onFolderClick: () => {
-          // Handle folder navigation
-          console.log('Folder clicked');
+        onFolderClick: (teamId: string, folderId: string | null) => {
+          filesFacade.loadContent(teamId, folderId || undefined);
         },
         onNewFolder: () => {
           // Open new folder modal

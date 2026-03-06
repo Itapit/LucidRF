@@ -1,9 +1,12 @@
 import { createSelector } from '@ngrx/store';
 import { filesFeature } from './files.reducer';
 
-const { selectFiles, selectFolders, selectLoading, selectLoaded, selectError } = filesFeature;
+const { selectFiles, selectFolders, selectAncestors, selectCurrentFolder, selectLoading, selectLoaded, selectError } =
+  filesFeature;
 
 export {
+  selectAncestors,
+  selectCurrentFolder,
   selectFiles,
   selectError as selectFilesError,
   selectLoaded as selectFilesLoaded,

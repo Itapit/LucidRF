@@ -47,10 +47,26 @@ export class FolderService {
     // Validate the user has access to the requested team
     await this.validateTeamAccess(userId, teamId);
 
+    let currentFolderDto = undefined;
+    const ancestors = [];
+
     if (targetId) {
       const folder = await this.folderRepository.findById(targetId);
       if (!folder || folder.teamId !== teamId) {
         throw new ResourceNotFoundException(targetId);
+      }
+
+      currentFolderDto = toFolderDto(folder);
+
+      // Walk up the hierarchy to get ancestors
+      let parentId = folder.parentFolderId;
+      while (parentId) {
+        const parentFolder = await this.folderRepository.findById(parentId);
+        if (!parentFolder || parentFolder.teamId !== teamId) {
+          break; // Stop if parent not found or access denied
+        }
+        ancestors.unshift(toFolderDto(parentFolder)); // Add to the beginning to maintain root -> current order
+        parentId = parentFolder.parentFolderId;
       }
     }
 
@@ -64,6 +80,8 @@ export class FolderService {
     return {
       files: files.map(toFileDto),
       folders: folders.map(toFolderDto),
+      ...(currentFolderDto && { currentFolder: currentFolderDto }),
+      ...(ancestors.length > 0 && { ancestors }),
     };
   }
 

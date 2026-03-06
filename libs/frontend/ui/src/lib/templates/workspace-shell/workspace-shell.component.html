@@ -7,7 +7,7 @@
     [themeColor]="themeColor"
     headerVariant="initials"
     [folders]="folders"
-    (folderClick)="folderClick.emit()"
+    (folderClick)="folderClick.emit($event)"
   >
   </ui-folder-sidebar>
 

@@ -28,7 +28,7 @@ export class WorkspaceShellComponent {
   @Input({ required: true }) files: FileDto[] = [];
   @Input({ required: true }) folders: FolderDto[] = [];
 
-  @Output() folderClick = new EventEmitter<void>();
+  @Output() folderClick = new EventEmitter<string | null>();
   @Output() newFolder = new EventEmitter<void>();
   @Output() uploadFile = new EventEmitter<File>();
   @Output() breadcrumbClick = new EventEmitter<BreadcrumbItem>();

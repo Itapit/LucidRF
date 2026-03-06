@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, effect, inject, OnDestroy } from '@angular/core';
-import { TeamColor } from '@LucidRF/common';
+import { FolderDto, TeamColor } from '@LucidRF/common';
 import { BreadcrumbItem, WorkspaceShellComponent } from '@LucidRF/ui';
 import { MyWorkspaceStore } from './my-workspace.store';
 
@@ -18,10 +18,24 @@ export class MyWorkspaceComponent implements OnDestroy {
   defaultColor = TeamColor.SIGNAL_BLUE;
 
   get breadcrumbs(): BreadcrumbItem[] {
-    return [
+    const baseBreadcrumbs: BreadcrumbItem[] = [
       { id: 'home', label: 'Home', icon: 'home' },
       { id: 'workspace-root', label: 'My Workspace' },
     ];
+
+    const ancestors = this.store.ancestors?.() || [];
+    const currentFolder = this.store.currentFolder?.();
+
+    const ancestorBreadcrumbs = ancestors.map((folder: FolderDto) => ({
+      id: folder.resourceId,
+      label: folder.name,
+    }));
+
+    if (currentFolder) {
+      ancestorBreadcrumbs.push({ id: currentFolder.resourceId, label: currentFolder.name });
+    }
+
+    return [...baseBreadcrumbs, ...ancestorBreadcrumbs];
   }
 
   constructor() {
@@ -34,7 +48,15 @@ export class MyWorkspaceComponent implements OnDestroy {
     if (item.id === 'home') {
       this.store.goHome();
     } else if (item.id === 'workspace-root') {
-      // Navigate to workspace root if implemented
+      const teamId = this.store.team()?.id;
+      if (teamId) {
+        this.store.loadWorkspaceContent(teamId, undefined);
+      }
+    } else {
+      const teamId = this.store.team()?.id;
+      if (teamId) {
+        this.store.loadWorkspaceContent(teamId, item.id);
+      }
     }
   }
 

@@ -2,7 +2,15 @@ import { inject, Injectable } from '@angular/core';
 import { CreateFolderRequest, InitUploadRequest } from '@LucidRF/common';
 import { Store } from '@ngrx/store';
 import { FilesActions } from './files.actions';
-import { selectFiles, selectFilesError, selectFilesLoaded, selectFilesLoading, selectFolders } from './files.selectors';
+import {
+  selectAncestors,
+  selectCurrentFolder,
+  selectFiles,
+  selectFilesError,
+  selectFilesLoaded,
+  selectFilesLoading,
+  selectFolders,
+} from './files.selectors';
 import { FilesState } from './files.state';
 
 @Injectable({ providedIn: 'root' })
@@ -16,6 +24,8 @@ export class FilesFacade {
 
   files$ = this.store.select(selectFiles);
   folders$ = this.store.select(selectFolders);
+  ancestors$ = this.store.select(selectAncestors);
+  currentFolder$ = this.store.select(selectCurrentFolder);
 
   // --- Action Dispatchers ---
   clearContent() {

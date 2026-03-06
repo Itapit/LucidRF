@@ -17,9 +17,9 @@ export const MyWorkspaceStore = signalStore(
   withMethods((store) => {
     return {
       initWorkspace: () => {
-        const t = store.team();
-        if (t?.id) {
-          store.loadWorkspaceContent(t.id);
+        const team = store.team();
+        if (team?.id) {
+          store.loadWorkspaceContent(team.id);
         }
       },
     };

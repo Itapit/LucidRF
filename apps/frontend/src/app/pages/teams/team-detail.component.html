@@ -1,28 +1,28 @@
-@if (store.team(); as t) {
+@if (store.team(); as team) {
 <ui-workspace-shell
-  [title]="t.name"
-  [subtitle]="t.description || ''"
-  [initials]="t.initials"
-  [themeColor]="t.color"
-  [breadcrumbs]="getBreadcrumbs(t)"
+  [title]="team.name"
+  [subtitle]="team.description || ''"
+  [initials]="team.initials"
+  [themeColor]="team.color"
+  [breadcrumbs]="getBreadcrumbs(team)"
   [files]="store.files()"
   [folders]="store.folders()"
-  (folderClick)="store.onFolderClick()"
+  (folderClick)="store.onFolderClick(team.id, $event)"
   (newFolder)="store.onNewFolder()"
-  (uploadFile)="store.onUploadFile(t.id, $event)"
+  (uploadFile)="store.onUploadFile(team.id, $event)"
   (breadcrumbClick)="onBreadcrumbClick($event)"
 >
   <ng-container right-actions>
     @if (store.canManageTeam()) {
     <button
-      (click)="openSettings(t)"
+      (click)="openSettings(team)"
       class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors font-medium hover:shadow-sm"
     >
       Settings
     </button>
     }
     <button
-      (click)="openMembers(t)"
+      (click)="openMembers(team)"
       class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors font-medium hover:shadow-sm"
     >
       Members
