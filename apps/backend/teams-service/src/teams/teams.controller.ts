@@ -69,4 +69,9 @@ export class TeamsController {
     // Payload contains: { teamId, userId }
     return this.teamsService.isUserInTeam(payload);
   }
+
+  @MessagePattern(TEAMS_PATTERNS.HANDLE_USER_DELETION)
+  handleUserDeletion(@Payload() payload: { userId: string }): Promise<void> {
+    return this.teamsService.handleUserDeletion(payload);
+  }
 }

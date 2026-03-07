@@ -18,7 +18,19 @@ export class UsersController {
 
   @Post()
   @UseGuards(JwtAuthGuard, AdminGuard)
-  async adminCreateUser(@Body() dto: AdminCreateUserDto, @Req() req: AccessAuthenticatedRequest): Promise<UserDto> {
-    return this.usersService.adminCreateUser(req.user.userId, dto);
+  async createUser(@Body() dto: CreateUserDto, @Req() req: AccessAuthenticatedRequest): Promise<UserDto> {
+    return this.usersService.createUser(req.user.userId, dto);
+  }
+
+  @Get()
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  async getAllUsers(): Promise<UserDto[]> {
+    return this.usersService.getAllUsers();
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  async deleteUser(@Req() req: AccessAuthenticatedRequest, @Param('id') targetId: string): Promise<void> {
+    return this.usersService.deleteUser(req.user, targetId);
   }
 }

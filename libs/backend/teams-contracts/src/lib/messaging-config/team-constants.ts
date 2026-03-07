@@ -15,4 +15,5 @@ export const TEAMS_PATTERNS = {
   UPDATE_MEMBER_ROLE: 'teams.update_member_role',
   DELETE: 'teams.delete',
   IS_USER_IN_TEAM: 'teams.is_user_in_team',
+  HANDLE_USER_DELETION: 'teams.handle_user_deletion',
 };

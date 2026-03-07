@@ -15,8 +15,13 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @MessagePattern(USER_PATTERNS.CREATE_USER)
-  async adminCreateUser(@Payload() payload: AdminCreateUserPayload): Promise<UserDto> {
-    return this.userService.adminCreateUser(payload);
+  async createUser(@Payload() payload: CreateUserPayload): Promise<UserDto> {
+    return this.userService.createUser(payload);
+  }
+
+  @MessagePattern(USER_PATTERNS.GET_ALL_USERS)
+  async getAllUsers(): Promise<UserDto[]> {
+    return this.userService.getAllUsers();
   }
 
   @MessagePattern(USER_PATTERNS.GET_USER_BY_ID)
@@ -32,5 +37,10 @@ export class UserController {
   @MessagePattern(USER_PATTERNS.GET_USERS_BY_IDS)
   async getUsersByIds(@Payload() payload: GetUsersByIdsPayload): Promise<UserDto[]> {
     return this.userService.getUsersByIds(payload.userIds);
+  }
+
+  @MessagePattern(USER_PATTERNS.DELETE_USER)
+  async deleteUser(@Payload() payload: { userId: string }): Promise<void> {
+    return this.userService.deleteUser(payload.userId);
   }
 }

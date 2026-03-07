@@ -1,4 +1,5 @@
 import { TeamColor, TeamDto, TeamRole, TeamType } from '@LucidRF/common';
+import { FILES_PATTERNS, FILES_SERVICE } from '@LucidRF/files-contracts';
 import {
   AddMemberPayload,
   CheckTeamMembershipPayload,
@@ -10,7 +11,9 @@ import {
   UpdateMemberRolePayload,
   UpdateTeamPayload,
 } from '@LucidRF/teams-contracts';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
 import { InvalidTeamOperationException, TeamNotFoundException, TeamPermissionDeniedException } from './exceptions';
 import { CreateTeamRepoDto } from './repository/create-team-repo.dto';
 import { TeamRepository } from './repository/team.repository';
@@ -18,7 +21,12 @@ import { TeamSchema } from './repository/team.schema';
 
 @Injectable()
 export class TeamsService {
-  constructor(private readonly teamRepository: TeamRepository) {}
+  private readonly logger = new Logger(TeamsService.name);
+
+  constructor(
+    private readonly teamRepository: TeamRepository,
+    @Inject(FILES_SERVICE) private readonly filesClient: ClientProxy
+  ) {}
 
   /**
    * Create a new team.
@@ -245,6 +253,16 @@ export class TeamsService {
       throw new TeamPermissionDeniedException('Only the owner can delete the team');
     }
 
+    try {
+      this.logger.log(`Initiating file deletion for team ${payload.teamId}`);
+      await firstValueFrom(this.filesClient.send(FILES_PATTERNS.DELETE_TEAM_FILES, { teamId: payload.teamId }));
+    } catch (error) {
+      this.logger.error(`Failed to delete files for team ${payload.teamId}`, error);
+      // We could throw here, but maybe it's better to log it and proceed to delete the team anyway,
+      // or we can fail the whole request. Let's fail it so it can be retried.
+      throw new InvalidTeamOperationException('Could not delete team files, aborting team deletion');
+    }
+
     return this.teamRepository.delete(payload.teamId);
   }
 
@@ -253,6 +271,58 @@ export class TeamsService {
    */
   async isUserInTeam(payload: CheckTeamMembershipPayload): Promise<boolean> {
     return this.teamRepository.isUserInTeam(payload.teamId, payload.userId);
+  }
+
+  /**
+   * Orchestrates the deletion of a user's teams.
+   * - Deletes the user's personal team.
+   * - Deletes group teams where the user is the sole member.
+   * - Removes the user from group teams.
+   * - Promotes another member to Owner if the user was the sole Owner.
+   */
+  async handleUserDeletion(payload: { userId: string }): Promise<void> {
+    const { userId } = payload;
+    this.logger.log(`Handling team deletions for user ${userId}`);
+
+    const teams = await this.teamRepository.findByMemberId(userId);
+
+    for (const team of teams) {
+      if (team.type === TeamType.PERSONAL) {
+        // Delete personal team
+        await this.delete({ teamId: team._id.toString(), actorId: userId });
+        continue;
+      }
+
+      if (team.members.length === 1) {
+        // User is the only member of this group team, delete it
+        await this.delete({ teamId: team._id.toString(), actorId: userId });
+        continue;
+      }
+
+      // If user is the only Owner, promote another member
+      const userMembership = team.members.find((m) => m.userId.toString() === userId);
+      const otherMembers = team.members.filter((m) => m.userId.toString() !== userId);
+      const otherOwners = otherMembers.filter((m) => m.role === TeamRole.OWNER);
+
+      if (userMembership?.role === TeamRole.OWNER && otherOwners.length === 0) {
+        // Find the oldest/first available member to promote
+        const memberToPromote = otherMembers[0];
+        if (memberToPromote) {
+          this.logger.log(
+            `Promoting user ${memberToPromote.userId} to Owner in team ${team._id} as previous owner is deleted`
+          );
+          await this.teamRepository.updateMemberRole(
+            team._id.toString(),
+            memberToPromote.userId.toString(),
+            TeamRole.OWNER
+          );
+        }
+      }
+
+      // Remove the user from the team
+      this.logger.log(`Removing user ${userId} from team ${team._id}`);
+      await this.teamRepository.removeMember(team._id.toString(), userId);
+    }
   }
 
   /**

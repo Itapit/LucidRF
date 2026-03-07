@@ -46,4 +46,14 @@ export class MongoUserRepository implements UserRepository {
     const doc = await this.userModel.findOne({ username }).exec();
     return doc ? toUserEntity(doc) : null;
   }
+
+  async findAll(): Promise<UserEntity[]> {
+    const docs = await this.userModel.find().exec();
+    return docs.map((doc) => toUserEntity(doc));
+  }
+
+  async delete(id: string): Promise<boolean> {
+    const result = await this.userModel.findByIdAndDelete(id).exec();
+    return !!result;
+  }
 }

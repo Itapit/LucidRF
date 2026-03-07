@@ -1,5 +1,5 @@
 import { UserDto, UserStatus } from '@LucidRF/common';
-import { AdminCreateUserPayload } from '@LucidRF/users-contracts';
+import { CreateUserPayload } from '@LucidRF/users-contracts';
 import { Injectable, Logger } from '@nestjs/common';
 import { PasswordService } from '../../security';
 import { CreateUserRepoDto, toUserDto, UserRepository } from '../domain';
@@ -79,5 +79,24 @@ export class UserService {
   async getUsersByIds(ids: string[]): Promise<UserDto[]> {
     const users = await this.userRepository.findByIds(ids);
     return users.map((u) => toUserDto(u));
+  }
+
+  /**
+   * Gets all users.
+   */
+  async getAllUsers(): Promise<UserDto[]> {
+    const users = await this.userRepository.findAll();
+    return users.map((u) => toUserDto(u));
+  }
+
+  /**
+   * Deletes a user by ID.
+   */
+  async deleteUser(id: string): Promise<void> {
+    const user = await this.userRepository.findById(id);
+    if (!user) {
+      throw new UserNotFoundException(id);
+    }
+    await this.userRepository.delete(id);
   }
 }
