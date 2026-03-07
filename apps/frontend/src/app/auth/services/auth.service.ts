@@ -3,7 +3,6 @@ import { inject, Injectable } from '@angular/core';
 import {
   AuthRefreshResponse,
   CompleteSetupRequest,
-  CreateUserRequest,
   LoginRequest,
   LoginResponse,
   PendingLoginResponse,
@@ -24,10 +23,6 @@ export class AuthService {
 
   login(dto: LoginRequest): Observable<LoginResponse | PendingLoginResponse> {
     return this.http.post<LoginResponse | PendingLoginResponse>(`${this.baseUrl}/auth/login`, dto);
-  }
-
-  CreateUser(dto: CreateUserRequest): Observable<UserDto> {
-    return this.http.post<UserDto>(`${this.baseUrl}/users`, dto);
   }
 
   completeSetup(dto: CompleteSetupRequest): Observable<LoginResponse> {

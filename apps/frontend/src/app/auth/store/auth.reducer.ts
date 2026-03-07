@@ -15,7 +15,6 @@ export const authReducer = createReducer(
     AuthActions.refresh,
     AuthActions.loadMe,
     AuthActions.logout,
-    AuthActions.createUser,
     (state) => ({
       ...state,
       loading: true,
@@ -24,16 +23,11 @@ export const authReducer = createReducer(
   ),
 
   // --- API Calls Failure ---
-  on(
-    AuthActions.loginFailure,
-    AuthActions.completeSetupFailure,
-    AuthActions.createUserFailure,
-    (state, { error }) => ({
-      ...state,
-      loading: false,
-      error: error,
-    })
-  ),
+  on(AuthActions.loginFailure, AuthActions.completeSetupFailure, (state, { error }) => ({
+    ...state,
+    loading: false,
+    error: error,
+  })),
 
   on(AuthActions.refreshFailure, AuthActions.loadMeFailure, (state, { error }) => ({
     ...state,
@@ -72,11 +66,6 @@ export const authReducer = createReducer(
       loaded: true,
     };
   }),
-
-  on(AuthActions.createUserSuccess, (state) => ({
-    ...state,
-    loading: false,
-  })),
 
   /**
    * This is only used by the App Init (F5 refresh) flow.

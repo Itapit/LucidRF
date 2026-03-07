@@ -13,17 +13,7 @@ export const appRoutes: Routes = [
     path: AppRoute.ADMIN,
     canActivate: [loggedInGuard],
     canMatch: [adminGuard],
-    children: [
-      { path: '', redirectTo: AppRoute.ADMIN_USERS, pathMatch: 'full' },
-      {
-        path: AppRoute.ADMIN_USERS,
-        loadComponent: () => import('./pages/admin/users/admin-users.component').then((m) => m.AdminUsersComponent),
-      },
-      // {
-      //   path: AppRoute.ADMIN_SETTINGS,
-      //   loadComponent: () => import('./pages/admin/settings/admin-settings.component').then((m) => m.AdminSettingsComponent),
-      // },
-    ],
+    loadChildren: () => import('./admin/admin.module').then((m) => m.AdminModule),
   },
   {
     path: AppRoute.HOME,

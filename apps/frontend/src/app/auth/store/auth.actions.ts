@@ -1,7 +1,6 @@
 import {
   AuthRefreshResponse,
   CompleteSetupRequest,
-  CreateUserRequest,
   LoginRequest,
   LoginResponse,
   PendingLoginResponse,
@@ -18,11 +17,6 @@ export const AuthActions = createActionGroup({
     'Login': props<{ request: LoginRequest }>(),
     'Login Success': props<{ response: LoginResponse | PendingLoginResponse }>(),
     'Login Failure': props<{ error: ActionError<AuthErrorSource> }>(),
-
-    // Create user
-    'Create User': props<{ request: CreateUserRequest }>(),
-    'Create User Success': props<{ response: UserDto }>(),
-    'Create User Failure': props<{ error: ActionError<AuthErrorSource> }>(),
 
     // Complete Setup
     'Complete Setup': props<{ request: CompleteSetupRequest }>(), // uses login success

@@ -1,0 +1,164 @@
+<div class="bg-white border border-lrf-border rounded-xl shadow-sm overflow-hidden relative min-h-[400px]">
+  <!-- Loading Overlay -->
+  @if (isLoading) {
+  <div class="absolute inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center z-10">
+    <div class="bg-white p-4 rounded-xl shadow-lg border border-lrf-border flex items-center gap-3">
+      <svg
+        class="animate-spin h-5 w-5 text-lrf-dark"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path
+          class="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+        ></path>
+      </svg>
+      <span class="text-sm font-medium">Loading users...</span>
+    </div>
+  </div>
+  }
+
+  <table class="w-full text-left font-sans text-sm">
+    <thead class="bg-gray-50 border-b border-lrf-border">
+      <tr class="text-gray-500 font-medium">
+        <th class="py-4 px-6">User</th>
+        <th class="py-4 px-6">Email</th>
+        <th class="py-4 px-6">Role</th>
+        <th class="py-4 px-6">Status</th>
+        <th class="py-4 px-6 text-right">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-lrf-border text-gray-800">
+      @for (user of users; track user.id) {
+      <tr class="hover:bg-gray-50 transition-colors group">
+        <td class="py-4 px-6 font-medium text-lrf-dark flex items-center gap-3">
+          <div
+            class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-600 uppercase border border-white shadow-sm"
+          >
+            {{ user.username.charAt(0) }}
+          </div>
+          {{ user.username }}
+        </td>
+        <td class="py-4 px-6 text-gray-500">{{ user.email }}</td>
+        <td class="py-4 px-6">
+          <span
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border"
+            [ngClass]="{
+              'bg-blue-50 text-blue-700 border-blue-100': user.role === SystemRole.ADMIN,
+              'bg-gray-50 text-gray-700 border-gray-200': user.role !== SystemRole.ADMIN
+            }"
+          >
+            {{ user.role }}
+          </span>
+        </td>
+        <td class="py-4 px-6">
+          <div class="flex items-center gap-2">
+            <div class="w-2 h-2 rounded-full bg-green-500"></div>
+            <span class="text-gray-600 text-xs font-medium">Active</span>
+          </div>
+        </td>
+        <td class="py-4 px-6 text-right">
+          <button
+            (click)="onDelete(user.id)"
+            [disabled]="deletingIds[user.id]"
+            class="text-gray-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-all p-1.5 hover:bg-red-50 rounded-md"
+            title="Delete User"
+          >
+            @if (deletingIds[user.id]) {
+            <svg
+              class="animate-spin h-5 w-5 text-red-600"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            } @else {
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+              />
+            </svg>
+            }
+          </button>
+        </td>
+      </tr>
+      } @if (users.length === 0 && !isLoading) {
+      <tr>
+        <td colspan="5" class="py-12 text-center text-gray-500">
+          <div class="flex flex-col items-center justify-center">
+            <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1"
+                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+              />
+            </svg>
+            <p>No users found in the system.</p>
+          </div>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+@if (userToDeleteId) {
+<ui-modal-wrapper title="Delete User" (closeModal)="cancelDelete()" [showFooter]="false">
+  <div modal-body class="p-6">
+    <div class="flex flex-col items-center text-center">
+      <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-4">
+        <svg class="w-6 h-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+          />
+        </svg>
+      </div>
+      <h3 class="text-lg font-bold text-gray-900 mb-2">Are you sure?</h3>
+      <p class="text-sm text-gray-500 mb-6 max-w-sm">
+        This action cannot be undone. This will permanently delete the user account and remove all associated data from
+        the system.
+      </p>
+      <div class="flex gap-3 w-full justify-center">
+        <ui-button variant="secondary" (click)="cancelDelete()"> Cancel </ui-button>
+        <button
+          (click)="confirmDelete()"
+          [disabled]="deletingIds[userToDeleteId]"
+          class="flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium text-sm shadow-sm"
+        >
+          @if (deletingIds[userToDeleteId]) {
+          <svg
+            class="animate-spin h-4 w-4 text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+          Deleting... } @else { Delete User }
+        </button>
+      </div>
+    </div>
+  </div>
+</ui-modal-wrapper>
+}

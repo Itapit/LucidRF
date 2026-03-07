@@ -80,13 +80,6 @@ export const selectRefreshError = createSelector(selectAuthError, (error) =>
 );
 
 /**
- * Selects the error *only if* it came from the 'createUser' flow.
- */
-export const selectCreateUserError = createSelector(selectAuthError, (error) =>
-  error?.source === AuthErrorSource.CREATE_USER ? error.message : null
-);
-
-/**
  * Selects if the auth state has been initialized.
  */
 export const selectAuthLoaded = createSelector(authFeature.selectLoaded, (loaded) => loaded);

@@ -1,61 +1,34 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { SystemRole } from '@LucidRF/common';
 import {
   AdminSidebarComponent,
-  AlertComponent,
-  ButtonComponent,
+  AdminUsersTableComponent,
   DashboardLayoutComponent,
-  FormFieldComponent,
-  InputDirective,
-  PageActionBarComponent,
-  SelectDirective,
+  UserCreateModalComponent,
 } from '@LucidRF/ui';
-import { AuthFacade } from '../../../auth/store/auth.facade';
 import { NavigationService } from '../../../core/navigation/navigation.service';
+import { AdminUsersStore } from './admin-users.store';
 
 @Component({
   selector: 'app-admin-users',
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
-    FormFieldComponent,
-    InputDirective,
-    SelectDirective,
-    ButtonComponent,
-    AlertComponent,
-    PageActionBarComponent,
     DashboardLayoutComponent,
     AdminSidebarComponent,
+    AdminUsersTableComponent,
+    UserCreateModalComponent,
   ],
+  providers: [AdminUsersStore],
   templateUrl: './admin-users.component.html',
   host: { class: 'flex-1 flex overflow-hidden w-full h-full' },
 })
 export class AdminUsersComponent implements OnInit {
-  private fb = inject(FormBuilder);
-  private authFacade = inject(AuthFacade);
   private navigationService = inject(NavigationService);
-
-  roles = [
-    { label: 'Standard User', value: SystemRole.USER },
-    { label: 'Administrator', value: SystemRole.ADMIN },
-  ];
-
-  adminCreateForm!: FormGroup;
-
-  isLoading = toSignal(this.authFacade.loading$, { initialValue: false });
-  error = toSignal(this.authFacade.adminCreateUserError$, { initialValue: null });
-  user = toSignal(this.authFacade.user$, { initialValue: null });
+  store = inject(AdminUsersStore);
 
   ngOnInit(): void {
-    this.adminCreateForm = this.fb.group({
-      username: ['', [Validators.required, Validators.minLength(5)]],
-      email: ['', [Validators.required, Validators.email]],
-      role: [SystemRole.USER, [Validators.required]],
-    });
+    this.store.loadUsers();
   }
 
   get activeTab(): 'users' | 'settings' {
@@ -68,13 +41,5 @@ export class AdminUsersComponent implements OnInit {
     } else {
       this.navigationService.toAdminSettings();
     }
-  }
-
-  onSubmit(): void {
-    if (this.adminCreateForm.invalid) {
-      return;
-    }
-
-    this.authFacade.adminCreateUser(this.adminCreateForm.value);
   }
 }

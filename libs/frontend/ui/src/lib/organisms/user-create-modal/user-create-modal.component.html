@@ -1,0 +1,40 @@
+@if (isOpen) {
+<ui-modal-wrapper title="Create New User" (closeModal)="onClose()" [showFooter]="false">
+  <div modal-body class="p-6">
+    <p class="text-xs text-gray-500 mb-6 -mt-4">Fill out the details below to add a user.</p>
+    <form [formGroup]="adminCreateForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-6">
+      <ui-form-field label="Username" forId="username">
+        <input id="username" type="text" formControlName="username" placeholder="johndoe" uiInput class="w-full" />
+      </ui-form-field>
+
+      <ui-form-field label="Email Address" forId="email">
+        <input id="email" type="email" formControlName="email" placeholder="john@example.com" uiInput class="w-full" />
+      </ui-form-field>
+
+      <ui-form-field label="System Role" forId="role">
+        <select id="role" formControlName="role" uiSelect class="w-full">
+          @for (option of roles; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      </ui-form-field>
+
+      @if (error) {
+      <ui-alert type="error" [message]="error"></ui-alert>
+      }
+
+      <div class="pt-4 flex justify-end gap-3">
+        <ui-button variant="secondary" type="button" (click)="onClose()"> Cancel </ui-button>
+        <ui-button
+          type="submit"
+          [disabled]="adminCreateForm.invalid || isSubmitting"
+          [loading]="isSubmitting"
+          loadingText="Creating..."
+        >
+          Create User
+        </ui-button>
+      </div>
+    </form>
+  </div>
+</ui-modal-wrapper>
+}

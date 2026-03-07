@@ -187,25 +187,4 @@ export class AuthEffects {
       ),
     { dispatch: false }
   );
-
-  // =================================================================
-  // ADMIN CREATE USER FLOWS
-  // =================================================================
-  createUser$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(AuthActions.createUser),
-      switchMap(({ request }) =>
-        this.authService.CreateUser(request).pipe(
-          map((response) => AuthActions.createUserSuccess({ response })),
-          catchError((error) => {
-            return of(
-              AuthActions.createUserFailure({
-                error: this.errorHandler.classifyActionError(error, AuthErrorSource.CREATE_USER),
-              })
-            );
-          })
-        )
-      )
-    )
-  );
 }

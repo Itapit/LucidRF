@@ -2,7 +2,6 @@
 export * from './admin-sidebar/admin-sidebar.component';
 export * from './global-sidebar/global-sidebar.component';
 export * from './global-sidebar/sidebar.types';
-export * from './page-action-bar/page-action-bar.component';
 export * from './workspace-header/workspace-header.component';
 
 // Files

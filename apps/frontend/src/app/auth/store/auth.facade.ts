@@ -1,15 +1,14 @@
 import { inject, Injectable } from '@angular/core';
-import { CreateUserRequest, CompleteSetupRequest, LoginRequest } from '@LucidRF/common';
+import { CompleteSetupRequest, LoginRequest } from '@LucidRF/common';
 import { Store } from '@ngrx/store';
 import { AuthActions } from './auth.actions';
 import {
-  selectCreateUserError,
   selectAuthError,
+  selectAuthLoaded,
   selectAuthLoading,
   selectCompleteSetupError,
   selectEmail,
   selectIsAppLoading,
-  selectAuthLoaded,
   selectIsLoggedIn,
   selectIsLoggedOut,
   selectIsPending,
@@ -40,9 +39,6 @@ export class AuthFacade {
 
   /** Emits the last known login error */
   loginError$ = this.store.select(selectLoginError);
-
-  /** Emits the last known admin create user error */
-  createUserError$ = this.store.select(selectCreateUserError);
 
   /** Emits the last known refresh error */
   refreshError$ = this.store.select(selectRefreshError);
@@ -92,13 +88,6 @@ export class AuthFacade {
    */
   login(request: LoginRequest) {
     this.store.dispatch(AuthActions.login({ request }));
-  }
-
-  /**Dispatches the admin create user action
-   * @param request The new user's email password and role
-   */
-  createUser(request: CreateUserRequest) {
-    this.store.dispatch(AuthActions.createUser({ request }));
   }
 
   /**
