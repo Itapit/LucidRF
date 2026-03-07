@@ -1,32 +1,32 @@
-@if (store.team(); as team) {
+@if (store.team(); as team) { @for (activeTeam of [team]; track activeTeam.id) {
 <ui-workspace-shell
-  [title]="team.name"
-  [subtitle]="team.description || ''"
-  [initials]="team.initials"
-  [themeColor]="team.color"
-  [breadcrumbs]="getBreadcrumbs(team)"
+  [title]="activeTeam.name"
+  [subtitle]="activeTeam.description || ''"
+  [initials]="activeTeam.initials"
+  [themeColor]="activeTeam.color"
+  [breadcrumbs]="getBreadcrumbs(activeTeam)"
   [files]="store.files()"
   [folders]="store.folders()"
-  (folderClick)="store.onFolderClick(team.id, $event)"
-  (newFolder)="store.onNewFolder(team.id)"
-  (uploadFile)="store.onUploadFile(team.id, $event)"
+  (folderClick)="store.onFolderClick(activeTeam.id, $event)"
+  (newFolder)="store.onNewFolder(activeTeam.id)"
+  (uploadFile)="store.onUploadFile(activeTeam.id, $event)"
   (breadcrumbClick)="onBreadcrumbClick($event)"
 >
   <ng-container right-actions>
     @if (store.canManageTeam()) {
     <button
-      (click)="openSettings(team)"
+      (click)="openSettings(activeTeam)"
       class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors font-medium hover:shadow-sm"
     >
       Settings
     </button>
     }
     <button
-      (click)="openMembers(team)"
+      (click)="openMembers(activeTeam)"
       class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors font-medium hover:shadow-sm"
     >
       Members
     </button>
   </ng-container>
 </ui-workspace-shell>
-}
+} }

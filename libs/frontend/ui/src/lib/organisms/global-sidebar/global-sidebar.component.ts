@@ -24,7 +24,6 @@ export class GlobalSidebarComponent {
   goWorkspace = output<void>();
   goTeam = output<string>();
   goAdmin = output<void>();
-  uploadClick = output<void>();
   logout = output<void>();
   editProfile = output<void>();
 

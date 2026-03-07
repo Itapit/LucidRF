@@ -32,30 +32,6 @@
     </div>
   </div>
 
-  <!-- Global Upload Button -->
-  <div
-    class="relative flex justify-center w-full team cursor-pointer"
-    tabindex="0"
-    (keyup.enter)="uploadClick.emit()"
-    (click)="uploadClick.emit()"
-  >
-    <div
-      class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-2 bg-gray-300 rounded-r-full opacity-0 team-hover:opacity-100 transition-all team-hover:h-4"
-    ></div>
-    <button
-      class="w-10 h-10 rounded-full bg-orange-500 text-white shadow-[0_4px_12px_rgba(249,115,22,0.3)] flex items-center justify-center hover:-translate-y-0.5 active:scale-95 transition-all"
-    >
-      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-      </svg>
-    </button>
-    <div
-      class="absolute left-16 bg-black text-white text-xs px-2 py-1 rounded opacity-0 team-hover:opacity-100 transition-opacity whitespace-nowrap z-50 top-1/2 -translate-y-1/2 pointer-events-none shadow-lg"
-    >
-      Upload File
-    </div>
-  </div>
-
   <!-- Divider -->
   <div class="w-8 h-px bg-gray-200 my-4"></div>
 
