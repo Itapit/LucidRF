@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { FileDto } from '@LucidRF/common';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { FileDto, FolderDto } from '@LucidRF/common';
 
+import { UnifiedResource } from './unified-resource.type';
 @Component({
   selector: 'ui-file-table',
   standalone: true,
@@ -11,10 +12,21 @@ import { FileDto } from '@LucidRF/common';
 })
 export class FileTableComponent {
   files = input<FileDto[] | null>([]);
+  folders = input<FolderDto[] | null>([]);
 
   fileClick = output<FileDto>();
+  folderClick = output<FolderDto>();
   download = output<FileDto>();
   delete = output<FileDto>();
+
+  unifiedResources = computed<UnifiedResource[]>(() => {
+    const mappedFolders = (this.folders() || []).map((folder) => ({ ...folder, isFolder: true } as const));
+    const mappedFiles = (this.files() || []).map((file) => ({ ...file, isFolder: false } as const));
+
+    // Sort folders recursively before files, maybe just a simple sort is enough for now,
+    // or assume they arrive pre-sorted from the store. We'll show all folders, then all files.
+    return [...mappedFolders, ...mappedFiles];
+  });
 
   activeMenuId: string | null = null;
 

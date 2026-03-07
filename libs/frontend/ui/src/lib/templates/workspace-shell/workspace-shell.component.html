@@ -1,25 +1,23 @@
 <ui-dashboard-layout>
-  <ui-folder-sidebar
-    layout-sidebar
-    [title]="title"
-    [subtitle]="subtitle"
-    [initials]="initials"
-    [themeColor]="themeColor"
-    headerVariant="initials"
-    [folders]="folders"
-    (folderClick)="folderClick.emit($event)"
-  >
-  </ui-folder-sidebar>
-
-  <ui-page-action-bar (newFolder)="newFolder.emit()" (uploadFile)="uploadFile.emit($event)">
-    <div left-actions class="flex items-center ml-2">
+  <ui-workspace-header [title]="title" [subtitle]="subtitle" [initials]="initials" [themeColor]="themeColor">
+    <div header-top>
       <ui-breadcrumbs [items]="breadcrumbs" (itemClick)="breadcrumbClick.emit($event)"></ui-breadcrumbs>
     </div>
 
-    <ng-container right-actions>
+    <ng-container header-actions>
       <ng-content select="[right-actions]"></ng-content>
+      @if (showNewFolder) {
+      <ui-button variant="secondary" (clicked)="newFolder.emit()"> New Folder </ui-button>
+      } @if (showUpload) {
+      <input type="file" #fileInput hidden (change)="onFileSelected($event)" />
+      <ui-button variant="primary" (clicked)="onUploadClick()"> Upload File </ui-button>
+      }
     </ng-container>
-  </ui-page-action-bar>
+  </ui-workspace-header>
 
-  <ui-file-table [files]="files"></ui-file-table>
+  <ui-file-table
+    [files]="files"
+    [folders]="folders"
+    (folderClick)="folderClick.emit($event.resourceId)"
+  ></ui-file-table>
 </ui-dashboard-layout>

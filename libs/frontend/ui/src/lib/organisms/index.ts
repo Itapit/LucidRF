@@ -8,7 +8,6 @@ export * from './layout/types/sidebar.types';
 // Files
 export * from './files/file-table/file-table.component';
 export * from './files/folder-form/folder-form.component';
-export * from './files/folder-sidebar/folder-sidebar.component';
 
 // Teams
 export * from './teams/member-list/member-list.component';
