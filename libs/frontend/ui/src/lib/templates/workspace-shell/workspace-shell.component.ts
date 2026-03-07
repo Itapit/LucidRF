@@ -3,8 +3,7 @@ import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@
 import { FileDto, FolderDto, TeamColor } from '@LucidRF/common';
 import { ButtonComponent } from '../../atoms';
 import { BreadcrumbItem, BreadcrumbsComponent } from '../../molecules';
-import { FileTableComponent } from '../../organisms';
-import { WorkspaceHeaderComponent } from '../../organisms/layout/workspace-header/workspace-header.component';
+import { FileTableComponent, WorkspaceHeaderComponent } from '../../organisms';
 import { DashboardLayoutComponent } from '../dashboard-layout/dashboard-layout.component';
 
 @Component({

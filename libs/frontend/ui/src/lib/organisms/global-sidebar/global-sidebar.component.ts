@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { TeamDto, UserDto } from '@LucidRF/common';
-import { ProfileMenuComponent } from '../profile-menu/profile-menu.component';
-import { SidebarItem } from '../types/sidebar.types';
+import { ProfileMenuComponent } from '../../molecules/profile-menu/profile-menu.component';
+import { SidebarItem } from './sidebar.types';
 
 @Component({
   selector: 'ui-global-sidebar',

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, ElementRef, ViewChild, input, output } from '@angular/core';
-import { ButtonComponent } from '../../../atoms';
+import { ButtonComponent } from '../../atoms';
 
 @Component({
   selector: 'ui-page-action-bar',

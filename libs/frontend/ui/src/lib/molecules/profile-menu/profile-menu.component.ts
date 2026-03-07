@@ -2,9 +2,9 @@ import { ConnectedPosition } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input, output, ViewChild } from '@angular/core';
 import { UserDto } from '@LucidRF/common';
-import { AvatarComponent } from '../../../atoms/avatar/avatar.component';
-import { DropdownItemComponent } from '../../../molecules/dropdown-item/dropdown-item.component';
-import { DropdownComponent } from '../../../molecules/dropdown/dropdown.component';
+import { AvatarComponent } from '../../atoms/avatar/avatar.component';
+import { DropdownItemComponent } from '../dropdown-item/dropdown-item.component';
+import { DropdownComponent } from '../dropdown/dropdown.component';
 
 @Component({
   selector: 'ui-profile-menu',
