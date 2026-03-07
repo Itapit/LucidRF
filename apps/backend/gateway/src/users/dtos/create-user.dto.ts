@@ -1,8 +1,8 @@
-import { AdminCreateUserRequest, SystemRole } from '@LucidRF/common';
+import { CreateUserRequest, SystemRole } from '@LucidRF/common';
 import { Transform } from 'class-transformer';
 import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
-export class AdminCreateUserDto implements AdminCreateUserRequest {
+export class CreateUserDto implements CreateUserRequest {
   @IsEmail()
   @Transform(({ value }) => value?.toLowerCase())
   email: string;

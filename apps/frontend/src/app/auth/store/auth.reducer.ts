@@ -15,7 +15,7 @@ export const authReducer = createReducer(
     AuthActions.refresh,
     AuthActions.loadMe,
     AuthActions.logout,
-    AuthActions.adminCreateUser,
+    AuthActions.createUser,
     (state) => ({
       ...state,
       loading: true,
@@ -27,7 +27,7 @@ export const authReducer = createReducer(
   on(
     AuthActions.loginFailure,
     AuthActions.completeSetupFailure,
-    AuthActions.adminCreateUserFailure,
+    AuthActions.createUserFailure,
     (state, { error }) => ({
       ...state,
       loading: false,
@@ -73,7 +73,7 @@ export const authReducer = createReducer(
     };
   }),
 
-  on(AuthActions.adminCreateUserSuccess, (state) => ({
+  on(AuthActions.createUserSuccess, (state) => ({
     ...state,
     loading: false,
   })),

@@ -1,6 +1,6 @@
 import { UserDto } from '@LucidRF/common';
 import {
-  AdminCreateUserPayload,
+  CreateUserPayload,
   GetUserByIdPayload,
   GetUserByIdentifierPayload,
   GetUsersByIdsPayload,

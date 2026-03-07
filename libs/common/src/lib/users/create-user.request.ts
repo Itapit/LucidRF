@@ -1,6 +1,6 @@
 import { SystemRole } from './system-role.enum';
 
-export interface AdminCreateUserRequest {
+export interface CreateUserRequest {
   email: string;
   username: string;
   role: SystemRole;

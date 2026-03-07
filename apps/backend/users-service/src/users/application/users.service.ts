@@ -16,7 +16,7 @@ export class UserService {
   /**
    * Creates a new user with a pending status and a temporary password.
    */
-  async adminCreateUser(payload: AdminCreateUserPayload): Promise<UserDto> {
+  async createUser(payload: CreateUserPayload): Promise<UserDto> {
     const email = payload.email.toLowerCase();
     const username = payload.username.toLowerCase();
 

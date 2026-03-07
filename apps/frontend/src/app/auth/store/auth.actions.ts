@@ -1,7 +1,7 @@
 import {
-  AdminCreateUserRequest,
   AuthRefreshResponse,
   CompleteSetupRequest,
+  CreateUserRequest,
   LoginRequest,
   LoginResponse,
   PendingLoginResponse,
@@ -19,10 +19,10 @@ export const AuthActions = createActionGroup({
     'Login Success': props<{ response: LoginResponse | PendingLoginResponse }>(),
     'Login Failure': props<{ error: ActionError<AuthErrorSource> }>(),
 
-    // Admin Create user
-    'Admin Create User': props<{ request: AdminCreateUserRequest }>(),
-    'Admin Create User Success': props<{ response: UserDto }>(),
-    'Admin Create User Failure': props<{ error: ActionError<AuthErrorSource> }>(),
+    // Create user
+    'Create User': props<{ request: CreateUserRequest }>(),
+    'Create User Success': props<{ response: UserDto }>(),
+    'Create User Failure': props<{ error: ActionError<AuthErrorSource> }>(),
 
     // Complete Setup
     'Complete Setup': props<{ request: CompleteSetupRequest }>(), // uses login success
