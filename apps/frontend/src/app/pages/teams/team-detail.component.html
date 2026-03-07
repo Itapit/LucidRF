@@ -8,7 +8,7 @@
   [files]="store.files()"
   [folders]="store.folders()"
   (folderClick)="store.onFolderClick(team.id, $event)"
-  (newFolder)="store.onNewFolder()"
+  (newFolder)="store.onNewFolder(team.id)"
   (uploadFile)="store.onUploadFile(team.id, $event)"
   (breadcrumbClick)="onBreadcrumbClick($event)"
 >

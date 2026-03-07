@@ -16,6 +16,7 @@ export class ButtonComponent {
   loadingText = input<string>('Loading...');
   type = input<'button' | 'submit'>('button');
   fullWidth = input<boolean>(false);
+  form = input<string>();
 
   clicked = output<MouseEvent>();
 

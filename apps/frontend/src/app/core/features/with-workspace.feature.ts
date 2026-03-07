@@ -1,5 +1,7 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { DialogAction, DialogResult, FolderFormComponent } from '@LucidRF/ui';
 import { signalStoreFeature, withComputed, withMethods } from '@ngrx/signals';
 import { NavigationService } from '../../core/navigation/navigation.service';
 import { FilesFacade } from '../../files/store/files.facade';
@@ -16,9 +18,10 @@ export function withWorkspace() {
 
       return { files, folders, ancestors, currentFolder };
     }),
-    withMethods(() => {
+    withMethods((store) => {
       const filesFacade = inject(FilesFacade);
       const navigationService = inject(NavigationService);
+      const dialog = inject(Dialog);
 
       return {
         loadWorkspaceContent: (ownerId: string, folderId?: string) => {
@@ -33,11 +36,24 @@ export function withWorkspace() {
         onFolderClick: (teamId: string, folderId: string | null) => {
           filesFacade.loadContent(teamId, folderId || undefined);
         },
-        onNewFolder: () => {
-          // Open new folder modal
-          console.log('New folder requested');
+        onNewFolder: (teamId: string) => {
+          const dialogRef = dialog.open<DialogResult<{ name: string }>>(FolderFormComponent, {
+            hasBackdrop: false,
+          });
+
+          dialogRef.closed.subscribe((result: DialogResult<{ name: string }> | undefined) => {
+            if (result?.action === DialogAction.SUBMIT && result.data) {
+              const parentFolderId = store.currentFolder()?.resourceId;
+              filesFacade.createFolder({
+                name: result.data.name,
+                teamId,
+                parentFolderId,
+              });
+            }
+          });
         },
-        onUploadFile: (teamId: string, file: File, parentFolderId?: string) => {
+        onUploadFile: (teamId: string, file: File) => {
+          const parentFolderId = store.currentFolder()?.resourceId;
           filesFacade.uploadFile(
             {
               originalFileName: file.name,
