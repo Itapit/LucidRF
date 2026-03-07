@@ -31,4 +31,9 @@ export abstract class FolderRepository {
    * Throws an exception if the folder does not exist.
    */
   abstract delete(id: string): Promise<boolean>;
+
+  /**
+   * SYSTEM INTERNAL: Deletes all folder records belonging to a specific team.
+   */
+  abstract deleteManyByTeamId(teamId: string): Promise<void>;
 }

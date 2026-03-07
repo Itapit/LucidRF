@@ -70,4 +70,15 @@ export class MongoFileRepository implements FileRepository {
     const session = this.dbContext.getSession();
     await this.fileModel.deleteMany({ parentFolderId: folderId }).session(session).exec();
   }
+
+  async findByTeamIdSystem(teamId: string): Promise<FileEntity[]> {
+    const session = this.dbContext.getSession();
+    const docs = await this.fileModel.find({ teamId }).session(session).exec();
+    return docs.map(toFileEntity);
+  }
+
+  async deleteManyByTeamId(teamId: string): Promise<void> {
+    const session = this.dbContext.getSession();
+    await this.fileModel.deleteMany({ teamId }).session(session).exec();
+  }
 }

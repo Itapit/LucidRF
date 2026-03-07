@@ -2,6 +2,7 @@ import { FileStatus } from '@LucidRF/common';
 import {
   ConfirmUploadPayload,
   DeleteResourcePayload,
+  DeleteTeamFilesPayload,
   GetDownloadUrlPayload,
   InitializeUploadPayload,
 } from '@LucidRF/files-contracts';
@@ -85,6 +86,23 @@ export class FileService {
     this.logger.log(`Deleted file ${payload.resourceId} (User: ${payload.userId})`);
 
     return { success: true, id: payload.resourceId };
+  }
+
+  async deleteTeamFiles(payload: DeleteTeamFilesPayload) {
+    const { teamId } = payload;
+    this.logger.log(`Deleting all files and folders for team ${teamId}`);
+
+    const files = await this.fileRepository.findByTeamIdSystem(teamId);
+    const storageKeys = files.map((f) => f.storageKey);
+
+    if (storageKeys.length > 0) {
+      await this.storageService.deleteMany(storageKeys);
+    }
+
+    await this.fileRepository.deleteManyByTeamId(teamId);
+    await this.folderRepository.deleteManyByTeamId(teamId);
+
+    return { success: true };
   }
 
   async getDownloadUrl(payload: GetDownloadUrlPayload) {

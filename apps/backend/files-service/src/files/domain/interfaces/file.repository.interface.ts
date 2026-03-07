@@ -33,6 +33,16 @@ export abstract class FileRepository {
   abstract deleteManyByFolderId(folderId: string): Promise<void>;
 
   /**
+   * SYSTEM INTERNAL: Retrieves ALL files belonging to a specific team.
+   */
+  abstract findByTeamIdSystem(teamId: string): Promise<FileEntity[]>;
+
+  /**
+   * SYSTEM INTERNAL: Deletes all file records belonging to a specific team.
+   */
+  abstract deleteManyByTeamId(teamId: string): Promise<void>;
+
+  /**
    * Updates the lifecycle status of a file (e.g., PENDING -> UPLOADED).
    */
   abstract updateStatus(id: string, status: string): Promise<FileEntity>;
