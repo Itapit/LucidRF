@@ -8,6 +8,7 @@ export class FileDto {
   mimeType!: string;
   status!: FileStatus;
   parentFolderId?: string | null;
+  uploadedBy!: string;
   createdAt!: Date;
   updatedAt!: Date;
 }

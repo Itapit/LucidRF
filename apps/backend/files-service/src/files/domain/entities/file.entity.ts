@@ -15,6 +15,8 @@ export class FileEntity {
   // Hierarchy
   parentFolderId?: string | null;
 
+  uploadedBy: string;
+
   createdAt?: Date;
   updatedAt?: Date;
 
