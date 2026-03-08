@@ -11,7 +11,7 @@
           </p>
         </div>
         <button
-          (click)="store.openModal()"
+          (click)="openCreateUserModal()"
           class="flex items-center gap-2 px-5 py-2.5 bg-lrf-dark text-white rounded-lg hover:bg-black transition-colors font-medium text-sm shadow-sm"
         >
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -28,13 +28,5 @@
         (delete)="store.deleteUser($event)"
       ></ui-admin-users-table>
     </div>
-
-    <ui-user-create-modal
-      [isOpen]="store.isCreateModalOpen()"
-      [isSubmitting]="store.isCreating()"
-      [error]="store.createError()"
-      (closeModal)="store.closeModal()"
-      (submitUser)="store.createUser($event)"
-    ></ui-user-create-modal>
   </div>
 </ui-dashboard-layout>

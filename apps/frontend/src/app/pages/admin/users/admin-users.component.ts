@@ -1,10 +1,12 @@
+import { Dialog, DialogModule, DialogRef } from '@angular/cdk/dialog';
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, effect, inject, OnInit } from '@angular/core';
 import {
   AdminSidebarComponent,
   AdminUsersTableComponent,
   DashboardLayoutComponent,
   UserCreateModalComponent,
+  UserCreateModalData,
 } from '@LucidRF/ui';
 import { NavigationService } from '../../../core/navigation/navigation.service';
 import { AdminUsersStore } from './admin-users.store';
@@ -12,20 +14,26 @@ import { AdminUsersStore } from './admin-users.store';
 @Component({
   selector: 'app-admin-users',
   standalone: true,
-  imports: [
-    CommonModule,
-    DashboardLayoutComponent,
-    AdminSidebarComponent,
-    AdminUsersTableComponent,
-    UserCreateModalComponent,
-  ],
+  imports: [CommonModule, DialogModule, DashboardLayoutComponent, AdminSidebarComponent, AdminUsersTableComponent],
   providers: [AdminUsersStore],
   templateUrl: './admin-users.component.html',
   host: { class: 'flex-1 flex overflow-hidden w-full h-full' },
 })
 export class AdminUsersComponent implements OnInit {
   private navigationService = inject(NavigationService);
+  private dialog = inject(Dialog);
   store = inject(AdminUsersStore);
+
+  private dialogRef: DialogRef<void> | null = null;
+
+  constructor() {
+    effect(() => {
+      if (!this.store.isCreateModalOpen() && this.dialogRef) {
+        this.dialogRef.close();
+        this.dialogRef = null;
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.store.loadUsers();
@@ -41,5 +49,23 @@ export class AdminUsersComponent implements OnInit {
     } else {
       this.navigationService.toAdminSettings();
     }
+  }
+
+  openCreateUserModal() {
+    this.store.openModal();
+    this.dialogRef = this.dialog.open<void, UserCreateModalData>(UserCreateModalComponent, {
+      data: {
+        isSubmitting: this.store.isCreating,
+        error: this.store.createError,
+        onSubmit: (data) => {
+          this.store.createUser(data);
+        },
+      },
+    });
+
+    this.dialogRef?.closed.subscribe(() => {
+      this.store.closeModal();
+      this.dialogRef = null;
+    });
   }
 }
