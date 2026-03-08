@@ -1,39 +1,45 @@
+<!-- Modal Panel -->
 <div
-  class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in"
-  (click)="closeModal.emit()"
-  (keydown.enter)="closeModal.emit()"
-  tabindex="0"
+  class="bg-white rounded-2xl shadow-xl w-full flex flex-col overflow-hidden animate-slide-up"
+  [ngClass]="maxWidthClass()"
 >
-  <!-- Modal Panel -->
-  <!-- eslint-disable-next-line @angular-eslint/template/click-events-have-key-events, @angular-eslint/template/interactive-supports-focus -->
-  <div
-    class="bg-white rounded-2xl shadow-xl w-full flex flex-col overflow-hidden animate-slide-up"
-    [ngClass]="maxWidthClass()"
-    (click)="$event.stopPropagation()"
-  >
-    <!-- Header -->
-    <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-      <h2 class="text-xl font-bold font-serif text-gray-900">{{ title() }}</h2>
-      <button
-        class="text-gray-400 hover:text-black transition-colors rounded-full hover:bg-gray-200 p-1"
-        (click)="closeModal.emit()"
-      >
-        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
+  <!-- Header -->
+  <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+    <h2 class="text-xl font-bold font-serif text-gray-900">{{ title() }}</h2>
+    <button
+      class="text-gray-400 hover:text-black transition-colors rounded-full hover:bg-gray-200 p-1"
+      (click)="closeModal.emit()"
+    >
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
 
-    <!-- Body Content -->
-    <div class="overflow-y-auto">
-      <ng-content select="[modal-body]"></ng-content>
-    </div>
+  <!-- Body Content -->
+  <div class="overflow-y-auto max-h-[calc(100vh-10rem)]">
+    <ng-content select="[modal-body]"></ng-content>
+  </div>
 
-    <!-- Footer Actions -->
-    @if (showFooter()) {
-    <div class="px-6 py-4 border-t border-gray-100 flex justify-end gap-3 bg-gray-50 mt-auto">
-      <ng-content select="[modal-footer]"></ng-content>
-    </div>
+  <!-- Footer Actions -->
+  @if (showFooter()) {
+  <div class="px-6 py-4 border-t border-gray-100 flex justify-end gap-3 bg-gray-50 mt-auto">
+    <!-- Check if a default footer action is passed via formId, if not, use custom projected footer -->
+    @if (formId()) {
+    <ui-button variant="secondary" type="button" (click)="closeModal.emit()"> {{ cancelText() }} </ui-button>
+    <ui-button
+      variant="primary"
+      type="submit"
+      [form]="formId()"
+      [disabled]="submitDisabled() || isSubmitting()"
+      [loading]="isSubmitting()"
+      (click)="!formId() ? submitModal.emit() : null"
+    >
+      {{ submitText() }}
+    </ui-button>
+    } @else {
+    <ng-content select="[modal-footer]"></ng-content>
     }
   </div>
+  }
 </div>
