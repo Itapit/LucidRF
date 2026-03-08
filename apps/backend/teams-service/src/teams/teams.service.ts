@@ -1,4 +1,4 @@
-import { TeamColor, TeamDto, TeamRole, TeamType } from '@LucidRF/common';
+import { RolePermissions, TeamColor, TeamDto, TeamPermission, TeamRole, TeamType } from '@LucidRF/common';
 import { FILES_PATTERNS, FILES_SERVICE } from '@LucidRF/files-contracts';
 import {
   AddMemberPayload,
@@ -27,6 +27,18 @@ export class TeamsService {
     private readonly teamRepository: TeamRepository,
     @Inject(FILES_SERVICE) private readonly filesClient: ClientProxy
   ) {}
+
+  /**
+   * Helper to strictly check an actor's role against static permissions
+   */
+  private enforcePermission(actorRole: TeamRole, requiredPermission: TeamPermission): void {
+    const permissions = RolePermissions[actorRole] || [];
+    if (!permissions.includes(requiredPermission)) {
+      throw new TeamPermissionDeniedException(
+        `Actor with role ${actorRole} does not have permission: ${requiredPermission}`
+      );
+    }
+  }
 
   /**
    * Create a new team.
@@ -79,13 +91,20 @@ export class TeamsService {
     }
 
     const actorMembership = team.members.find((m) => m.userId === payload.actorId);
-    if (!actorMembership || (actorMembership.role !== TeamRole.OWNER && actorMembership.role !== TeamRole.MANAGER)) {
-      throw new TeamPermissionDeniedException('Only the team owner or managers can add members');
+    if (!actorMembership) {
+      throw new TeamPermissionDeniedException('Actor is not a member of this team');
     }
 
-    if (actorMembership.role === TeamRole.MANAGER && payload.role !== TeamRole.MEMBER) {
-      throw new TeamPermissionDeniedException('Managers can only add regular members');
+    let requiredPermission: TeamPermission;
+    if (payload.role === TeamRole.OWNER) {
+      requiredPermission = TeamPermission.ADD_OWNER;
+    } else if (payload.role === TeamRole.MANAGER) {
+      requiredPermission = TeamPermission.ADD_MANAGER;
+    } else {
+      requiredPermission = TeamPermission.ADD_MEMBER;
     }
+
+    this.enforcePermission(actorMembership.role, requiredPermission);
 
     const updatedTeam = await this.teamRepository.addMember(payload.teamId, payload.targetUserId, payload.role);
     if (!updatedTeam) {
@@ -115,12 +134,17 @@ export class TeamsService {
       if (!actorMembership) {
         throw new TeamPermissionDeniedException('Actor is not a member of this team');
       }
-      if (actorMembership.role === TeamRole.MEMBER) {
-        throw new TeamPermissionDeniedException('Members cannot remove other members');
+
+      let requiredPermission: TeamPermission;
+      if (targetMembership.role === TeamRole.OWNER) {
+        requiredPermission = TeamPermission.REMOVE_OWNER;
+      } else if (targetMembership.role === TeamRole.MANAGER) {
+        requiredPermission = TeamPermission.REMOVE_MANAGER;
+      } else {
+        requiredPermission = TeamPermission.REMOVE_MEMBER;
       }
-      if (actorMembership.role === TeamRole.MANAGER && targetMembership.role !== TeamRole.MEMBER) {
-        throw new TeamPermissionDeniedException('Managers can only remove regular members');
-      }
+
+      this.enforcePermission(actorMembership.role, requiredPermission);
     }
 
     if (isSelf && isActorOwner) {
@@ -147,13 +171,11 @@ export class TeamsService {
     const team = await this.findOne({ teamId: payload.teamId });
 
     const actorMembership = team.members.find((m) => m.userId === payload.actorId);
-    if (!actorMembership || (actorMembership.role !== TeamRole.OWNER && actorMembership.role !== TeamRole.MANAGER)) {
-      throw new TeamPermissionDeniedException('Only the owner or managers can update team details');
+    if (!actorMembership) {
+      throw new TeamPermissionDeniedException('Actor is not a member of this team');
     }
 
-    if (payload.color && actorMembership.role !== TeamRole.OWNER) {
-      throw new TeamPermissionDeniedException('Only the owner can update the team color');
-    }
+    this.enforcePermission(actorMembership.role, TeamPermission.UPDATE_TEAM_DETAILS);
 
     const updateData: Partial<TeamSchema> = {
       name: payload.name,
@@ -207,33 +229,28 @@ export class TeamsService {
       // but let's enforce role checks below anyway.
     }
 
-    if (actorMembership.role === TeamRole.MEMBER) {
-      throw new TeamPermissionDeniedException('Members cannot change roles');
+    if (payload.role === targetMembership.role) {
+      return team; // No change needed
     }
 
-    if (actorMembership.role === TeamRole.MANAGER) {
-      // Managers can only manage regular members and other managers (up to manager)
-      // They can't touch Owners.
-      if (targetMembership.role === TeamRole.OWNER) {
-        throw new TeamPermissionDeniedException('Managers cannot change the role of an Owner');
-      }
-      // They also cannot promote anyone to Owner.
-      if (payload.role === TeamRole.OWNER) {
-        throw new TeamPermissionDeniedException('Managers cannot promote someone to Owner');
-      }
+    let requiredPermission: TeamPermission;
+
+    // Promoting TO a higher role
+    if (payload.role === TeamRole.OWNER) {
+      requiredPermission = TeamPermission.PROMOTE_TO_OWNER;
+    } else if (payload.role === TeamRole.MANAGER && targetMembership.role === TeamRole.MEMBER) {
+      requiredPermission = TeamPermission.PROMOTE_TO_MANAGER;
+    }
+    // Demoting FROM a higher role
+    else if (targetMembership.role === TeamRole.OWNER) {
+      requiredPermission = TeamPermission.DEMOTE_OWNER;
+    } else if (targetMembership.role === TeamRole.MANAGER && payload.role === TeamRole.MEMBER) {
+      requiredPermission = TeamPermission.DEMOTE_MANAGER;
+    } else {
+      throw new InvalidTeamOperationException('Invalid role transition');
     }
 
-    // Owner can do anything (except we already checked last owner demoting self)
-    if (
-      actorMembership.role === TeamRole.OWNER &&
-      targetMembership.role === TeamRole.OWNER &&
-      payload.role !== TeamRole.OWNER &&
-      !isSelf
-    ) {
-      // An owner can demote another owner, but we must ensure at least 1 owner remains.
-      // Since the actor is an owner and NOT the target, there's at least the actor remaining as owner.
-      // So this is safe.
-    }
+    this.enforcePermission(actorMembership.role, requiredPermission);
 
     const updatedTeam = await this.teamRepository.updateMemberRole(payload.teamId, payload.targetUserId, payload.role);
     if (!updatedTeam) {
@@ -249,9 +266,11 @@ export class TeamsService {
     const team = await this.findOne({ teamId: payload.teamId });
 
     const actorMembership = team.members.find((m) => m.userId === payload.actorId);
-    if (!actorMembership || actorMembership.role !== TeamRole.OWNER) {
-      throw new TeamPermissionDeniedException('Only the owner can delete the team');
+    if (!actorMembership) {
+      throw new TeamPermissionDeniedException('Actor is not a member of this team');
     }
+
+    this.enforcePermission(actorMembership.role, TeamPermission.DELETE_TEAM);
 
     try {
       this.logger.log(`Initiating file deletion for team ${payload.teamId}`);
