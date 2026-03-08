@@ -37,9 +37,7 @@ export function withWorkspace() {
           filesFacade.loadContent(teamId, folderId || undefined);
         },
         onNewFolder: (teamId: string) => {
-          const dialogRef = dialog.open<DialogResult<{ name: string }>>(FolderFormComponent, {
-            hasBackdrop: false,
-          });
+          const dialogRef = dialog.open<DialogResult<{ name: string }>>(FolderFormComponent);
 
           dialogRef.closed.subscribe((result: DialogResult<{ name: string }> | undefined) => {
             if (result?.action === DialogAction.SUBMIT && result.data) {

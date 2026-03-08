@@ -86,7 +86,6 @@ export class TeamDetailComponent implements OnDestroy {
   openSettings(team: TeamDto) {
     const dialogRef = this.dialog.open<DialogResult<Partial<TeamDto>>>(TeamFormComponent, {
       data: { team, showDangerZone: true },
-      hasBackdrop: false,
     });
 
     dialogRef.closed.subscribe((result: DialogResult | undefined) => {
@@ -107,7 +106,6 @@ export class TeamDetailComponent implements OnDestroy {
 
     const dialogRef = this.dialog.open(MemberListComponent, {
       data: { team, currentUserRole: role, currentUserId },
-      hasBackdrop: false,
     });
 
     if (dialogRef.componentInstance) {

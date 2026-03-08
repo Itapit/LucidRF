@@ -39,7 +39,6 @@ export class HomeOverviewComponent {
   openCreateTeam() {
     const dialogRef = this.dialog.open<DialogResult<{ name: string; description: string }>>(TeamFormComponent, {
       data: { team: null, showDangerZone: false },
-      hasBackdrop: false,
     });
 
     dialogRef.closed.subscribe((result: DialogResult | undefined) => {
