@@ -12,6 +12,9 @@ export class FolderSchema extends Document {
   @Prop({ required: true, index: true })
   teamId: string;
 
+  @Prop({ required: true, index: true })
+  createdBy: string;
+
   // Hierarchy
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Folder', default: null, index: true })
   parentFolderId: MongooseSchema.Types.ObjectId;

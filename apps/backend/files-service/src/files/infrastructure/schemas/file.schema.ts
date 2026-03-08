@@ -22,6 +22,9 @@ export class FileSchema extends Document {
   @Prop({ required: true, enum: FileStatus, type: String, default: FileStatus.PENDING })
   status: FileStatus;
 
+  @Prop({ required: true, index: true })
+  uploadedBy: string;
+
   // Infrastructure
   @Prop({ required: true, unique: true })
   storageKey: string;

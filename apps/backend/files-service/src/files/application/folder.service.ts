@@ -33,6 +33,7 @@ export class FolderService {
       name,
       teamId,
       parentFolderId: parentFolderId || null,
+      createdBy: userId,
     };
 
     const folder = await this.folderRepository.create(dto);

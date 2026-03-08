@@ -10,6 +10,7 @@ export function toFileDto(entity: FileEntity): FileDto {
     status: entity.status,
     teamId: entity.teamId,
     parentFolderId: entity.parentFolderId,
+    uploadedBy: entity.uploadedBy,
     createdAt: entity.createdAt,
     updatedAt: entity.updatedAt,
   };

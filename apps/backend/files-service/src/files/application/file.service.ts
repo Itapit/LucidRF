@@ -150,6 +150,7 @@ export class FileService {
       storageKey,
       bucket: this.bucketName,
       parentFolderId: payload.parentFolderId || null,
+      uploadedBy: payload.userId,
     };
 
     return this.fileRepository.create(dto);
