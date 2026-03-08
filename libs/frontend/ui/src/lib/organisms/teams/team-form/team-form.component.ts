@@ -1,13 +1,24 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, effect, inject, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, Signal, inject, output, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TeamDto } from '@LucidRF/common';
-import { ButtonComponent } from '../../../atoms';
-import { FormFieldComponent } from '../../../molecules';
-import { InputDirective } from '../../../atoms';
-import { DialogAction, DialogResult } from '../../../molecules';
-import { ModalWrapperComponent } from '../../../molecules';
+import { ButtonComponent, InputDirective } from '../../../atoms';
+import {
+  AlertComponent,
+  DialogAction,
+  DialogResult,
+  FormFieldComponent,
+  ModalWrapperComponent,
+} from '../../../molecules';
+
+export interface TeamFormData {
+  team: TeamDto | null;
+  showDangerZone?: boolean;
+  isSubmitting?: Signal<boolean>;
+  error?: Signal<string | null>;
+  onSubmit?: (data: { name: string; description: string }) => void;
+}
 
 @Component({
   selector: 'ui-team-form',
@@ -19,14 +30,12 @@ import { ModalWrapperComponent } from '../../../molecules';
     FormFieldComponent,
     InputDirective,
     ButtonComponent,
+    AlertComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './team-form.component.html',
 })
 export class TeamFormComponent implements OnInit {
-  team = input<TeamDto | null>(null);
-  showDangerZone = input<boolean>(false);
-
   cancelForm = output<void>();
   submitForm = output<{ name: string; description: string }>();
   deleteTeam = output<void>();
@@ -39,15 +48,11 @@ export class TeamFormComponent implements OnInit {
   });
 
   dialogRef = inject<DialogRef<DialogResult>>(DialogRef, { optional: true });
-  data: { team: TeamDto | null; showDangerZone?: boolean } | null = inject(DIALOG_DATA, {
-    optional: true,
-  });
+  data = inject<TeamFormData>(DIALOG_DATA, { optional: true });
 
-  constructor() {
-    effect(() => {
-      this.initTeamData(this.team());
-    });
-  }
+  showDangerZone = this.data?.showDangerZone || false;
+  isSubmitting = this.data?.isSubmitting || signal(false);
+  error = this.data?.error || signal(null);
 
   ngOnInit() {
     if (this.data) {
@@ -82,9 +87,14 @@ export class TeamFormComponent implements OnInit {
   onSubmit() {
     if (this.form.valid) {
       const value = this.form.getRawValue();
-      this.submitForm.emit(value);
-      if (this.dialogRef) {
-        this.dialogRef.close({ action: DialogAction.SUBMIT, data: value });
+
+      if (this.data?.onSubmit) {
+        this.data.onSubmit(value);
+      } else {
+        this.submitForm.emit(value);
+        if (this.dialogRef) {
+          this.dialogRef.close({ action: DialogAction.SUBMIT, data: value });
+        }
       }
     }
   }
