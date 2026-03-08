@@ -2,12 +2,9 @@ import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, effect, inject, input, output, signal } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TeamDto, TeamRole } from '@LucidRF/common';
-import { ButtonComponent } from '../../../atoms';
-import { InputDirective } from '../../../atoms';
-import { SelectDirective } from '../../../atoms';
-import { DialogResult } from '../../../molecules';
-import { ModalWrapperComponent } from '../../../molecules';
+import { RolePermissions, TeamDto, TeamPermission, TeamRole } from '@LucidRF/common';
+import { ButtonComponent, InputDirective, SelectDirective } from '../../../atoms';
+import { DialogResult, ModalWrapperComponent } from '../../../molecules';
 
 @Component({
   selector: 'ui-member-list',
@@ -103,40 +100,55 @@ export class MemberListComponent implements OnInit {
     this.removeMember.emit(userId);
   }
 
+  private hasPermission(permission: TeamPermission): boolean {
+    const role = this._currentUserRole();
+    if (!role) return false;
+    return RolePermissions[role]?.includes(permission) ?? false;
+  }
+
   // Permissions getters
   get canInvite(): boolean {
-    const role = this._currentUserRole();
-    return role === TeamRole.OWNER || role === TeamRole.MANAGER;
+    return this.hasPermission(TeamPermission.ADD_MEMBER);
   }
 
   canRemove(targetRole: TeamRole, targetId: string): boolean {
     const currentId = this._currentUserId();
-    const currentRole = this._currentUserRole();
     if (currentId === targetId) return false;
-    if (currentRole === TeamRole.OWNER) return true;
-    if (currentRole === TeamRole.MANAGER && targetRole === TeamRole.MEMBER) return true;
-    return false;
+
+    if (targetRole === TeamRole.OWNER) return this.hasPermission(TeamPermission.REMOVE_OWNER);
+    if (targetRole === TeamRole.MANAGER) return this.hasPermission(TeamPermission.REMOVE_MANAGER);
+    return this.hasPermission(TeamPermission.REMOVE_MEMBER);
   }
 
   canChangeRole(targetRole: TeamRole, targetId: string): boolean {
     const currentId = this._currentUserId();
-    const currentRole = this._currentUserRole();
     if (currentId === targetId) return false; // Self-demotion not supported via UI yet
-    if (currentRole === TeamRole.OWNER) return true;
-    // Managers can change roles of members/managers, but cannot touch owners or promote to owner
-    if (currentRole === TeamRole.MANAGER && targetRole !== TeamRole.OWNER) return true;
-    return false;
+
+    // To even open the dropdown, you need to be able to DEMOTE them
+    if (targetRole === TeamRole.OWNER) return this.hasPermission(TeamPermission.DEMOTE_OWNER);
+    if (targetRole === TeamRole.MANAGER) return this.hasPermission(TeamPermission.DEMOTE_MANAGER);
+
+    // If they are a MEMBER, you only need the ability to PROMOTE them to *something*
+    return this.hasPermission(TeamPermission.PROMOTE_TO_MANAGER) || this.hasPermission(TeamPermission.PROMOTE_TO_OWNER);
   }
 
   getAvailableRoles(): TeamRole[] {
-    const role = this._currentUserRole();
-    if (role === TeamRole.OWNER) {
-      return [TeamRole.OWNER, TeamRole.MANAGER, TeamRole.MEMBER];
+    const currentRole = this._currentUserRole();
+    if (!currentRole) return [];
+
+    const available: TeamRole[] = [TeamRole.MEMBER];
+
+    if (this.hasPermission(TeamPermission.PROMOTE_TO_MANAGER) || this.hasPermission(TeamPermission.DEMOTE_MANAGER)) {
+      available.push(TeamRole.MANAGER);
     }
-    if (role === TeamRole.MANAGER) {
-      return [TeamRole.MANAGER, TeamRole.MEMBER];
+
+    if (this.hasPermission(TeamPermission.PROMOTE_TO_OWNER) || this.hasPermission(TeamPermission.DEMOTE_OWNER)) {
+      available.push(TeamRole.OWNER);
     }
-    return [];
+
+    // Sort conventionally: Owner -> Manager -> Member
+    const order = { [TeamRole.OWNER]: 0, [TeamRole.MANAGER]: 1, [TeamRole.MEMBER]: 2 };
+    return available.sort((a, b) => order[a] - order[b]);
   }
 
   onInvite() {
