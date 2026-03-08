@@ -2,20 +2,13 @@ import { DialogRef } from '@angular/cdk/dialog';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ButtonComponent, InputDirective } from '../../../atoms';
+import { InputDirective } from '../../../atoms';
 import { DialogAction, DialogResult, FormFieldComponent, ModalWrapperComponent } from '../../../molecules';
 
 @Component({
   selector: 'ui-folder-form',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    ModalWrapperComponent,
-    FormFieldComponent,
-    InputDirective,
-    ButtonComponent,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, ModalWrapperComponent, FormFieldComponent, InputDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './folder-form.component.html',
 })
