@@ -1,13 +1,20 @@
+import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
+import { Component, OnInit, Signal, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CreateUserRequest, SystemRole } from '@LucidRF/common';
-import { ButtonComponent } from '../../atoms/button/button.component';
 import { InputDirective } from '../../atoms/input/input.directive';
 import { SelectDirective } from '../../atoms/select/select.directive';
 import { AlertComponent } from '../../molecules/alert/alert.component';
 import { FormFieldComponent } from '../../molecules/form-field/form-field.component';
+import { DialogAction, DialogResult } from '../../molecules/modal-wrapper/dialog.types';
 import { ModalWrapperComponent } from '../../molecules/modal-wrapper/modal-wrapper.component';
+
+export interface UserCreateModalData {
+  isSubmitting?: Signal<boolean>;
+  error?: Signal<string | null>;
+  onSubmit?: (data: CreateUserRequest) => void;
+}
 
 @Component({
   selector: 'ui-user-create-modal',
@@ -17,7 +24,6 @@ import { ModalWrapperComponent } from '../../molecules/modal-wrapper/modal-wrapp
     FormFieldComponent,
     InputDirective,
     SelectDirective,
-    ButtonComponent,
     AlertComponent,
     ModalWrapperComponent,
   ],
@@ -26,13 +32,11 @@ import { ModalWrapperComponent } from '../../molecules/modal-wrapper/modal-wrapp
 })
 export class UserCreateModalComponent implements OnInit {
   private fb = inject(FormBuilder);
+  dialogRef = inject<DialogRef<DialogResult<CreateUserRequest>>>(DialogRef, { optional: true });
+  data = inject<UserCreateModalData>(DIALOG_DATA, { optional: true });
 
-  @Input() isOpen = false;
-  @Input() isSubmitting = false;
-  @Input() error: string | null = null;
-
-  @Output() closeDrawer = new EventEmitter<void>();
-  @Output() submitUser = new EventEmitter<CreateUserRequest>();
+  isSubmitting = this.data?.isSubmitting || signal(false);
+  error = this.data?.error || signal(null);
 
   roles = [
     { label: 'Standard User', value: SystemRole.USER },
@@ -50,12 +54,21 @@ export class UserCreateModalComponent implements OnInit {
   }
 
   onClose() {
-    this.adminCreateForm.reset({ role: SystemRole.USER });
-    this.closeDrawer.emit();
+    if (this.dialogRef) {
+      this.dialogRef.close();
+    }
   }
 
   onSubmit() {
     if (this.adminCreateForm.invalid) return;
-    this.submitUser.emit(this.adminCreateForm.value);
+    const value = this.adminCreateForm.value;
+
+    if (this.data?.onSubmit) {
+      this.data.onSubmit(value);
+    } else {
+      if (this.dialogRef) {
+        this.dialogRef.close({ action: DialogAction.SUBMIT, data: value });
+      }
+    }
   }
 }
