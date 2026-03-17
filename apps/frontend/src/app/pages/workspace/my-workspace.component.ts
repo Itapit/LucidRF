@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, effect, inject, OnDestroy } from '@angular/core';
 import { FolderDto, TeamColor } from '@LucidRF/common';
 import { BreadcrumbItem, WorkspaceShellComponent } from '@LucidRF/ui';
@@ -7,7 +7,7 @@ import { MyWorkspaceStore } from './my-workspace.store';
 @Component({
   selector: 'app-my-workspace',
   standalone: true,
-  imports: [CommonModule, WorkspaceShellComponent],
+  imports: [WorkspaceShellComponent],
   templateUrl: './my-workspace.component.html',
   host: { class: 'flex-1 flex overflow-hidden w-full h-full' },
   providers: [MyWorkspaceStore],

@@ -1,11 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { ActionError } from "./store/action-error.interface";
 import { Store } from '@ngrx/store';
+import { ActionError } from './store/action-error.interface';
 import { CoreActions } from './store/core.actions';
 
 const GENERIC_EXPECTED_ERROR = 'An unknown error occurred. Please try again.';
-const GENERIC_UNEXPECTED_ERROR = 'The server is unavailable. Please try again later.';
+const GENERIC_UNEXPECTED_ERROR = 'The server is unavailable.\nPlease try again later.';
 const GENERIC_APP_ERROR = 'An application error occurred. Please try again.';
 
 @Injectable({ providedIn: 'root' })
@@ -35,14 +35,14 @@ export class ErrorHandlerService {
    */
   private handleHttpError(error: HttpErrorResponse): string {
     if (error.status >= 500 || error.status === 0) {
-      // --- 1. Unexpected Error ---
+      // --- Unexpected Error ---
       this.dispatchGlobalError(GENERIC_UNEXPECTED_ERROR);
       // We still return a message for the feature's error state
       return GENERIC_UNEXPECTED_ERROR;
     }
 
     if (error.status >= 400 && error.status < 500) {
-      // --- 2. Expected Error ---
+      // --- Expected Error ---
       // This is a feature-level error. We return the specific message from the backend.
       return this.extractExpectedErrorMessage(error);
     }
@@ -75,7 +75,6 @@ export class ErrorHandlerService {
   private dispatchGlobalError(error: string): void {
     this.store.dispatch(CoreActions.setGlobalError({ error }));
   }
-
 
   public classifyActionError<T>(error: unknown, source: T): ActionError<T> {
     return {

@@ -1,5 +1,5 @@
 import { Dialog, DialogModule } from '@angular/cdk/dialog';
-import { CommonModule } from '@angular/common';
+
 import { Component, effect, inject, OnDestroy } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
@@ -18,7 +18,7 @@ import { TeamDetailStore } from './team-detail.store';
 @Component({
   selector: 'app-team-detail',
   standalone: true,
-  imports: [CommonModule, DialogModule, WorkspaceShellComponent],
+  imports: [DialogModule, WorkspaceShellComponent],
   providers: [TeamDetailStore],
   templateUrl: './team-detail.component.html',
   host: { class: 'flex-1 flex overflow-hidden w-full h-full' },

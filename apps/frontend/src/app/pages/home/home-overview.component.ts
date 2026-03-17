@@ -1,5 +1,5 @@
 import { Dialog, DialogModule } from '@angular/cdk/dialog';
-import { CommonModule } from '@angular/common';
+
 import { Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
@@ -16,7 +16,7 @@ import { TeamsFacade } from '../../teams/store/teams.facade';
 @Component({
   selector: 'app-home-overview',
   standalone: true,
-  imports: [CommonModule, TeamCardComponent, DialogModule, DashboardLayoutComponent],
+  imports: [TeamCardComponent, DialogModule, DashboardLayoutComponent],
   templateUrl: './home-overview.component.html',
   host: { class: 'flex-1 flex overflow-hidden w-full h-full' },
 })

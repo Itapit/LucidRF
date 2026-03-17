@@ -1,11 +1,11 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { TeamColor } from '@LucidRF/common';
 
 @Component({
   selector: 'ui-workspace-header',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './workspace-header.component.html',
 })

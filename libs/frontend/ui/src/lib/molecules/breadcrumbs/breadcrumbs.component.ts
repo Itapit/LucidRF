@@ -1,11 +1,11 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, input, output } from '@angular/core';
 import { BreadcrumbItem } from './breadcrumbs.types';
 
 @Component({
   selector: 'ui-breadcrumbs',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './breadcrumbs.component.html',
 })
 export class BreadcrumbsComponent {

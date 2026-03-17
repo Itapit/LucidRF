@@ -1,5 +1,5 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, OnInit, Signal, inject, output, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TeamDto } from '@LucidRF/common';
@@ -24,14 +24,13 @@ export interface TeamFormData {
   selector: 'ui-team-form',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     ModalWrapperComponent,
     FormFieldComponent,
     InputDirective,
     ButtonComponent,
-    AlertComponent,
-  ],
+    AlertComponent
+],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './team-form.component.html',
 })

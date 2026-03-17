@@ -1,10 +1,10 @@
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 
 @Component({
   selector: 'ui-admin-sidebar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './admin-sidebar.component.html',
 })

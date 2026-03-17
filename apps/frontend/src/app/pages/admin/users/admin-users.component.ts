@@ -1,5 +1,5 @@
 import { Dialog, DialogModule, DialogRef } from '@angular/cdk/dialog';
-import { CommonModule } from '@angular/common';
+
 import { Component, effect, inject, OnInit } from '@angular/core';
 import {
   AdminSidebarComponent,
@@ -14,7 +14,7 @@ import { AdminUsersStore } from './admin-users.store';
 @Component({
   selector: 'app-admin-users',
   standalone: true,
-  imports: [CommonModule, DialogModule, DashboardLayoutComponent, AdminSidebarComponent, AdminUsersTableComponent],
+  imports: [DialogModule, DashboardLayoutComponent, AdminSidebarComponent, AdminUsersTableComponent],
   providers: [AdminUsersStore],
   templateUrl: './admin-users.component.html',
   host: { class: 'flex-1 flex overflow-hidden w-full h-full' },

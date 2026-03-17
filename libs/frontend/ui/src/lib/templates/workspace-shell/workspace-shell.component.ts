@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FileDto, FolderDto, TeamColor } from '@LucidRF/common';
 import { ButtonComponent } from '../../atoms';
@@ -10,13 +10,12 @@ import { DashboardLayoutComponent } from '../dashboard-layout/dashboard-layout.c
   selector: 'ui-workspace-shell',
   standalone: true,
   imports: [
-    CommonModule,
     WorkspaceHeaderComponent,
     FileTableComponent,
     BreadcrumbsComponent,
     ButtonComponent,
-    DashboardLayoutComponent,
-  ],
+    DashboardLayoutComponent
+],
   templateUrl: './workspace-shell.component.html',
   host: { class: 'flex-1 flex overflow-hidden w-full h-full' },
 })

@@ -1,5 +1,5 @@
 import { ConnectedPosition } from '@angular/cdk/overlay';
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, input, output, ViewChild } from '@angular/core';
 import { UserDto } from '@LucidRF/common';
 import { AvatarComponent } from '../../atoms/avatar/avatar.component';
@@ -9,7 +9,7 @@ import { DropdownComponent } from '../dropdown/dropdown.component';
 @Component({
   selector: 'ui-profile-menu',
   standalone: true,
-  imports: [CommonModule, AvatarComponent, DropdownComponent, DropdownItemComponent],
+  imports: [AvatarComponent, DropdownComponent, DropdownItemComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './profile-menu.component.html',
 })

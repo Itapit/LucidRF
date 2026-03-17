@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, inject, OnInit } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -15,14 +15,13 @@ import { AuthFacade } from '../../../auth/store/auth.facade';
   selector: 'app-login',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     FormFieldComponent,
     InputDirective,
     ButtonComponent,
     AlertComponent,
-    CenteredLayoutComponent,
-  ],
+    CenteredLayoutComponent
+],
   templateUrl: './login.component.html',
 })
 export class LoginComponent implements OnInit {

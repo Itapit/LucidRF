@@ -1,11 +1,11 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, input, output } from '@angular/core';
 import { ButtonComponent } from '../../atoms';
 
 @Component({
   selector: 'ui-global-error',
   standalone: true,
-  imports: [CommonModule, ButtonComponent],
+  imports: [ButtonComponent],
   templateUrl: './global-error.component.html',
 })
 export class GlobalErrorComponent {

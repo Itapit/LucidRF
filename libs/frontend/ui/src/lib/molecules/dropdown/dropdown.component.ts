@@ -1,11 +1,11 @@
 import { ConnectedPosition, OverlayModule } from '@angular/cdk/overlay';
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
 
 @Component({
   selector: 'ui-dropdown',
   standalone: true,
-  imports: [CommonModule, OverlayModule],
+  imports: [OverlayModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './dropdown.component.html',
 })

@@ -1,10 +1,10 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'ui-form-field',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './form-field.component.html',
 })
 export class FormFieldComponent {

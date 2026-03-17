@@ -1,5 +1,5 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit, Signal, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CreateUserRequest, SystemRole } from '@LucidRF/common';
@@ -19,14 +19,13 @@ export interface UserCreateModalData {
 @Component({
   selector: 'ui-user-create-modal',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     FormFieldComponent,
     InputDirective,
     SelectDirective,
     AlertComponent,
-    ModalWrapperComponent,
-  ],
+    ModalWrapperComponent
+],
   standalone: true,
   templateUrl: './user-create-modal.component.html',
 })

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, inject, OnInit } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -15,14 +15,13 @@ import { AuthFacade } from '../../../auth/store/auth.facade';
   selector: 'app-complete-setup',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     FormFieldComponent,
     InputDirective,
     ButtonComponent,
     AlertComponent,
-    CenteredLayoutComponent,
-  ],
+    CenteredLayoutComponent
+],
   templateUrl: './complete-setup.component.html',
 })
 export class CompleteSetupComponent implements OnInit {
