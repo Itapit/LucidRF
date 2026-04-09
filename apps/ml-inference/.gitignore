@@ -1,0 +1,4 @@
+.venv
+*.egg-info
+tools/presentation_demo/output/
+tools/presentation_demo/fixtures/
