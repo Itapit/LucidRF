@@ -60,6 +60,8 @@ mongo_data
 TODO.txt
 
 ml/.venv
+apps/ml-inference/.venv
+apps/ml-inference/**/*.egg-info
 ml/__pycache__
 ml/notebooks/.ipynb_checkpoints
 ml/data/*
