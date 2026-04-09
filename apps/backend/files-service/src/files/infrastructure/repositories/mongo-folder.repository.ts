@@ -55,4 +55,9 @@ export class MongoFolderRepository implements FolderRepository {
     const result = await this.folderModel.findByIdAndDelete(id).session(session).exec();
     return !!result;
   }
+
+  async deleteManyByTeamId(teamId: string): Promise<void> {
+    const session = this.dbContext.getSession();
+    await this.folderModel.deleteMany({ teamId }).session(session).exec();
+  }
 }

@@ -1,0 +1,32 @@
+<ui-dashboard-layout>
+  <ui-admin-sidebar layout-sidebar [activeTab]="activeTab" (tabClick)="onTabClick($event)"></ui-admin-sidebar>
+  <div class="flex-1 overflow-auto bg-lrf-bg relative">
+    <div class="max-w-6xl mx-auto p-8">
+      <!-- Header Area -->
+      <div class="flex justify-between items-end mb-8">
+        <div>
+          <h1 class="text-3xl font-semibold tracking-tight text-lrf-dark">System Users</h1>
+          <p class="text-sm text-gray-500 mt-2">
+            Manage all registered users, roles, and permissions across the platform.
+          </p>
+        </div>
+        <button
+          (click)="openCreateUserModal()"
+          class="flex items-center gap-2 px-5 py-2.5 bg-lrf-dark text-white rounded-lg hover:bg-black transition-colors font-medium text-sm shadow-sm"
+        >
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Add User
+        </button>
+      </div>
+
+      <ui-admin-users-table
+        [users]="store.users()"
+        [isLoading]="store.isLoading()"
+        [deletingIds]="store.deletingIds()"
+        (delete)="store.deleteUser($event)"
+      ></ui-admin-users-table>
+    </div>
+  </div>
+</ui-dashboard-layout>

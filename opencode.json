@@ -5,6 +5,7 @@
     "bash": {
       "*": "allow",
       "git restore*": "deny",
+      "git stage": "deny",
       "git reset --hard*": "ask",
       "rm -rf*": "ask",
       "rmdir*": "ask"

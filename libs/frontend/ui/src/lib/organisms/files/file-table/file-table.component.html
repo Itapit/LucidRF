@@ -1,0 +1,117 @@
+<div class="flex-1 overflow-auto p-8 h-full hide-scrollbar">
+  <table class="w-full text-left font-sans text-sm border-collapse">
+    <thead class="sticky top-0 bg-white z-10 shadow-[0_1px_0_0_#e5e7eb]">
+      <tr class="text-gray-400 select-none">
+        <th class="py-3 font-medium px-4">File Name</th>
+        <th class="py-3 font-medium px-4">Size</th>
+        <th class="py-3 font-medium px-4">Pipeline Status</th>
+        <th class="py-3 font-medium px-4">Date Uploaded</th>
+        <th class="py-3 font-medium px-4 w-24">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="text-gray-700">
+      @for (item of unifiedResources(); track item.resourceId) {
+      <tr
+        class="border-b border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer team"
+        (click)="item.isFolder ? folderClick.emit(item) : fileClick.emit(item)"
+      >
+        <!-- Name -->
+        <td class="py-4 px-4 flex items-center gap-3">
+          @if (item.isFolder) {
+          <!-- Folder Icon -->
+          <svg
+            class="w-6 h-6 team-hover:scale-110 transition-transform text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+            />
+          </svg>
+          <span class="font-medium text-black transition-colors">{{ item.name }}</span>
+          } @else {
+          <!-- File Icon -->
+          <svg
+            class="w-6 h-6 team-hover:scale-110 transition-transform text-gray-400"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
+            />
+          </svg>
+          <span class="font-medium text-black transition-colors">{{ item.originalFileName }}</span>
+          }
+        </td>
+
+        <!-- Size -->
+        <td class="py-4 px-4 font-mono text-xs">
+          {{ item.isFolder ? '-' : formatBytes(item.size) }}
+        </td>
+
+        <!-- Status -->
+        <td class="py-4 px-4">
+          @if (!item.isFolder) {
+          <span
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border shadow-sm"
+            [ngClass]="getStatusClasses(item.status)"
+          >
+            <span class="w-1.5 h-1.5 rounded-full" [ngClass]="getDotClasses(item.status)"></span>
+            {{ item.status | titlecase }}
+          </span>
+          } @else {
+          <span class="text-gray-400">-</span>
+          }
+        </td>
+
+        <!-- Date -->
+        <td class="py-4 px-4 text-gray-500">{{ item.createdAt | date : 'mediumDate' }}</td>
+
+        <!-- Actions -->
+        <td class="py-4 px-4 text-right relative">
+          @if (!item.isFolder) {
+          <button
+            class="text-gray-400 hover:text-black opacity-0 team-hover:opacity-100 transition-all p-1 hover:bg-gray-200 rounded"
+            (click)="toggleMenu($event, item.resourceId)"
+          >
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+              />
+            </svg>
+          </button>
+
+          @if (activeMenuId === item.resourceId) {
+          <div
+            class="absolute right-8 top-10 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50 animate-fade-in"
+            tabindex="0"
+            (keyup.enter)="$event.stopPropagation()"
+            (click)="$event.stopPropagation()"
+          >
+            <button
+              class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+              (click)="download.emit(item); closeMenu()"
+            >
+              Download
+            </button>
+            <button
+              class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+              (click)="delete.emit(item); closeMenu()"
+            >
+              Delete
+            </button>
+          </div>
+          } }
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+</div>

@@ -11,4 +11,7 @@ export enum ApiEndpoint {
 
   // Teams
   TEAMS = '/teams',
+
+  // Files
+  FILES = '/files',
 }

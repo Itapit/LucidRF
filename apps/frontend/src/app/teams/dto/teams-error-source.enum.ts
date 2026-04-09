@@ -6,4 +6,5 @@ export enum TeamsErrorSource {
   SELECT = 'select',
   ADD_MEMBER = 'addMember',
   REMOVE_MEMBER = 'removeMember',
+  UPDATE_MEMBER = 'updateMember',
 }

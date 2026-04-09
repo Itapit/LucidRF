@@ -1,18 +1,16 @@
 import { TeamDto } from '@LucidRF/common';
-import { TeamsError } from '../dto/teams-error';
+import { FeatureState } from '../../core/store/feature-state.interface';
+import { TeamsErrorSource } from '../dto/teams-error-source.enum';
 
 export const TEAMS_FEATURE_KEY = 'teams';
 
-export interface TeamsState {
+export interface TeamsState extends FeatureState<TeamsErrorSource> {
   teams: TeamDto[];
-  loaded: boolean;
-  loading: boolean;
-  error: TeamsError | null;
 }
 
 export const initialTeamsState: TeamsState = {
   teams: [],
-  loaded: false,
   loading: false,
+  loaded: false,
   error: null,
 };

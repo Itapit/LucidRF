@@ -1,0 +1,15 @@
+<ui-modal-wrapper
+  title="New Folder"
+  (closeModal)="onCancel()"
+  formId="folderForm"
+  submitText="Create"
+  [submitDisabled]="!form.valid"
+>
+  <div modal-body class="p-6">
+    <form id="folderForm" [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-4">
+      <ui-form-field label="Folder Name">
+        <input uiInput formControlName="name" placeholder="Enter folder name" />
+      </ui-form-field>
+    </form>
+  </div>
+</ui-modal-wrapper>

@@ -8,13 +8,14 @@ import {
   RemoveMemberPayload,
   TEAMS_PATTERNS,
   TEAMS_SERVICE,
+  UpdateMemberRolePayload,
   UpdateTeamPayload,
 } from '@LucidRF/teams-contracts';
-import { USER_PATTERNS, USER_SERVICE } from '@LucidRF/users-contracts';
+import { GetUserByIdentifierPayload, USER_PATTERNS, USER_SERVICE } from '@LucidRF/users-contracts';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
-import { AddMemberDto, CreateTeamDto, UpdateTeamDto } from './dtos';
+import { AddMemberDto, CreateTeamDto, UpdateMemberRoleDto, UpdateTeamDto } from './dtos';
 
 @Injectable()
 export class TeamsService {
@@ -101,16 +102,22 @@ export class TeamsService {
       actorId: userId,
       name: dto.name,
       description: dto.description,
+      color: dto.color,
     };
     const team = await firstValueFrom(this.teamsClient.send<TeamDto>(TEAMS_PATTERNS.UPDATE, payload));
     return this.hydrateTeams(team);
   }
 
   async addMember(teamId: string, userId: string, dto: AddMemberDto): Promise<TeamDto> {
+    const userLookupPayload: GetUserByIdentifierPayload = { identifier: dto.identifier };
+    const targetUser = await firstValueFrom(
+      this.usersClient.send<UserDto>(USER_PATTERNS.GET_USER_BY_IDENTIFIER, userLookupPayload)
+    );
+
     const payload: AddMemberPayload = {
       teamId,
       actorId: userId,
-      targetUserId: dto.targetUserId,
+      targetUserId: targetUser.id,
       role: dto.role,
     };
     const team = await firstValueFrom(this.teamsClient.send<TeamDto>(TEAMS_PATTERNS.ADD_MEMBER, payload));
@@ -124,6 +131,22 @@ export class TeamsService {
       targetUserId,
     };
     const team = await firstValueFrom(this.teamsClient.send<TeamDto>(TEAMS_PATTERNS.REMOVE_MEMBER, payload));
+    return this.hydrateTeams(team);
+  }
+
+  async updateMemberRole(
+    teamId: string,
+    userId: string,
+    targetUserId: string,
+    dto: UpdateMemberRoleDto
+  ): Promise<TeamDto> {
+    const payload: UpdateMemberRolePayload = {
+      teamId,
+      actorId: userId,
+      targetUserId,
+      role: dto.role,
+    };
+    const team = await firstValueFrom(this.teamsClient.send<TeamDto>(TEAMS_PATTERNS.UPDATE_MEMBER_ROLE, payload));
     return this.hydrateTeams(team);
   }
 

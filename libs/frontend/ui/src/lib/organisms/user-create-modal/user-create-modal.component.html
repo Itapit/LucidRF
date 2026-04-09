@@ -1,0 +1,33 @@
+<ui-modal-wrapper
+  title="Create New User"
+  (closeModal)="onClose()"
+  formId="userCreateForm"
+  submitText="Create User"
+  [submitDisabled]="adminCreateForm.invalid"
+  [isSubmitting]="isSubmitting()"
+>
+  <div modal-body class="p-6">
+    <form id="userCreateForm" [formGroup]="adminCreateForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-6">
+      <button type="submit" class="hidden">Create</button>
+      <ui-form-field label="Username" forId="username">
+        <input id="username" type="text" formControlName="username" placeholder="johndoe" uiInput class="w-full" />
+      </ui-form-field>
+
+      <ui-form-field label="Email Address" forId="email">
+        <input id="email" type="email" formControlName="email" placeholder="john@example.com" uiInput class="w-full" />
+      </ui-form-field>
+
+      <ui-form-field label="System Role" forId="role">
+        <select id="role" formControlName="role" uiSelect class="w-full">
+          @for (option of roles; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      </ui-form-field>
+
+      @if (error()) {
+      <ui-alert type="error" [message]="error()!"></ui-alert>
+      }
+    </form>
+  </div>
+</ui-modal-wrapper>

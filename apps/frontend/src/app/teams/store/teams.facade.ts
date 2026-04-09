@@ -1,8 +1,16 @@
 import { inject, Injectable } from '@angular/core';
-import { AddMemberRequest, CreateTeamRequest, RemoveMemberRequest, UpdateTeamRequest } from '@LucidRF/common';
+import {
+  AddMemberRequest,
+  CreateTeamRequest,
+  RemoveMemberRequest,
+  UpdateMemberRoleRequest,
+  UpdateTeamRequest,
+} from '@LucidRF/common';
 import { Store } from '@ngrx/store';
 import { TeamsActions } from './teams.actions';
 import {
+  selectCollaborativeTeams,
+  selectPersonalTeam,
   selectTeamById,
   selectTeams,
   selectTeamsError,
@@ -28,6 +36,12 @@ export class TeamsFacade {
 
   /** Emits the full list of teams */
   teams$ = this.store.select(selectTeams);
+
+  /** Emits the personal workspace team */
+  personalTeam$ = this.store.select(selectPersonalTeam);
+
+  /** Emits the list of collaborative teams */
+  collaborativeTeams$ = this.store.select(selectCollaborativeTeams);
 
   /** Emits a specific team by ID */
   selectTeamById(teamId: string) {
@@ -64,5 +78,10 @@ export class TeamsFacade {
   /** Dispatches the removeMember action */
   removeMember(teamId: string, request: RemoveMemberRequest) {
     this.store.dispatch(TeamsActions.removeMember({ teamId, request }));
+  }
+
+  /** Dispatches the updateMemberRole action */
+  updateMemberRole(teamId: string, targetUserId: string, request: UpdateMemberRoleRequest) {
+    this.store.dispatch(TeamsActions.updateMemberRole({ teamId, targetUserId, request }));
   }
 }

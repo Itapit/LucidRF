@@ -9,7 +9,7 @@ export const adminGuard: CanMatchFn = () => {
   const authFacade = inject(AuthFacade);
   const nav = inject(NavigationService);
 
-  return authFacade.isInitialized$.pipe(
+  return authFacade.loaded$.pipe(
     //  Wait for Auth Check
     filter((isInitialized) => isInitialized),
     take(1),

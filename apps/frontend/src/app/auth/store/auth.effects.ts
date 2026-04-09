@@ -6,7 +6,7 @@ import { isPendingLoginResponse } from '@LucidRF/common';
 import { Store } from '@ngrx/store';
 import { ErrorHandlerService } from '../../core/error-handler.service';
 import { NavigationService } from '../../core/navigation/navigation.service';
-import { AuthError } from '../dtos/auth-error';
+
 import { AuthErrorSource } from '../dtos/auth-error-source.enum';
 import { AccessTokenService } from '../services/access-token.service';
 import { AuthService } from '../services/auth.service';
@@ -29,7 +29,7 @@ export class AuthEffects {
   init$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ROOT_EFFECTS_INIT),
-      map(() => AuthActions.refreshStart())
+      map(() => AuthActions.refresh())
     )
   );
 
@@ -38,14 +38,14 @@ export class AuthEffects {
   // =================================================================
   login$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(AuthActions.loginStart),
+      ofType(AuthActions.login),
       switchMap(({ request }) =>
         this.authService.login(request).pipe(
           map((response) => AuthActions.loginSuccess({ response })),
           catchError((error) => {
             return of(
               AuthActions.loginFailure({
-                error: this.createError(error, AuthErrorSource.LOGIN),
+                error: this.errorHandler.classifyActionError(error, AuthErrorSource.LOGIN),
               })
             );
           })
@@ -66,22 +66,34 @@ export class AuthEffects {
           }
           // It's a LoginResponse
           this.tokenService.setToken(response.accessToken);
-          this.navigationService.toDashboard();
+          this.navigationService.toHome();
         })
       ),
     { dispatch: false }
   );
 
+  loadMeOnLoginSuccess$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.loginSuccess),
+      switchMap(({ response }) => {
+        if (isPendingLoginResponse(response)) {
+          return EMPTY;
+        }
+        return of(AuthActions.loadMe());
+      })
+    )
+  );
+
   completeSetup$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(AuthActions.completeSetupStart),
+      ofType(AuthActions.completeSetup),
       switchMap(({ request }) =>
         this.authService.completeSetup(request).pipe(
           map((response) => AuthActions.loginSuccess({ response })),
           catchError((error) => {
             return of(
               AuthActions.completeSetupFailure({
-                error: this.createError(error, AuthErrorSource.COMPLETE_SETUP),
+                error: this.errorHandler.classifyActionError(error, AuthErrorSource.COMPLETE_SETUP),
               })
             );
           })
@@ -95,14 +107,14 @@ export class AuthEffects {
   // =================================================================
   refresh$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(AuthActions.refreshStart), // Triggered by Init OR interceptor
+      ofType(AuthActions.refresh), // Triggered by Init OR interceptor
       switchMap(() =>
         this.authService.refresh().pipe(
           map((response) => AuthActions.refreshSuccess({ response })),
           catchError((error) => {
             return of(
               AuthActions.refreshFailure({
-                error: this.createError(error, AuthErrorSource.REFRESH),
+                error: this.errorHandler.classifyActionError(error, AuthErrorSource.REFRESH),
               })
             );
           })
@@ -126,21 +138,21 @@ export class AuthEffects {
           return EMPTY;
         }
         // If user is null (F5 refresh), dispatch Load Me.
-        return of(AuthActions.loadMeStart());
+        return of(AuthActions.loadMe());
       })
     )
   );
 
   loadMe$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(AuthActions.loadMeStart),
+      ofType(AuthActions.loadMe),
       switchMap(() =>
         this.authService.getMe().pipe(
           map((user) => AuthActions.loadMeSuccess({ user })),
           catchError((error) => {
             return of(
               AuthActions.loadMeFailure({
-                error: this.createError(error, AuthErrorSource.LOAD_ME),
+                error: this.errorHandler.classifyActionError(error, AuthErrorSource.LOAD_ME),
               })
             );
           })
@@ -154,7 +166,7 @@ export class AuthEffects {
   // =================================================================
   logout$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(AuthActions.logoutStart),
+      ofType(AuthActions.logout),
       switchMap(() =>
         this.authService.logout().pipe(
           map(() => AuthActions.logoutSuccess()),
@@ -175,35 +187,4 @@ export class AuthEffects {
       ),
     { dispatch: false }
   );
-
-  // =================================================================
-  // ADMIN CREATE USER FLOWS
-  // =================================================================
-  adminCreateUser$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(AuthActions.adminCreateUserStart),
-      switchMap(({ request }) =>
-        this.authService.adminCreateUser(request).pipe(
-          map((response) => AuthActions.adminCreateUserSuccess({ response })),
-          catchError((error) => {
-            return of(
-              AuthActions.adminCreateUserFailure({
-                error: this.createError(error, AuthErrorSource.ADMIN_CREATE_USER),
-              })
-            );
-          })
-        )
-      )
-    )
-  );
-
-  /**
-   * Helper to construct the AuthError object using the ErrorHandlerService.
-   */
-  private createError(error: unknown, source: AuthErrorSource): AuthError {
-    return {
-      message: this.errorHandler.classifyError(error),
-      source,
-    };
-  }
 }

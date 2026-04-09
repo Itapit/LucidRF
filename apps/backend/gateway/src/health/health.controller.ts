@@ -6,6 +6,9 @@ import { Transport } from '@nestjs/microservices';
 import { HealthCheck, HealthCheckService, MemoryHealthIndicator, MicroserviceHealthIndicator } from '@nestjs/terminus';
 import { MAX_MEMORY_HEAP_BYTES } from './health.constants';
 
+/**
+ * Controller for health checks and service monitoring.
+ */
 @Controller('health')
 export class HealthController {
   constructor(
@@ -14,6 +17,10 @@ export class HealthController {
     private memory: MemoryHealthIndicator
   ) {}
 
+  /**
+   * Perform a health check.
+   * Checks the health of the gateway (memory) and all connected microservices (TCP ping).
+   */
   @Get()
   @HealthCheck()
   check() {

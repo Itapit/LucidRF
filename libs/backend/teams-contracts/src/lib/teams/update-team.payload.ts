@@ -1,5 +1,6 @@
 import { IsResourceId } from '@LucidRF/backend-common';
-import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { TeamColor } from '@LucidRF/common';
+import { IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class UpdateTeamPayload {
   @IsNotEmpty()
@@ -19,4 +20,8 @@ export class UpdateTeamPayload {
   @IsOptional()
   @MaxLength(200)
   description?: string;
+
+  @IsEnum(TeamColor)
+  @IsOptional()
+  color?: TeamColor;
 }

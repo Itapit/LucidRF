@@ -6,6 +6,8 @@ export class FolderEntity {
   // Hierarchy
   parentFolderId?: string | null;
 
+  createdBy: string;
+
   createdAt?: Date;
   updatedAt?: Date;
 

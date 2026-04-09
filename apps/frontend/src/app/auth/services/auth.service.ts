@@ -1,7 +1,6 @@
 import { HttpBackend, HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import {
-  AdminCreateUserRequest,
   AuthRefreshResponse,
   CompleteSetupRequest,
   LoginRequest,
@@ -24,10 +23,6 @@ export class AuthService {
 
   login(dto: LoginRequest): Observable<LoginResponse | PendingLoginResponse> {
     return this.http.post<LoginResponse | PendingLoginResponse>(`${this.baseUrl}/auth/login`, dto);
-  }
-
-  adminCreateUser(dto: AdminCreateUserRequest): Observable<UserDto> {
-    return this.http.post<UserDto>(`${this.baseUrl}/users`, dto);
   }
 
   completeSetup(dto: CompleteSetupRequest): Observable<LoginResponse> {

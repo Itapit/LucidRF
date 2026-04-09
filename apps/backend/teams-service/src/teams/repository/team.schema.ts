@@ -1,4 +1,4 @@
-import { TeamRole, TeamType } from '@LucidRF/common';
+import { TeamColor, TeamRole, TeamType } from '@LucidRF/common';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 
@@ -24,6 +24,12 @@ export class TeamSchema extends Document {
 
   @Prop({ type: String, enum: TeamType, required: true, default: TeamType.COLLABORATIVE })
   type: TeamType;
+
+  @Prop({ type: String, enum: TeamColor, required: true })
+  color: TeamColor;
+
+  @Prop({ type: String, required: true, trim: true, maxlength: 2 })
+  initials: string;
 
   @Prop({ type: [TeamMemberSchemaFactory], default: [] })
   members: TeamMemberSchema[];

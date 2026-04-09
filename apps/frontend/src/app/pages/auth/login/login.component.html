@@ -1,0 +1,25 @@
+<ui-centered-layout title="LucidRF" subtitle="Sign in to your account">
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="contents">
+    <ui-form-field label="Email" forId="email">
+      <input id="email" type="email" formControlName="email" placeholder="name@company.com" uiInput />
+    </ui-form-field>
+
+    <ui-form-field label="Password" forId="password">
+      <input id="password" type="password" formControlName="password" placeholder="••••••••" uiInput />
+    </ui-form-field>
+
+    @if (error(); as err) {
+    <ui-alert type="error" [message]="err"></ui-alert>
+    }
+
+    <ui-button
+      type="submit"
+      [disabled]="loginForm.invalid"
+      [loading]="isLoading()"
+      loadingText="Signing in..."
+      [fullWidth]="true"
+    >
+      <span>Sign In</span>
+    </ui-button>
+  </form>
+</ui-centered-layout>

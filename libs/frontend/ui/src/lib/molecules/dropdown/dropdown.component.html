@@ -1,0 +1,28 @@
+<div class="relative inline-block w-full">
+  <!-- Trigger -->
+  <div
+    cdkOverlayOrigin
+    #trigger="cdkOverlayOrigin"
+    (click)="toggle()"
+    (keydown.enter)="toggle()"
+    tabindex="0"
+    class="cursor-pointer"
+  >
+    <ng-content select="[dropdown-trigger]"></ng-content>
+  </div>
+
+  <!-- Menu -->
+  <ng-template
+    cdkConnectedOverlay
+    [cdkConnectedOverlayOrigin]="trigger"
+    [cdkConnectedOverlayOpen]="isOpen()"
+    (overlayOutsideClick)="close()"
+    [cdkConnectedOverlayPositions]="positions()"
+  >
+    <div
+      class="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden transform origin-top-left animate-fade-in z-50 flex flex-col min-w-[12rem]"
+    >
+      <ng-content select="[dropdown-menu]"></ng-content>
+    </div>
+  </ng-template>
+</div>

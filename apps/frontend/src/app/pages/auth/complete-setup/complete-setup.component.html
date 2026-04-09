@@ -1,0 +1,28 @@
+<ui-centered-layout title="LucidRF" subtitle="Set your password to activate your account">
+  <form [formGroup]="setupForm" (ngSubmit)="onSubmit()" class="contents">
+    <ui-form-field label="New Password" forId="password" [error]="passwordError">
+      <input
+        id="password"
+        type="password"
+        formControlName="password"
+        placeholder="Enter new password"
+        uiInput
+        [hasError]="!!passwordError"
+      />
+    </ui-form-field>
+
+    @if (error(); as err) {
+    <ui-alert type="error" [message]="err"></ui-alert>
+    }
+
+    <ui-button
+      type="submit"
+      [disabled]="setupForm.invalid"
+      [loading]="isLoading()"
+      loadingText="Activating..."
+      [fullWidth]="true"
+    >
+      <span>Activate Account</span>
+    </ui-button>
+  </form>
+</ui-centered-layout>

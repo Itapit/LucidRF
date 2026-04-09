@@ -16,4 +16,5 @@ export const FILES_PATTERNS = {
   CREATE_FOLDER: 'files.create_folder',
   LIST_CONTENT: 'files.list_content',
   DELETE_FOLDER: 'files.delete_folder',
+  DELETE_TEAM_FILES: 'files.delete_team_files',
 };

@@ -2,6 +2,7 @@ import {
   ConfirmUploadPayload,
   CreateFolderPayload,
   DeleteResourcePayload,
+  DeleteTeamFilesPayload,
   FILES_PATTERNS,
   GetContentPayload,
   GetDownloadUrlPayload,
@@ -29,6 +30,11 @@ export class FilesController {
   @MessagePattern(FILES_PATTERNS.DELETE_FILE)
   async deleteFile(@Payload() payload: DeleteResourcePayload) {
     return this.fileService.delete(payload);
+  }
+
+  @MessagePattern(FILES_PATTERNS.DELETE_TEAM_FILES)
+  async deleteTeamFiles(@Payload() payload: DeleteTeamFilesPayload) {
+    return this.fileService.deleteTeamFiles(payload);
   }
 
   @MessagePattern(FILES_PATTERNS.GET_DOWNLOAD_URL)

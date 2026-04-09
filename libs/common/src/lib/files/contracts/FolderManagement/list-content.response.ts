@@ -4,4 +4,6 @@ import { FolderDto } from '../../domain/dtos/folder.dto';
 export interface ListContentResponse {
   files: FileDto[];
   folders: FolderDto[];
+  currentFolder?: FolderDto;
+  ancestors?: FolderDto[];
 }

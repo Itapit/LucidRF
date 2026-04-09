@@ -7,6 +7,7 @@ export function toFolderDto(entity: FolderEntity): FolderDto {
     name: entity.name,
     teamId: entity.teamId,
     parentFolderId: entity.parentFolderId,
+    createdBy: entity.createdBy,
     createdAt: entity.createdAt,
     updatedAt: entity.updatedAt,
   };

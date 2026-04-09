@@ -1,5 +1,5 @@
 import { UserDto, UserStatus } from '@LucidRF/common';
-import { AdminCreateUserPayload } from '@LucidRF/users-contracts';
+import { CreateUserPayload } from '@LucidRF/users-contracts';
 import { Injectable, Logger } from '@nestjs/common';
 import { PasswordService } from '../../security';
 import { CreateUserRepoDto, toUserDto, UserRepository } from '../domain';
@@ -16,7 +16,7 @@ export class UserService {
   /**
    * Creates a new user with a pending status and a temporary password.
    */
-  async adminCreateUser(payload: AdminCreateUserPayload): Promise<UserDto> {
+  async createUser(payload: CreateUserPayload): Promise<UserDto> {
     const email = payload.email.toLowerCase();
     const username = payload.username.toLowerCase();
 
@@ -59,10 +59,44 @@ export class UserService {
   }
 
   /**
+   * Gets a user's public profile by email or username.
+   */
+  async getUserByIdentifier(identifier: string): Promise<UserDto> {
+    const isEmail = identifier.includes('@');
+    const user = isEmail
+      ? await this.userRepository.findByEmail(identifier.toLowerCase())
+      : await this.userRepository.findByUsername(identifier.toLowerCase());
+
+    if (!user) {
+      throw new UserNotFoundException(identifier);
+    }
+    return toUserDto(user);
+  }
+
+  /**
    * Gets multiple users by their IDs.
    */
   async getUsersByIds(ids: string[]): Promise<UserDto[]> {
     const users = await this.userRepository.findByIds(ids);
     return users.map((u) => toUserDto(u));
+  }
+
+  /**
+   * Gets all users.
+   */
+  async getAllUsers(): Promise<UserDto[]> {
+    const users = await this.userRepository.findAll();
+    return users.map((u) => toUserDto(u));
+  }
+
+  /**
+   * Deletes a user by ID.
+   */
+  async deleteUser(id: string): Promise<void> {
+    const user = await this.userRepository.findById(id);
+    if (!user) {
+      throw new UserNotFoundException(id);
+    }
+    await this.userRepository.delete(id);
   }
 }

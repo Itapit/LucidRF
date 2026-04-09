@@ -9,4 +9,5 @@ export class CreateFileRepoDto {
   storageKey: string;
   bucket: string;
   parentFolderId: string | null;
+  uploadedBy: string;
 }

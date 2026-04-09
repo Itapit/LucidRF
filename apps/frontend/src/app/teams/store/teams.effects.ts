@@ -1,12 +1,11 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, concatMap, map, mergeMap, of, switchMap } from 'rxjs';
+import { AuthActions } from '../../auth/store/auth.actions';
 import { ErrorHandlerService } from '../../core/error-handler.service';
 import { TeamsService } from '../services/teams.service';
 import { TeamsActions } from './teams.actions';
 
-import { Action } from '@ngrx/store';
-import { TeamsError } from '../dto/teams-error';
 import { TeamsErrorSource } from '../dto/teams-error-source.enum';
 
 @Injectable()
@@ -15,13 +14,13 @@ export class TeamsEffects {
   private teamsService = inject(TeamsService);
   private errorHandler = inject(ErrorHandlerService);
 
-  /**
-   * TRIGGER: Automatically dispatch this action when the effect is initialized.
-   * This ensures teams load as soon as this module is lazy-loaded after login.
-   */
-  ngrxOnInitEffects(): Action {
-    return TeamsActions.loadTeams();
-  }
+  // --- INIT / AUTH ---
+  loadTeamsOnLogin$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.loadMeSuccess),
+      map(() => TeamsActions.loadTeams())
+    )
+  );
 
   // --- LOAD ---
   loadTeams$ = createEffect(() =>
@@ -33,7 +32,7 @@ export class TeamsEffects {
           catchError((error) => {
             return of(
               TeamsActions.loadTeamsFailure({
-                error: this.createError(error, TeamsErrorSource.LOAD),
+                error: this.errorHandler.classifyActionError(error, TeamsErrorSource.LOAD),
               })
             );
           })
@@ -54,7 +53,7 @@ export class TeamsEffects {
           catchError((error) =>
             of(
               TeamsActions.createTeamFailure({
-                error: this.createError(error, TeamsErrorSource.CREATE),
+                error: this.errorHandler.classifyActionError(error, TeamsErrorSource.CREATE),
               })
             )
           )
@@ -73,7 +72,7 @@ export class TeamsEffects {
           catchError((error) =>
             of(
               TeamsActions.updateTeamFailure({
-                error: this.createError(error, TeamsErrorSource.UPDATE),
+                error: this.errorHandler.classifyActionError(error, TeamsErrorSource.UPDATE),
               })
             )
           )
@@ -92,7 +91,7 @@ export class TeamsEffects {
           catchError((error) =>
             of(
               TeamsActions.deleteTeamFailure({
-                error: this.createError(error, TeamsErrorSource.DELETE),
+                error: this.errorHandler.classifyActionError(error, TeamsErrorSource.DELETE),
               })
             )
           )
@@ -111,7 +110,7 @@ export class TeamsEffects {
           catchError((error) =>
             of(
               TeamsActions.addMemberFailure({
-                error: this.createError(error, TeamsErrorSource.ADD_MEMBER),
+                error: this.errorHandler.classifyActionError(error, TeamsErrorSource.ADD_MEMBER),
               })
             )
           )
@@ -129,7 +128,7 @@ export class TeamsEffects {
           catchError((error) =>
             of(
               TeamsActions.removeMemberFailure({
-                error: this.createError(error, TeamsErrorSource.REMOVE_MEMBER),
+                error: this.errorHandler.classifyActionError(error, TeamsErrorSource.REMOVE_MEMBER),
               })
             )
           )
@@ -138,13 +137,21 @@ export class TeamsEffects {
     )
   );
 
-  /**
-   * Helper to construct the TeamsError object using the ErrorHandlerService.
-   */
-  private createError(error: unknown, source: TeamsErrorSource): TeamsError {
-    return {
-      message: this.errorHandler.classifyError(error),
-      source,
-    };
-  }
+  updateMemberRole$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(TeamsActions.updateMemberRole),
+      concatMap(({ teamId, targetUserId, request }) =>
+        this.teamsService.updateUserRole(teamId, targetUserId, request).pipe(
+          map((team) => TeamsActions.updateMemberRoleSuccess({ team })),
+          catchError((error) =>
+            of(
+              TeamsActions.updateMemberRoleFailure({
+                error: this.errorHandler.classifyActionError(error, TeamsErrorSource.UPDATE_MEMBER),
+              })
+            )
+          )
+        )
+      )
+    )
+  );
 }

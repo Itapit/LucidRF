@@ -8,12 +8,16 @@ import { AuthEffects } from '../auth/store/auth.effects';
 import { authFeature } from '../auth/store/auth.reducer';
 import { coreFeature } from '../core/store/core.reducer';
 import { environment } from '../environments/environment';
+import { FilesModule } from '../files/files.module';
+import { TeamsModule } from '../teams/teams-module';
 import { AppInitEffects } from './app-init.effects';
 
 @NgModule({
   declarations: [],
   imports: [
     CommonModule,
+    TeamsModule,
+    FilesModule,
 
     // router store
     StoreModule.forRoot({

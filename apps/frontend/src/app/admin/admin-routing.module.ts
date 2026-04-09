@@ -1,11 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AdminCreateUserComponent } from './admin-create-user/admin-create-user.component';
+import { AppRoute } from '../core/navigation/app-routes.enum';
 
 const routes: Routes = [
+  { path: '', redirectTo: AppRoute.ADMIN_USERS, pathMatch: 'full' },
   {
-    path: '',
-    component: AdminCreateUserComponent,
+    path: AppRoute.ADMIN_USERS,
+    loadComponent: () => import('../pages/admin/users/admin-users.component').then((m) => m.AdminUsersComponent),
   },
 ];
 

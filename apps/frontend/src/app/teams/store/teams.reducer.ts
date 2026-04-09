@@ -1,9 +1,13 @@
 import { createFeature, createReducer, on } from '@ngrx/store';
+import { AuthActions } from '../../auth/store/auth.actions';
 import { TeamsActions } from './teams.actions';
 import { TEAMS_FEATURE_KEY, initialTeamsState } from './teams.state';
 
 export const teamsReducer = createReducer(
   initialTeamsState,
+
+  // --- GLOBAL ---
+  on(AuthActions.logoutSuccess, () => initialTeamsState),
 
   // --- LOAD ---
   on(TeamsActions.loadTeams, (state) => ({
@@ -75,24 +79,34 @@ export const teamsReducer = createReducer(
   })),
 
   // --- MEMBERS (Optional: Update state on member changes if needed) ---
-  on(TeamsActions.addMember, TeamsActions.removeMember, (state) => ({
+  on(TeamsActions.addMember, TeamsActions.removeMember, TeamsActions.updateMemberRole, (state) => ({
     ...state,
     loading: true,
     error: null,
   })),
   // Success actions for members just update the team in the list
 
-  on(TeamsActions.addMemberSuccess, TeamsActions.removeMemberSuccess, (state, { team }) => ({
-    ...state,
-    teams: state.teams.map((t) => (t.id === team.id ? team : t)),
-    loading: false,
-  })),
+  on(
+    TeamsActions.addMemberSuccess,
+    TeamsActions.removeMemberSuccess,
+    TeamsActions.updateMemberRoleSuccess,
+    (state, { team }) => ({
+      ...state,
+      teams: state.teams.map((t) => (t.id === team.id ? team : t)),
+      loading: false,
+    })
+  ),
 
-  on(TeamsActions.addMemberFailure, TeamsActions.removeMemberFailure, (state, { error }) => ({
-    ...state,
-    loading: false,
-    error,
-  }))
+  on(
+    TeamsActions.addMemberFailure,
+    TeamsActions.removeMemberFailure,
+    TeamsActions.updateMemberRoleFailure,
+    (state, { error }) => ({
+      ...state,
+      loading: false,
+      error,
+    })
+  )
 );
 
 export const teamsFeature = createFeature({

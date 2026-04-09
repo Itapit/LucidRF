@@ -1,0 +1,16 @@
+<div class="flex justify-center items-center min-h-screen bg-gray-50">
+  <div class="w-full max-w-sm px-6">
+    <div class="mb-8 text-center">
+      <ng-content select="[header-icon]"></ng-content>
+      <h1 class="text-3xl font-extrabold text-black tracking-tight mb-2">{{ title() }}</h1>
+      @if (subtitle()) {
+      <p class="text-gray-500 text-sm">{{ subtitle() }}</p>
+      }
+    </div>
+
+    <!-- The wrapper card with standardized styling. Form tags will use display: contents to inherit flex gaps -->
+    <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-200 flex flex-col gap-5">
+      <ng-content></ng-content>
+    </div>
+  </div>
+</div>

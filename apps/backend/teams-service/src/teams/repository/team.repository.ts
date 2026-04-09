@@ -28,6 +28,11 @@ export abstract class TeamRepository {
    */
   abstract removeMember(teamId: string, userId: string): Promise<TeamSchema | null>;
 
+  /**
+   * updates a specific user's role in the members array.
+   */
+  abstract updateMemberRole(teamId: string, userId: string, role: TeamRole): Promise<TeamSchema | null>;
+
   abstract delete(id: string): Promise<boolean>;
 
   /**

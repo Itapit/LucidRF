@@ -8,6 +8,7 @@ import {
   GetUserTeamsPayload,
   RemoveMemberPayload,
   TEAMS_PATTERNS,
+  UpdateMemberRolePayload,
   UpdateTeamPayload,
 } from '@LucidRF/teams-contracts';
 import { Controller } from '@nestjs/common';
@@ -52,6 +53,11 @@ export class TeamsController {
     return this.teamsService.removeMember(payload);
   }
 
+  @MessagePattern(TEAMS_PATTERNS.UPDATE_MEMBER_ROLE)
+  updateMemberRole(@Payload() payload: UpdateMemberRolePayload): Promise<TeamDto> {
+    return this.teamsService.updateMemberRole(payload);
+  }
+
   @MessagePattern(TEAMS_PATTERNS.DELETE)
   delete(@Payload() payload: DeleteTeamPayload): Promise<boolean> {
     // Payload contains: { teamId, actorId }
@@ -62,5 +68,10 @@ export class TeamsController {
   isUserInTeam(@Payload() payload: CheckTeamMembershipPayload): Promise<boolean> {
     // Payload contains: { teamId, userId }
     return this.teamsService.isUserInTeam(payload);
+  }
+
+  @MessagePattern(TEAMS_PATTERNS.HANDLE_USER_DELETION)
+  handleUserDeletion(@Payload() payload: { userId: string }): Promise<void> {
+    return this.teamsService.handleUserDeletion(payload);
   }
 }

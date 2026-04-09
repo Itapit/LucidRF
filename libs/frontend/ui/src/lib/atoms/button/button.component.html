@@ -1,0 +1,15 @@
+<button
+  [type]="type()"
+  [attr.form]="form() || null"
+  [disabled]="isDisabled"
+  [attr.aria-busy]="loading()"
+  (click)="onClick($event)"
+  [ngClass]="classes"
+>
+  @if (loading()) {
+  <ui-spinner size="sm" class="mr-2"></ui-spinner>
+  <span>{{ loadingText() }}</span>
+  } @else {
+  <ng-content></ng-content>
+  }
+</button>

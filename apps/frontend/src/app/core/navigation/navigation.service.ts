@@ -6,8 +6,32 @@ import { AppPaths } from './app-routes.enum';
 export class NavigationService {
   private router = inject(Router);
 
-  toDashboard(): void {
-    this.router.navigate([AppPaths.dashboard]);
+  toHome(): void {
+    this.router.navigate([AppPaths.home]);
+  }
+
+  toWorkspace(): void {
+    this.router.navigate([AppPaths.workspace]);
+  }
+
+  toTeam(teamId: string): void {
+    this.router.navigate([AppPaths.teams, teamId]);
+  }
+
+  toAdmin(): void {
+    this.toAdminUsers();
+  }
+
+  toAdminUsers(): void {
+    this.router.navigate([AppPaths.admin.users]);
+  }
+
+  toAdminSettings(): void {
+    this.router.navigate([AppPaths.admin.settings]);
+  }
+
+  isActiveAdminTab(tab: 'users' | 'settings'): boolean {
+    return this.router.url.includes(AppPaths.admin[tab]);
   }
 
   toLogin(): void {
@@ -31,8 +55,8 @@ export class NavigationService {
     return this.router.createUrlTree([AppPaths.auth.login]);
   }
 
-  public createDashboardUrlTree(): UrlTree {
-    return this.router.createUrlTree([AppPaths.dashboard]);
+  public createHomeUrlTree(): UrlTree {
+    return this.router.createUrlTree([AppPaths.home]);
   }
 
   public createRootUrlTree(): UrlTree {
