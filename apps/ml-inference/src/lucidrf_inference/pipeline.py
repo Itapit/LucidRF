@@ -12,7 +12,12 @@ from pathlib import Path
 import numpy as np
 
 from lucidrf_inference.barrage_detector import BarrageDetector
-from lucidrf_inference.constants import DETECTOR_CHUNK_SIZE, U_NET_HOP_SAMPLES, U_NET_INPUT_LENGTH
+from lucidrf_inference.constants import (
+    DETECTOR_CHUNK_SIZE,
+    U_NET_GLOBAL_SCALE,
+    U_NET_HOP_SAMPLES,
+    U_NET_INPUT_LENGTH,
+)
 from lucidrf_inference.denoiser import IQDenoiser
 from lucidrf_inference.iq import complex_to_two_channel, remove_dc_offset, scale_u_net_input, take_center_frame
 from lucidrf_inference.overlap_denoise import denoise_iq_sliding
@@ -26,7 +31,7 @@ class InferencePipelineConfig:
     detector_model_path: Path
     denoiser_checkpoint_path: Path
     """Divide U-Net inputs by this value (training used a global max over the dataset)."""
-    u_net_global_scale: float | None = None
+    u_net_global_scale: float = U_NET_GLOBAL_SCALE
 
 
 class InferencePipeline:
@@ -60,8 +65,6 @@ class InferencePipeline:
         run U-Net per window, reconstruct with Hann-weighted overlap-add. Output length matches input.
         """
         scale = global_scale if global_scale is not None else self._config.u_net_global_scale
-        if scale is None:
-            raise ValueError("Set InferencePipelineConfig.u_net_global_scale or pass global_scale=.")
         out = denoise_iq_sliding(
             iq,
             self._denoiser.denoise_two_channel,
@@ -81,8 +84,6 @@ class InferencePipeline:
         Single frame: DC removal, crop/pad to `frame_length`, scale, U-Net. Output shape (2, frame_length).
         """
         scale = global_scale if global_scale is not None else self._config.u_net_global_scale
-        if scale is None:
-            raise ValueError("Set InferencePipelineConfig.u_net_global_scale or pass global_scale=.")
 
         iq_dc = remove_dc_offset(np.asarray(iq).ravel())
         frame = take_center_frame(iq_dc, length=frame_length)
