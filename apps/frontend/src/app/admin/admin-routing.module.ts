@@ -8,6 +8,11 @@ const routes: Routes = [
     path: AppRoute.ADMIN_USERS,
     loadComponent: () => import('../pages/admin/users/admin-users.component').then((m) => m.AdminUsersComponent),
   },
+  {
+    path: AppRoute.ADMIN_SETTINGS,
+    loadComponent: () =>
+      import('../pages/admin/settings/admin-settings.component').then((m) => m.AdminSettingsComponent),
+  },
 ];
 
 @NgModule({
