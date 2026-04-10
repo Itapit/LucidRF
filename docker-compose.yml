@@ -13,6 +13,19 @@ services:
     networks:
       - lucid-network
 
+  notifications-service:
+    build:
+      context: ./services/notifications-service
+      dockerfile: Dockerfile
+    container_name: LucidRF-notifications
+    restart: unless-stopped
+    ports:
+      - '8090:8090'
+    env_file:
+      - ./services/notifications-service/.env
+    networks:
+      - lucid-network
+
   minio:
     image: minio/minio:latest
     container_name: LucidRF-minio

@@ -1,0 +1,19 @@
+server:
+  port: ${NOTIFICATIONS_SERVER_PORT:8090}
+
+spring:
+  application:
+    name: notifications-service
+  # For SMTP: set NOTIFICATIONS_MAIL_MODE=SMTP and e.g. SPRING_MAIL_HOST, SPRING_MAIL_USERNAME, SPRING_MAIL_PASSWORD
+
+notifications:
+  internal-api-key: ${NOTIFICATIONS_INTERNAL_API_KEY:}
+  mail-from: ${NOTIFICATIONS_MAIL_FROM:noreply@localhost}
+  app-public-base-url: ${APP_PUBLIC_BASE_URL:http://localhost:4200}
+  mail-mode: ${NOTIFICATIONS_MAIL_MODE:LOG}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
