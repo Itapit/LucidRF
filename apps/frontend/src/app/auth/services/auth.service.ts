@@ -39,10 +39,14 @@ export class AuthService {
    * being re-intercepted by our own AuthInterceptor.
    */
   refresh(): Observable<AuthRefreshResponse> {
-    return this.cleanHttp.post<AuthRefreshResponse>(`${this.baseUrl}/auth/refresh`, {}, { withCredentials: true });
+    return this.cleanHttp.post<AuthRefreshResponse>(`${this.baseUrl}${ApiEndpoint.AUTH_REFRESH}`, {}, { withCredentials: true });
   }
 
   logout(): Observable<void> {
-    return this.http.post<void>(`${this.baseUrl}/auth/logout`, {});
+    return this.http.post<void>(`${this.baseUrl}${ApiEndpoint.AUTH_LOGOUT}`, {});
+  }
+
+  logoutAll(): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}${ApiEndpoint.AUTH_LOGOUT_ALL}`, {});
   }
 }

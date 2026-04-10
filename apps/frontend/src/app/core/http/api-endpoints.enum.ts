@@ -4,6 +4,7 @@ export enum ApiEndpoint {
   AUTH_COMPLETE_SETUP = '/auth/complete-setup',
   AUTH_REFRESH = '/auth/refresh',
   AUTH_LOGOUT = '/auth/logout',
+  AUTH_LOGOUT_ALL = '/auth/logout-all',
 
   // Users
   USERS = '/users',
