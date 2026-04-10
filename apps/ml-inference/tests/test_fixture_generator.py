@@ -1,13 +1,29 @@
+import sys
 import unittest
+from pathlib import Path
 
 import numpy as np
 
+_SRC = Path(__file__).resolve().parents[1] / "src"
+if _SRC.is_dir() and str(_SRC) not in sys.path:
+    sys.path.insert(0, str(_SRC))
+
 from lucidrf_inference.cf32_le import cf32_le_from_bytes
 
-from tools.presentation_demo.generate_commsignal2_fixtures import mix_signals, two_channel_to_cf32_bytes
+try:
+    from tools.presentation_demo.generate_commsignal2_fixtures import mix_signals, two_channel_to_cf32_bytes
+except ImportError:
+    mix_signals = None  # type: ignore[misc, assignment]
+    two_channel_to_cf32_bytes = None  # type: ignore[misc, assignment]
 
 
 class TestFixtureGenerator(unittest.TestCase):
+    def setUp(self) -> None:
+        if two_channel_to_cf32_bytes is None or mix_signals is None:
+            self.skipTest(
+                "Optional tools.presentation_demo package not present (fixture generator scripts)."
+            )
+
     def test_two_channel_to_cf32_bytes_roundtrip(self):
         n = 1234
         rng = np.random.default_rng(0)

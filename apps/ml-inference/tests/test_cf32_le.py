@@ -1,9 +1,14 @@
 import struct
+import sys
 import tempfile
 import unittest
 from pathlib import Path
 
 import numpy as np
+
+_SRC = Path(__file__).resolve().parents[1] / "src"
+if _SRC.is_dir() and str(_SRC) not in sys.path:
+    sys.path.insert(0, str(_SRC))
 
 from lucidrf_inference.cf32_le import cf32_le_from_bytes, cf32_le_from_file
 
