@@ -36,6 +36,9 @@ export const AuthActions = createActionGroup({
     'Logout': emptyProps(),
     'Logout Success': emptyProps(),
 
+    /** Revoke refresh tokens everywhere (all devices / sessions). */
+    'Logout All': emptyProps(),
+
     'Clear Error': emptyProps(),
   },
 });

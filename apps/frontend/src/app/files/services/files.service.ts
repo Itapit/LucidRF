@@ -11,7 +11,7 @@ import {
   InitUploadResponse,
   ListContentResponse,
 } from '@LucidRF/common';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { ApiEndpoint } from '../../core/http/api-endpoints.enum';
 import { environment } from '../../environments/environment';
 
@@ -41,7 +41,19 @@ export class FilesService {
   }
 
   getDownloadUrl(fileId: string): Observable<GetDownloadUrlResponse> {
-    return this.http.get<GetDownloadUrlResponse>(`${this.baseUrl}${ApiEndpoint.FILES}/download/${fileId}`);
+    return this.http
+      .get<string | GetDownloadUrlResponse>(`${this.baseUrl}${ApiEndpoint.FILES}/download/${fileId}`, {
+        // Backend can return either raw URL text or { url } JSON depending on gateway shape.
+        responseType: 'text' as 'json',
+      })
+      .pipe(
+        map((response) => {
+          if (typeof response === 'string') {
+            return { url: response };
+          }
+          return response;
+        })
+      );
   }
 
   initUpload(request: InitUploadRequest): Observable<InitUploadResponse> {

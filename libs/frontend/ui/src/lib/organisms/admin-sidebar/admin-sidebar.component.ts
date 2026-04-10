@@ -9,6 +9,6 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
   templateUrl: './admin-sidebar.component.html',
 })
 export class AdminSidebarComponent {
-  activeTab = input<'users' | 'settings'>('users');
-  tabClick = output<'users' | 'settings'>();
+  activeTab = input<'users' | 'monitoring'>('users');
+  tabClick = output<'users' | 'monitoring'>();
 }

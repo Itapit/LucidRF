@@ -41,23 +41,23 @@
       </button>
 
       <button
-        (click)="tabClick.emit('settings')"
+        (click)="tabClick.emit('monitoring')"
         class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all group outline-none focus-visible:ring-2 focus-visible:ring-black/5 focus-visible:ring-offset-1"
-        [class.bg-black]="activeTab() === 'settings'"
-        [class.text-white]="activeTab() === 'settings'"
-        [class.shadow-sm]="activeTab() === 'settings'"
-        [class.text-gray-700]="activeTab() !== 'settings'"
-        [class.hover:bg-black/5]="activeTab() !== 'settings'"
-        [class.hover:text-black]="activeTab() !== 'settings'"
+        [class.bg-black]="activeTab() === 'monitoring'"
+        [class.text-white]="activeTab() === 'monitoring'"
+        [class.shadow-sm]="activeTab() === 'monitoring'"
+        [class.text-gray-700]="activeTab() !== 'monitoring'"
+        [class.hover:bg-black/5]="activeTab() !== 'monitoring'"
+        [class.hover:text-black]="activeTab() !== 'monitoring'"
       >
         <svg class="w-5 h-5 transition-colors" 
-             [class.text-white]="activeTab() === 'settings'"
-             [class.text-gray-400]="activeTab() !== 'settings'"
-             [class.group-hover:text-gray-600]="activeTab() !== 'settings'"
+             [class.text-white]="activeTab() === 'monitoring'"
+             [class.text-gray-400]="activeTab() !== 'monitoring'"
+             [class.group-hover:text-gray-600]="activeTab() !== 'monitoring'"
              fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
         </svg>
-        System Settings
+        Monitoring
       </button>
     </div>
   </div>

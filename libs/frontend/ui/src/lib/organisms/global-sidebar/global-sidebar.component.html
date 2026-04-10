@@ -157,5 +157,10 @@
   }
 
   <!-- Profile Menu -->
-  <ui-profile-menu [user]="user()" (logout)="logout.emit()" (editProfile)="editProfile.emit()"></ui-profile-menu>
+  <ui-profile-menu
+    [user]="user()"
+    (logout)="logout.emit()"
+    (logoutAll)="logoutAll.emit()"
+    (editProfile)="editProfile.emit()"
+  ></ui-profile-menu>
 </nav>
