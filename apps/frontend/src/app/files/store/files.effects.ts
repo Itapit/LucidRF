@@ -136,8 +136,11 @@ export class FilesEffects {
               anchor.href = objectUrl;
               anchor.download = safeName;
               anchor.rel = 'noopener';
+              document.body.appendChild(anchor);
               anchor.click();
-              URL.revokeObjectURL(objectUrl);
+              anchor.remove();
+              // Some browsers may cancel the download if we revoke immediately.
+              window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
             })
             .catch(() => {
               window.location.assign(url);

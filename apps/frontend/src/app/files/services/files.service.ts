@@ -48,10 +48,34 @@ export class FilesService {
       })
       .pipe(
         map((response) => {
+          let url: string | undefined;
+
           if (typeof response === 'string') {
-            return { url: response };
+            const trimmed = response.trim();
+            // Some gateways serialize JSON even when responseType=text is used.
+            if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+              try {
+                const parsed = JSON.parse(trimmed) as { url?: string };
+                if (parsed.url) {
+                  url = parsed.url.trim();
+                }
+              } catch {
+                // Fall back to raw text handling below.
+              }
+            }
+
+            if (!url) {
+              url = trimmed;
+            }
+          } else {
+            url = response.url?.trim();
           }
-          return response;
+
+          if (!url) {
+            throw new Error('Download URL is missing from server response');
+          }
+
+          return { url };
         })
       );
   }
