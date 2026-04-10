@@ -10,6 +10,9 @@ import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core
   templateUrl: './dropdown.component.html',
 })
 export class DropdownComponent {
+  /** Default includes `w-full` for layouts like the profile sidebar; use `relative inline-block` for compact triggers (e.g. table actions). */
+  containerClass = input('relative inline-block w-full');
+
   positions = input<ConnectedPosition[]>([
     { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 8 },
   ]);
