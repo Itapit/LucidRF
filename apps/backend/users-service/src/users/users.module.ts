@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { NotificationsModule } from '../notifications';
 import { SecurityModule } from '../security';
 import { UserService } from './application';
 import { UserRepository } from './domain';
@@ -10,6 +11,7 @@ import { UserController } from './users.controller';
 @Module({
   imports: [
     SecurityModule,
+    NotificationsModule,
     MongooseModule.forFeature([
       {
         name: UserSchema.name,

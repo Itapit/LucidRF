@@ -1,6 +1,7 @@
 import { UserDto, UserStatus } from '@LucidRF/common';
 import { CreateUserPayload } from '@LucidRF/users-contracts';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { NotificationsClientService } from '../../notifications';
 import { PasswordService } from '../../security';
 import { CreateUserRepoDto, toUserDto, UserRepository } from '../domain';
 import {
@@ -11,7 +12,11 @@ import {
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository, private readonly passwordService: PasswordService) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly passwordService: PasswordService,
+    private readonly notificationsClient: NotificationsClientService
+  ) {}
 
   /**
    * Creates a new user with a pending status and a temporary password.
@@ -41,8 +46,11 @@ export class UserService {
     };
     const newUserEntity = await this.userRepository.create(repoDto);
 
-    // TODO: add email or smthing
-    Logger.log(`Temp password for ${email}: ${tempPassword}`);
+    void this.notificationsClient.sendWelcomePendingUserEmail({
+      email,
+      username,
+      temporaryPassword: tempPassword,
+    });
 
     return toUserDto(newUserEntity);
   }

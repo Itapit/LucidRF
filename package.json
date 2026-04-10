@@ -2,7 +2,11 @@
   "name": "@lucid-rf/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "dev:notifications:up": "docker compose up -d notifications-service",
+    "dev:notifications:logs": "docker compose logs -f notifications-service",
+    "dev:users-service:with-notifications": "NOTIFICATIONS_SERVICE_BASE_URL=http://localhost:8090 NOTIFICATIONS_INTERNAL_API_KEY=dev-notifications-key nx run users-service:serve:development"
+  },
   "private": true,
   "dependencies": {
     "@angular/animations": "21.1.6",
