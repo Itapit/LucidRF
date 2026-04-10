@@ -9,8 +9,8 @@ import {
 } from '@LucidRF/users-contracts';
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { randomUUID } from 'crypto';
 import ms from 'ms';
-import { v4 as uuidv4 } from 'uuid';
 import { GeneratedTokensDto } from '../../application/dtos';
 import { TokenGenerationException, TokenService } from '../../domain';
 
@@ -43,7 +43,7 @@ export class JwtTokenService implements TokenService {
   }
 
   async generateAuthTokens(userId: string, role: SystemRole): Promise<GeneratedTokensDto> {
-    const jti = uuidv4();
+    const jti = randomUUID();
 
     const refreshExpiresInMs = ms(this.jwtRefreshExpiresIn as any);
     const refreshExpiresAt = new Date(Date.now() + refreshExpiresInMs);
