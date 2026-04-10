@@ -9,9 +9,9 @@ const routes: Routes = [
     loadComponent: () => import('../pages/admin/users/admin-users.component').then((m) => m.AdminUsersComponent),
   },
   {
-    path: AppRoute.ADMIN_MONITORING,
+    path: AppRoute.ADMIN_SETTINGS,
     loadComponent: () =>
-      import('../pages/admin/monitoring/admin-monitoring.component').then((m) => m.AdminMonitoringComponent),
+      import('../pages/admin/settings/admin-settings.component').then((m) => m.AdminSettingsComponent),
   },
 ];
 

@@ -48,21 +48,12 @@ services:
     container_name: LucidRF-grafana
     ports:
       - '3100:3000'
-    environment:
-      # Allow embedding the dashboard in the frontend monitoring page.
-      GF_SECURITY_ALLOW_EMBEDDING: 'true'
-      # Local dev convenience to avoid clickjacking checks breaking iframe.
-      GF_SECURITY_COOKIE_SAMESITE: 'lax'
-      # Anonymous read-only dashboard access for local embedded monitoring.
-      GF_AUTH_ANONYMOUS_ENABLED: 'true'
-      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
-      GF_AUTH_DISABLE_LOGIN_FORM: 'true'
     depends_on:
       - prometheus
     volumes:
-      # Mount the provisioning config
+      # 1. Mount the provisioning config
       - ./grafana/provisioning:/etc/grafana/provisioning
-      # Mount the actual dashboard JSON files
+      # 2. Mount the actual dashboard JSON files
       - ./grafana/dashboards:/etc/grafana/dashboards
     networks:
       - lucid-network

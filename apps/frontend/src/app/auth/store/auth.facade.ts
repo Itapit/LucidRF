@@ -112,10 +112,6 @@ export class AuthFacade {
     this.store.dispatch(AuthActions.logout());
   }
 
-  logoutAll() {
-    this.store.dispatch(AuthActions.logoutAll());
-  }
-
   /**
    * Dispatches an action to clear any visible error messages.
    */

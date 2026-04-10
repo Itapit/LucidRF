@@ -26,11 +26,11 @@ export class NavigationService {
     this.router.navigate([AppPaths.admin.users]);
   }
 
-  toAdminMonitoring(): void {
-    this.router.navigate([AppPaths.admin.monitoring]);
+  toAdminSettings(): void {
+    this.router.navigate([AppPaths.admin.settings]);
   }
 
-  isActiveAdminTab(tab: 'users' | 'monitoring'): boolean {
+  isActiveAdminTab(tab: 'users' | 'settings'): boolean {
     return this.router.url.includes(AppPaths.admin[tab]);
   }
 

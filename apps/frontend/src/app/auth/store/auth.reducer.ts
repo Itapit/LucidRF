@@ -15,7 +15,6 @@ export const authReducer = createReducer(
     AuthActions.refresh,
     AuthActions.loadMe,
     AuthActions.logout,
-    AuthActions.logoutAll,
     (state) => ({
       ...state,
       loading: true,

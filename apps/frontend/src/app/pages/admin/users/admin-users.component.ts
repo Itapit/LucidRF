@@ -39,15 +39,15 @@ export class AdminUsersComponent implements OnInit {
     this.store.loadUsers();
   }
 
-  get activeTab(): 'users' | 'monitoring' {
-    return this.navigationService.isActiveAdminTab('monitoring') ? 'monitoring' : 'users';
+  get activeTab(): 'users' | 'settings' {
+    return this.navigationService.isActiveAdminTab('settings') ? 'settings' : 'users';
   }
 
-  onTabClick(tab: 'users' | 'monitoring') {
+  onTabClick(tab: 'users' | 'settings') {
     if (tab === 'users') {
       this.navigationService.toAdminUsers();
     } else {
-      this.navigationService.toAdminMonitoring();
+      this.navigationService.toAdminSettings();
     }
   }
 

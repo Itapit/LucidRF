@@ -98,11 +98,12 @@ export class FilesEffects {
   getDownloadUrl$ = createEffect(() =>
     this.actions$.pipe(
       ofType(FilesActions.getDownloadUrl),
-      concatMap(({ fileId, originalFileName }) =>
+      concatMap(({ fileId }) =>
         this.filesService.getDownloadUrl(fileId).pipe(
-          map((response) =>
-            FilesActions.getDownloadUrlSuccess({ url: response.url, originalFileName })
-          ),
+          tap((response) => {
+            window.open(response.url, '_blank');
+          }),
+          map((response) => FilesActions.getDownloadUrlSuccess({ url: response.url })),
           catchError((error: HttpErrorResponse) =>
             of(
               FilesActions.getDownloadUrlFailure({
@@ -116,35 +117,6 @@ export class FilesEffects {
         )
       )
     )
-  );
-
-  /** Applies the presigned URL: prefer blob download with filename; fall back to navigation. */
-  completeDownload$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(FilesActions.getDownloadUrlSuccess),
-        tap(({ url, originalFileName }) => {
-          const safeName = originalFileName?.trim() || 'download';
-          fetch(url, { mode: 'cors', credentials: 'omit' })
-            .then((res) => {
-              if (!res.ok) throw new Error('Download failed');
-              return res.blob();
-            })
-            .then((blob) => {
-              const objectUrl = URL.createObjectURL(blob);
-              const anchor = document.createElement('a');
-              anchor.href = objectUrl;
-              anchor.download = safeName;
-              anchor.rel = 'noopener';
-              anchor.click();
-              URL.revokeObjectURL(objectUrl);
-            })
-            .catch(() => {
-              window.location.assign(url);
-            });
-        })
-      ),
-    { dispatch: false }
   );
 
   // UPLOAD FLOW

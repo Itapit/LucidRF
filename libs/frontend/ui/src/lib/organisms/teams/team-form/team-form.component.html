@@ -16,16 +16,6 @@
         <input id="description" type="text" formControlName="description" placeholder="Brief description..." uiInput />
       </ui-form-field>
 
-      @if (isEdit) {
-      <ui-form-field label="Team color">
-        <select id="color" formControlName="color" uiSelect class="w-full">
-          @for (entry of teamColorChoices; track entry[1]) {
-          <option [value]="entry[1]">{{ entry[0].split('_').join(' ') }}</option>
-          }
-        </select>
-      </ui-form-field>
-      }
-
       @if (error()) {
       <ui-alert type="error" [message]="error()!"></ui-alert>
       }

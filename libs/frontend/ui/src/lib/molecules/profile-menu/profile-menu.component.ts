@@ -16,7 +16,6 @@ import { DropdownComponent } from '../dropdown/dropdown.component';
 export class ProfileMenuComponent {
   user = input<UserDto | null>(null);
   logout = output<void>();
-  logoutAll = output<void>();
   editProfile = output<void>();
 
   @ViewChild(DropdownComponent) dropdown!: DropdownComponent;
@@ -32,11 +31,6 @@ export class ProfileMenuComponent {
 
   handleLogout() {
     this.logout.emit();
-    this.dropdown.close();
-  }
-
-  handleLogoutAll() {
-    this.logoutAll.emit();
     this.dropdown.close();
   }
 }

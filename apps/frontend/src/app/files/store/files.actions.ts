@@ -36,8 +36,8 @@ export const FilesActions = createActionGroup({
     'Delete Folder Failure': props<{ error: ActionError<FilesErrorSource> }>(),
 
     // --- DOWNLOAD ---
-    'Get Download Url': props<{ fileId: string; originalFileName?: string }>(),
-    'Get Download Url Success': props<{ url: string; originalFileName?: string }>(),
+    'Get Download Url': props<{ fileId: string }>(),
+    'Get Download Url Success': props<{ url: string }>(),
     'Get Download Url Failure': props<{ error: ActionError<FilesErrorSource> }>(),
 
     // --- UPLOAD FLOW ---

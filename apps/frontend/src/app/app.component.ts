@@ -55,10 +55,6 @@ export class AppComponent {
     this.authFacade.logout();
   }
 
-  logoutAll() {
-    this.authFacade.logoutAll();
-  }
-
   editProfile() {
     // Navigate or open modal
   }

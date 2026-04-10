@@ -25,7 +25,6 @@ export class GlobalSidebarComponent {
   goTeam = output<string>();
   goAdmin = output<void>();
   logout = output<void>();
-  logoutAll = output<void>();
   editProfile = output<void>();
 
   SidebarItem = SidebarItem;
