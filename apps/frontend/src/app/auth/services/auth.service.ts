@@ -9,6 +9,7 @@ import {
   UserDto,
 } from '@LucidRF/common';
 import { Observable } from 'rxjs';
+import { ApiEndpoint } from '../../core/http/api-endpoints.enum';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -22,15 +23,15 @@ export class AuthService {
   private cleanHttp = new HttpClient(this.httpBackend);
 
   login(dto: LoginRequest): Observable<LoginResponse | PendingLoginResponse> {
-    return this.http.post<LoginResponse | PendingLoginResponse>(`${this.baseUrl}/auth/login`, dto);
+    return this.http.post<LoginResponse | PendingLoginResponse>(`${this.baseUrl}${ApiEndpoint.AUTH_LOGIN}`, dto);
   }
 
   completeSetup(dto: CompleteSetupRequest): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.baseUrl}/auth/complete-setup`, dto);
+    return this.http.post<LoginResponse>(`${this.baseUrl}${ApiEndpoint.AUTH_COMPLETE_SETUP}`, dto);
   }
 
   getMe(): Observable<UserDto> {
-    return this.http.get<UserDto>(`${this.baseUrl}/users/me`);
+    return this.http.get<UserDto>(`${this.baseUrl}${ApiEndpoint.USERS_ME}`);
   }
 
   /**
