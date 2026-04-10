@@ -4,6 +4,7 @@ import {
   ConfirmUploadRequest,
   ConfirmUploadResponse,
   CreateFolderRequest,
+  DeleteResourceResponse,
   FolderDto,
   GetDownloadUrlResponse,
   InitUploadRequest,
@@ -31,12 +32,12 @@ export class FilesService {
     return this.http.post<FolderDto>(`${this.baseUrl}${ApiEndpoint.FILES}/folder`, request);
   }
 
-  deleteFile(fileId: string): Observable<boolean> {
-    return this.http.delete<boolean>(`${this.baseUrl}${ApiEndpoint.FILES}/file/${fileId}`);
+  deleteFile(fileId: string): Observable<DeleteResourceResponse> {
+    return this.http.delete<DeleteResourceResponse>(`${this.baseUrl}${ApiEndpoint.FILES}/file/${fileId}`);
   }
 
-  deleteFolder(folderId: string): Observable<boolean> {
-    return this.http.delete<boolean>(`${this.baseUrl}${ApiEndpoint.FILES}/folder/${folderId}`);
+  deleteFolder(folderId: string): Observable<DeleteResourceResponse> {
+    return this.http.delete<DeleteResourceResponse>(`${this.baseUrl}${ApiEndpoint.FILES}/folder/${folderId}`);
   }
 
   getDownloadUrl(fileId: string): Observable<GetDownloadUrlResponse> {
