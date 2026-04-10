@@ -2,6 +2,17 @@ const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
 const { join } = require('path');
 
 module.exports = {
+  resolve: {
+    alias: {
+      '@LucidRF/api-clients': join(__dirname, '../../../libs/backend/api-clients/src/index.ts'),
+      '@LucidRF/backend-common': join(__dirname, '../../../libs/backend/backend-common/src/index.ts'),
+      '@LucidRF/common': join(__dirname, '../../../libs/common/src/index.ts'),
+      '@LucidRF/files-contracts': join(__dirname, '../../../libs/backend/files-contracts/src/index.ts'),
+      '@LucidRF/teams-contracts': join(__dirname, '../../../libs/backend/teams-contracts/src/index.ts'),
+      '@LucidRF/ui': join(__dirname, '../../../libs/frontend/ui/src/index.ts'),
+      '@LucidRF/users-contracts': join(__dirname, '../../../libs/backend/users-contracts/src/index.ts'),
+    },
+  },
   output: {
     path: join(__dirname, '../../../dist/apps/backend/files-service'),
     ...(process.env.NODE_ENV !== 'production' && {
