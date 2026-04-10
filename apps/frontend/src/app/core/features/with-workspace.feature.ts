@@ -1,6 +1,7 @@
 import { Dialog } from '@angular/cdk/dialog';
 import { inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { FileDto } from '@LucidRF/common';
 import { DialogAction, DialogResult, FolderFormComponent } from '@LucidRF/ui';
 import { signalStoreFeature, withComputed, withMethods } from '@ngrx/signals';
 import { NavigationService } from '../../core/navigation/navigation.service';
@@ -62,6 +63,12 @@ export function withWorkspace() {
             },
             file
           );
+        },
+        onDownloadFile: (file: FileDto) => {
+          filesFacade.getDownloadUrl(file.resourceId);
+        },
+        onDeleteFile: (file: FileDto) => {
+          filesFacade.deleteFile(file.resourceId);
         },
       };
     })
