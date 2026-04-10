@@ -59,6 +59,7 @@ export const TeamDetailStore = signalStore(
       setTeamId: (teamId: string) => {
         patchState(store, { teamId });
         if (teamId) {
+          teamsFacade.loadTeam(teamId);
           store.loadWorkspaceContent(teamId);
         } else {
           store.clearWorkspaceContent();
