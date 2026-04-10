@@ -56,8 +56,16 @@
         </td>
         <td class="py-4 px-6">
           <div class="flex items-center gap-2">
-            <div class="w-2 h-2 rounded-full bg-green-500"></div>
-            <span class="text-gray-600 text-xs font-medium">Active</span>
+            <div
+              class="w-2 h-2 rounded-full shrink-0"
+              [ngClass]="{
+                'bg-green-500': user.status === UserStatus.ACTIVE,
+                'bg-amber-500': user.status === UserStatus.PENDING
+              }"
+            ></div>
+            <span class="text-gray-600 text-xs font-medium">
+              {{ user.status === UserStatus.ACTIVE ? 'Active' : 'Pending' }}
+            </span>
           </div>
         </td>
         <td class="py-4 px-6 text-right">
