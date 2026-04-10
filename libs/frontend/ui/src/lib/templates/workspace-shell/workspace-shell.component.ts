@@ -31,6 +31,8 @@ export class WorkspaceShellComponent {
   @Output() folderClick = new EventEmitter<string | null>();
   @Output() newFolder = new EventEmitter<void>();
   @Output() uploadFile = new EventEmitter<File>();
+  @Output() downloadFile = new EventEmitter<FileDto>();
+  @Output() deleteFile = new EventEmitter<FileDto>();
   @Output() breadcrumbClick = new EventEmitter<BreadcrumbItem>();
 
   @Input() showNewFolder = true;
