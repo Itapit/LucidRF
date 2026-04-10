@@ -9,6 +9,8 @@
   (folderClick)="store.team()?.id && store.onFolderClick(store.team()!.id, $event)"
   (newFolder)="store.team()?.id && store.onNewFolder(store.team()!.id)"
   (uploadFile)="store.team()?.id && store.onUploadFile(store.team()!.id, $event)"
+  (downloadFile)="store.onDownloadFile($event)"
+  (deleteFile)="store.onDeleteFile($event)"
   (breadcrumbClick)="onBreadcrumbClick($event)"
 >
 </ui-workspace-shell>

@@ -21,6 +21,10 @@ export class TeamsService {
     return this.http.get<TeamDto[]>(`${this.baseUrl}${ApiEndpoint.TEAMS}`);
   }
 
+  getTeamById(teamId: string): Observable<TeamDto> {
+    return this.http.get<TeamDto>(`${this.baseUrl}${ApiEndpoint.TEAMS}/${teamId}`);
+  }
+
   createTeam(teamData: CreateTeamRequest): Observable<TeamDto> {
     return this.http.post<TeamDto>(`${this.baseUrl}${ApiEndpoint.TEAMS}`, teamData);
   }

@@ -15,7 +15,7 @@ export enum AppRoute {
 
   // Children of Admin
   ADMIN_USERS = 'users',
-  ADMIN_SETTINGS = 'settings',
+  ADMIN_MONITORING = 'monitoring',
 }
 
 // Helper to construct full paths for use in Services/Effects
@@ -31,6 +31,6 @@ export const AppPaths = {
   admin: {
     root: `/${AppRoute.ADMIN}`,
     users: `/${AppRoute.ADMIN}/${AppRoute.ADMIN_USERS}`,
-    settings: `/${AppRoute.ADMIN}/${AppRoute.ADMIN_SETTINGS}`,
+    monitoring: `/${AppRoute.ADMIN}/${AppRoute.ADMIN_MONITORING}`,
   },
 };

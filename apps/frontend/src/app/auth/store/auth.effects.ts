@@ -176,6 +176,18 @@ export class AuthEffects {
     )
   );
 
+  logoutAll$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.logoutAll),
+      switchMap(() =>
+        this.authService.logoutAll().pipe(
+          map(() => AuthActions.logoutSuccess()),
+          catchError(() => of(AuthActions.logoutSuccess()))
+        )
+      )
+    )
+  );
+
   sessionEnd$ = createEffect(
     () =>
       this.actions$.pipe(

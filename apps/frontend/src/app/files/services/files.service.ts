@@ -4,13 +4,14 @@ import {
   ConfirmUploadRequest,
   ConfirmUploadResponse,
   CreateFolderRequest,
+  DeleteResourceResponse,
   FolderDto,
   GetDownloadUrlResponse,
   InitUploadRequest,
   InitUploadResponse,
   ListContentResponse,
 } from '@LucidRF/common';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { ApiEndpoint } from '../../core/http/api-endpoints.enum';
 import { environment } from '../../environments/environment';
 
@@ -31,16 +32,52 @@ export class FilesService {
     return this.http.post<FolderDto>(`${this.baseUrl}${ApiEndpoint.FILES}/folder`, request);
   }
 
-  deleteFile(fileId: string): Observable<boolean> {
-    return this.http.delete<boolean>(`${this.baseUrl}${ApiEndpoint.FILES}/file/${fileId}`);
+  deleteFile(fileId: string): Observable<DeleteResourceResponse> {
+    return this.http.delete<DeleteResourceResponse>(`${this.baseUrl}${ApiEndpoint.FILES}/file/${fileId}`);
   }
 
-  deleteFolder(folderId: string): Observable<boolean> {
-    return this.http.delete<boolean>(`${this.baseUrl}${ApiEndpoint.FILES}/folder/${folderId}`);
+  deleteFolder(folderId: string): Observable<DeleteResourceResponse> {
+    return this.http.delete<DeleteResourceResponse>(`${this.baseUrl}${ApiEndpoint.FILES}/folder/${folderId}`);
   }
 
   getDownloadUrl(fileId: string): Observable<GetDownloadUrlResponse> {
-    return this.http.get<GetDownloadUrlResponse>(`${this.baseUrl}${ApiEndpoint.FILES}/download/${fileId}`);
+    return this.http
+      .get<string | GetDownloadUrlResponse>(`${this.baseUrl}${ApiEndpoint.FILES}/download/${fileId}`, {
+        // Backend can return either raw URL text or { url } JSON depending on gateway shape.
+        responseType: 'text' as 'json',
+      })
+      .pipe(
+        map((response) => {
+          let url: string | undefined;
+
+          if (typeof response === 'string') {
+            const trimmed = response.trim();
+            // Some gateways serialize JSON even when responseType=text is used.
+            if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+              try {
+                const parsed = JSON.parse(trimmed) as { url?: string };
+                if (parsed.url) {
+                  url = parsed.url.trim();
+                }
+              } catch {
+                // Fall back to raw text handling below.
+              }
+            }
+
+            if (!url) {
+              url = trimmed;
+            }
+          } else {
+            url = response.url?.trim();
+          }
+
+          if (!url) {
+            throw new Error('Download URL is missing from server response');
+          }
+
+          return { url };
+        })
+      );
   }
 
   initUpload(request: InitUploadRequest): Observable<InitUploadResponse> {
