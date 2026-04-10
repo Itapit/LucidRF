@@ -39,6 +39,7 @@ export class FileTableComponent {
   folderClick = output<FolderDto>();
   download = output<FileDto>();
   delete = output<FileDto>();
+  deleteFolder = output<FolderDto>();
 
   unifiedResources = computed<UnifiedResource[]>(() => {
     const mappedFolders = (this.folders() || []).map((folder) => ({ ...folder, isFolder: true } as const));
@@ -52,6 +53,15 @@ export class FileTableComponent {
   /** Close the CDK overlay after an action; each file row has its own dropdown instance. */
   closeActionMenus() {
     this.actionMenus?.forEach((m) => m.close());
+  }
+
+  onDeleteRow(item: UnifiedResource) {
+    this.closeActionMenus();
+    if (item.isFolder) {
+      this.deleteFolder.emit(item);
+    } else {
+      this.delete.emit(item);
+    }
   }
 
   formatBytes(bytes: number, decimals = 2) {
