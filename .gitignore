@@ -67,3 +67,6 @@ ml/reports/
 ml/final_unet
 *.pyc
 __pycache__/
+
+
+.cursor

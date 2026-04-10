@@ -2,8 +2,8 @@ import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 
 import { ChangeDetectionStrategy, Component, OnInit, Signal, inject, output, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { TeamDto } from '@LucidRF/common';
-import { ButtonComponent, InputDirective } from '../../../atoms';
+import { TeamColor, TeamDto } from '@LucidRF/common';
+import { ButtonComponent, InputDirective, SelectDirective } from '../../../atoms';
 import {
   AlertComponent,
   DialogAction,
@@ -17,7 +17,7 @@ export interface TeamFormData {
   showDangerZone?: boolean;
   isSubmitting?: Signal<boolean>;
   error?: Signal<string | null>;
-  onSubmit?: (data: { name: string; description: string }) => void;
+  onSubmit?: (data: { name: string; description: string; color?: TeamColor }) => void;
 }
 
 @Component({
@@ -28,6 +28,7 @@ export interface TeamFormData {
     ModalWrapperComponent,
     FormFieldComponent,
     InputDirective,
+    SelectDirective,
     ButtonComponent,
     AlertComponent
 ],
@@ -36,7 +37,7 @@ export interface TeamFormData {
 })
 export class TeamFormComponent implements OnInit {
   cancelForm = output<void>();
-  submitForm = output<{ name: string; description: string }>();
+  submitForm = output<{ name: string; description: string; color?: TeamColor }>();
   deleteTeam = output<void>();
 
   isEdit = false;
@@ -44,7 +45,11 @@ export class TeamFormComponent implements OnInit {
   form = new FormGroup({
     name: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     description: new FormControl('', { nonNullable: true }),
+    color: new FormControl<TeamColor>(TeamColor.SIGNAL_BLUE, { nonNullable: true }),
   });
+
+  /** Pairs of [enum key, hex] for display in the select. */
+  readonly teamColorChoices = Object.entries(TeamColor) as [string, TeamColor][];
 
   dialogRef = inject<DialogRef<DialogResult>>(DialogRef, { optional: true });
   data = inject<TeamFormData>(DIALOG_DATA, { optional: true });
@@ -62,7 +67,11 @@ export class TeamFormComponent implements OnInit {
   private initTeamData(val: TeamDto | null) {
     if (val) {
       this.isEdit = true;
-      this.form.patchValue({ name: val.name, description: val.description || '' });
+      this.form.patchValue({
+        name: val.name,
+        description: val.description || '',
+        color: val.color || TeamColor.SIGNAL_BLUE,
+      });
     } else {
       this.isEdit = false;
       this.form.reset();
@@ -86,13 +95,16 @@ export class TeamFormComponent implements OnInit {
   onSubmit() {
     if (this.form.valid) {
       const value = this.form.getRawValue();
+      const payload = this.isEdit
+        ? { name: value.name, description: value.description, color: value.color }
+        : { name: value.name, description: value.description };
 
       if (this.data?.onSubmit) {
-        this.data.onSubmit(value);
+        this.data.onSubmit(payload);
       } else {
-        this.submitForm.emit(value);
+        this.submitForm.emit(payload);
         if (this.dialogRef) {
-          this.dialogRef.close({ action: DialogAction.SUBMIT, data: value });
+          this.dialogRef.close({ action: DialogAction.SUBMIT, data: payload });
         }
       }
     }

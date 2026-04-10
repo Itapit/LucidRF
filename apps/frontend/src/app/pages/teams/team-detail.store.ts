@@ -1,6 +1,6 @@
 import { computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { TeamDto, TeamRole } from '@LucidRF/common';
+import { TeamDto, TeamRole, UpdateTeamRequest } from '@LucidRF/common';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
 import { AuthFacade } from '../../auth/store/auth.facade';
 import { withWorkspace } from '../../core/features/with-workspace.feature';
@@ -65,7 +65,7 @@ export const TeamDetailStore = signalStore(
           store.clearWorkspaceContent();
         }
       },
-      updateTeam: (id: string, data: Partial<TeamDto>) => {
+      updateTeam: (id: string, data: UpdateTeamRequest) => {
         teamsFacade.updateTeam(id, data);
       },
       deleteTeam: (id: string) => {

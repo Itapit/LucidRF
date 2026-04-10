@@ -65,7 +65,7 @@ export function withWorkspace() {
           );
         },
         onDownloadFile: (file: FileDto) => {
-          filesFacade.getDownloadUrl(file.resourceId);
+          filesFacade.getDownloadUrl(file.resourceId, file.originalFileName);
         },
         onDeleteFile: (file: FileDto) => {
           filesFacade.deleteFile(file.resourceId);
