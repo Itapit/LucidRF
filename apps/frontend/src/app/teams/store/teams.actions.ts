@@ -17,6 +17,9 @@ export const TeamsActions = createActionGroup({
     'Load Teams': emptyProps(),
     'Load Teams Success': props<{ teams: TeamDto[] }>(),
     'Load Teams Failure': props<{ error: ActionError<TeamsErrorSource> }>(),
+    'Load Team': props<{ teamId: string }>(),
+    'Load Team Success': props<{ team: TeamDto }>(),
+    'Load Team Failure': props<{ error: ActionError<TeamsErrorSource> }>(),
 
     // --- CREATE ---
     'Create Team': props<{ request: CreateTeamRequest }>(),

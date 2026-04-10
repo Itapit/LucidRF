@@ -55,6 +55,11 @@ export class TeamsFacade {
     this.store.dispatch(TeamsActions.loadTeams());
   }
 
+  /** Dispatches the loadTeam action */
+  loadTeam(teamId: string) {
+    this.store.dispatch(TeamsActions.loadTeam({ teamId }));
+  }
+
   /** Dispatches the createTeam action */
   createTeam(teamData: CreateTeamRequest) {
     this.store.dispatch(TeamsActions.createTeam({ request: teamData }));

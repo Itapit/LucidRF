@@ -41,6 +41,24 @@ export class TeamsEffects {
     )
   );
 
+  loadTeam$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(TeamsActions.loadTeam),
+      switchMap(({ teamId }) =>
+        this.teamsService.getTeamById(teamId).pipe(
+          map((team) => TeamsActions.loadTeamSuccess({ team })),
+          catchError((error) =>
+            of(
+              TeamsActions.loadTeamFailure({
+                error: this.errorHandler.classifyActionError(error, TeamsErrorSource.LOAD),
+              })
+            )
+          )
+        )
+      )
+    )
+  );
+
   // --- CREATE ---
   createTeam$ = createEffect(() =>
     this.actions$.pipe(
