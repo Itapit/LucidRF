@@ -70,4 +70,6 @@ ml/final_unet
 *.pyc
 __pycache__/
 
-presentation_demo/
+cf32_tests/
+
+.cursor
