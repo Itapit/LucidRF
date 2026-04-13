@@ -1,23 +1,45 @@
+import { ConnectedPosition } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  input,
+  output,
+  QueryList,
+  ViewChildren,
+} from '@angular/core';
 import { FileDto, FolderDto } from '@LucidRF/common';
 
+import { DropdownComponent } from '../../../molecules/dropdown/dropdown.component';
 import { UnifiedResource } from './unified-resource.type';
+
+/** Right-align menu to the kebab trigger; flip above the row when there is no room below. */
+const FILE_ACTIONS_MENU_POSITIONS: ConnectedPosition[] = [
+  { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetY: 6 },
+  { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom', offsetY: -6 },
+];
+
 @Component({
   selector: 'ui-file-table',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, DropdownComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './file-table.component.html',
 })
 export class FileTableComponent {
+  @ViewChildren(DropdownComponent) private actionMenus!: QueryList<DropdownComponent>;
+
   files = input<FileDto[] | null>([]);
   folders = input<FolderDto[] | null>([]);
+
+  readonly fileActionsMenuPositions = FILE_ACTIONS_MENU_POSITIONS;
 
   fileClick = output<FileDto>();
   folderClick = output<FolderDto>();
   download = output<FileDto>();
   delete = output<FileDto>();
+  deleteFolder = output<FolderDto>();
 
   unifiedResources = computed<UnifiedResource[]>(() => {
     const mappedFolders = (this.folders() || []).map((folder) => ({ ...folder, isFolder: true } as const));
@@ -28,15 +50,18 @@ export class FileTableComponent {
     return [...mappedFolders, ...mappedFiles];
   });
 
-  activeMenuId: string | null = null;
-
-  toggleMenu(event: Event, id: string) {
-    event.stopPropagation();
-    this.activeMenuId = this.activeMenuId === id ? null : id;
+  /** Close the CDK overlay after an action; each file row has its own dropdown instance. */
+  closeActionMenus() {
+    this.actionMenus?.forEach((m) => m.close());
   }
 
-  closeMenu() {
-    this.activeMenuId = null;
+  onDeleteRow(item: UnifiedResource) {
+    this.closeActionMenus();
+    if (item.isFolder) {
+      this.deleteFolder.emit(item);
+    } else {
+      this.delete.emit(item);
+    }
   }
 
   formatBytes(bytes: number, decimals = 2) {

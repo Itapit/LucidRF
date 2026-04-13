@@ -7,8 +7,8 @@ import {
   InitializeUploadPayload,
 } from '@LucidRF/files-contracts';
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { randomUUID } from 'crypto';
 import { basename } from 'path';
-import { v4 as uuidv4 } from 'uuid';
 import { StorageUploadException } from '../../storage/exceptions';
 import { StorageService } from '../../storage/interfaces';
 import { STORAGE_BUCKET_NAME } from '../../storage/storage.constants';
@@ -129,7 +129,7 @@ export class FileService {
    * Handles the generation of unique storage keys and presigned URLs.
    */
   private async generateStorageDetails(userId: string, fileName: string) {
-    const uniqueSuffix = uuidv4();
+    const uniqueSuffix = randomUUID();
     const safeFileName = basename(fileName);
     const storageKey = `uploads/${userId}/${uniqueSuffix}-${safeFileName}`;
     const uploadUrl = await this.storageService.getPresignedPutUrl(storageKey);

@@ -35,8 +35,16 @@ async function bootstrap() {
     })
   );
   app.use(cookieParser());
+  // Browsers send Origin as the page URL (e.g. Angular on :4200), not the API host (:3000).
+  const corsOriginsEnv = process.env.CORS_ORIGINS?.split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const corsOrigins =
+    corsOriginsEnv && corsOriginsEnv.length > 0
+      ? corsOriginsEnv
+      : ['http://localhost:4200', 'http://127.0.0.1:4200'];
   app.enableCors({
-    origin: `http://localhost:${port}`,
+    origin: corsOrigins,
     credentials: true,
   });
   await app.listen(port);
