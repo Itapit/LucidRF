@@ -24,7 +24,7 @@ The system is built as a Monorepo using **Nx** and follows a **Microservices** a
 
 ### Frontend (Angular)
 
-- Built with **Angular**, **PrimeNG**, and **NgRx** for state management.
+- Built with **Angular** and **NgRx** for state management.
 - Provides a responsive UI for file uploads, visualization, and system administration.
 
 ### Infrastructure

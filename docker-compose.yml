@@ -80,6 +80,19 @@ services:
     networks:
       - lucid-network
 
+  # ML Inference Service
+  ml-inference:
+    build:
+      context: ./apps/ml-inference
+      dockerfile: Dockerfile
+    container_name: LucidRF-ml-inference
+    ports:
+      - '8000:8000'
+    networks:
+      - lucid-network
+    depends_on:
+      - minio
+
 networks:
   lucid-network:
     driver: bridge

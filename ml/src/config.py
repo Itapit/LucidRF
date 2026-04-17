@@ -107,7 +107,11 @@ BarrageSignal = "BarrageSignal"
 
 MIXED_DATASET = "mixed_dataset"
 MIXED_METADATA = "mixed_metadata"
-SCALING_FACTORS_FILE = UNET_PROCESSED_DATA_DIR / "scaling_factors.txt"
+# Canonical global max for U-Net train/infer (JSON in apps/ml-inference).
+_REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+SCALING_FACTORS_FILE = (
+    _REPO_ROOT / "apps" / "ml-inference" / "src" / "lucidrf_inference" / "u_net_scaling.json"
+)
 
 
 SIGNALS = [EMISignal1, CommSignal2, CommSignal3, CommSignal5G1, BarrageSignal   ]

@@ -1,0 +1,29 @@
+{
+  "name": "ml-inference",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/ml-inference/src",
+  "targets": {
+    "install": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "poetry install --no-interaction",
+        "cwd": "apps/ml-inference"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "poetry run python -m unittest discover -s tests -p \"test_*.py\"",
+        "cwd": "apps/ml-inference"
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "echo \"TODO: add FastAPI/Flask and set this to e.g. poetry run uvicorn lucidrf_inference.api:app --host 0.0.0.0 --reload\"",
+        "cwd": "apps/ml-inference"
+      }
+    }
+  }
+}

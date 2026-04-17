@@ -63,6 +63,8 @@ mongo_data
 TODO.txt
 
 ml/.venv
+apps/ml-inference/.venv
+apps/ml-inference/**/*.egg-info
 ml/__pycache__
 ml/notebooks/.ipynb_checkpoints
 ml/data/*
@@ -70,5 +72,7 @@ ml/reports/
 ml/final_unet
 *.pyc
 __pycache__/
+
+cf32_tests/
 
 .cursor
