@@ -1,13 +1,24 @@
 from contextlib import asynccontextmanager
+import logging
+import os
 from pathlib import Path
 from typing import Dict, Any
 
 from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel, HttpUrl
 import httpx
+import numpy as np
 
 from lucidrf_inference.pipeline import InferencePipeline, InferencePipelineConfig
 from lucidrf_inference.cf32_le import cf32_le_from_bytes
+from .visualization import generate_spectrogram_comparison
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger("ml_inference")
 
 # Global pipeline instance
 pipeline: InferencePipeline | None = None
@@ -16,20 +27,26 @@ pipeline: InferencePipeline | None = None
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global pipeline
-    # We assume models are in the 'models/' directory relative to CWD
-    # In a real setup, these might come from env vars
+    
     base_dir = Path(__file__).parent.parent.parent
-    detector_path = base_dir / "models" / "machine_a_logistic_v1.pkl"
-    denoiser_path = base_dir / "models" / "lucidrf_unet_checkpoint.pth"
+    
+    # Read configuration from environment variables with sensible defaults
+    detector_path = Path(os.getenv("DETECTOR_MODEL_PATH", base_dir / "models" / "machine_a_logistic_v1.pkl"))
+    denoiser_path = Path(os.getenv("DENOISER_MODEL_PATH", base_dir / "models" / "lucidrf_unet_checkpoint.pth"))
+    device = os.getenv("INFERENCE_DEVICE", "cpu")
 
     config = InferencePipelineConfig(
         detector_model_path=detector_path,
         denoiser_checkpoint_path=denoiser_path
     )
     
-    print("Loading ML models. This might take a few seconds...")
-    pipeline = InferencePipeline(config, device="cpu") # Use CPU by default, or "cuda" if available
-    print("ML models loaded successfully.")
+    logger.info(f"Loading ML models on device '{device}'. This might take a few seconds...")
+    try:
+        pipeline = InferencePipeline(config, device=device)
+        logger.info("ML models loaded successfully.")
+    except Exception as e:
+        logger.error(f"Failed to load ML models: {e}")
+        raise e
     
     yield
     
@@ -45,6 +62,7 @@ class DetectRequest(BaseModel):
 class DenoiseRequest(BaseModel):
     input_url: str
     output_url: str
+    spectrogram_url: str
 
 
 @app.get("/health")
@@ -76,9 +94,11 @@ async def run_detection(req: DetectRequest) -> Dict[str, Any]:
             "chunk_starts": result.chunk_starts.tolist()
         }
     except httpx.HTTPError as e:
+        logger.error(f"HTTP error during file fetch: {e}")
         raise HTTPException(status_code=400, detail=f"Failed to fetch file: {str(e)}")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.exception("Unexpected error during detection job")
+        raise HTTPException(status_code=500, detail="Internal server error during detection")
 
 
 @app.post("/api/v1/jobs/denoise")
@@ -104,13 +124,45 @@ async def run_denoising(req: DenoiseRequest):
         complex_data = denoised_iq[0, :] + 1j * denoised_iq[1, :]
         out_bytes = complex_data.astype("<c8").tobytes()
         
-        # 4. Upload to Minio using presigned PUT URL
+        # 4. Calculate Noise Reduction (dB)
+        # Using 10*log10(P_in / P_out) as a simple approximation of SNR improvement
+        # provided the signal amplitude is roughly preserved
+        p_in = float(np.mean(np.abs(iq_data)**2))
+        p_out = float(np.mean(np.abs(complex_data)**2))
+        
+        if p_out > 0 and p_in > p_out:
+            noise_reduction_db = 10 * np.log10(p_in / p_out)
+        else:
+            noise_reduction_db = 0.0
+            
+        # 5. Generate Spectrogram Image
+        logger.info("Generating before/after spectrogram comparison...")
+        spectrogram_bytes = generate_spectrogram_comparison(iq_data, complex_data)
+        
+        # 6. Upload outputs to Minio using presigned PUT URLs
         async with httpx.AsyncClient() as client:
+            # Upload clean binary
             put_resp = await client.put(req.output_url, content=out_bytes, timeout=60.0)
             put_resp.raise_for_status()
             
-        return {"status": "success"}
+            # Upload spectrogram image
+            spec_resp = await client.put(
+                req.spectrogram_url, 
+                content=spectrogram_bytes, 
+                timeout=60.0,
+                headers={"Content-Type": "image/png"}
+            )
+            spec_resp.raise_for_status()
+            
+        return {
+            "status": "success",
+            "metrics": {
+                "noise_reduction_db": round(noise_reduction_db, 2)
+            }
+        }
     except httpx.HTTPError as e:
+        logger.error(f"HTTP error during file fetch/upload: {e}")
         raise HTTPException(status_code=400, detail=f"HTTP error during download/upload: {str(e)}")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.exception("Unexpected error during denoising job")
+        raise HTTPException(status_code=500, detail="Internal server error during denoising")

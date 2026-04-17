@@ -87,28 +87,34 @@ def test_run_denoising(mock_async_client_class, sample_cf32_data):
     with TestClient(app) as client:
         payload = {
             "input_url": "http://mock-minio:9000/bucket/input.bin",
-            "output_url": "http://mock-minio:9000/bucket/output.bin"
+            "output_url": "http://mock-minio:9000/bucket/output.bin",
+            "spectrogram_url": "http://mock-minio:9000/bucket/output.png"
         }
         response = client.post("/api/v1/jobs/denoise", json=payload)
         
         assert response.status_code == 200
-        assert response.json() == {"status": "success"}
+        res_data = response.json()
+        assert res_data["status"] == "success"
+        assert "metrics" in res_data
+        assert "noise_reduction_db" in res_data["metrics"]
+        assert isinstance(res_data["metrics"]["noise_reduction_db"], float)
         
         # Verify GET was called for the input_url
         mock_client_instance.get.assert_called_once_with(payload["input_url"], timeout=60.0)
         
-        # Verify PUT was called for the output_url
-        mock_client_instance.put.assert_called_once()
-        put_call_args = mock_client_instance.put.call_args
+        # Verify PUT was called twice (once for output.bin, once for spectrogram.png)
+        assert mock_client_instance.put.call_count == 2
         
-        # Check the URL argument
-        assert put_call_args[0][0] == payload["output_url"]
-        
-        # Check the content keyword argument (the actual binary data being uploaded)
-        assert "content" in put_call_args[1]
-        assert isinstance(put_call_args[1]["content"], bytes)
-        assert len(put_call_args[1]["content"]) > 0
-        
-        # In fact, we expect the output bytes to be the same size as the input bytes
-        # because the UNET output shape is preserved!
-        assert len(put_call_args[1]["content"]) == len(sample_cf32_data)
+        # Check first PUT call args (the output.bin upload)
+        put_bin_call_args = mock_client_instance.put.call_args_list[0]
+        assert put_bin_call_args[0][0] == payload["output_url"]
+        assert "content" in put_bin_call_args[1]
+        assert isinstance(put_bin_call_args[1]["content"], bytes)
+        assert len(put_bin_call_args[1]["content"]) == len(sample_cf32_data)
+
+        # Check second PUT call args (the spectrogram.png upload)
+        put_spec_call_args = mock_client_instance.put.call_args_list[1]
+        assert put_spec_call_args[0][0] == payload["spectrogram_url"]
+        assert "content" in put_spec_call_args[1]
+        assert isinstance(put_spec_call_args[1]["content"], bytes)
+        assert len(put_spec_call_args[1]["content"]) > 0
