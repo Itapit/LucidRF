@@ -13,6 +13,19 @@ services:
     networks:
       - lucid-network
 
+  notifications-service:
+    build:
+      context: ./services/notifications-service
+      dockerfile: Dockerfile
+    container_name: LucidRF-notifications
+    restart: unless-stopped
+    ports:
+      - '8090:8090'
+    env_file:
+      - ./services/notifications-service/.env
+    networks:
+      - lucid-network
+
   minio:
     image: minio/minio:latest
     container_name: LucidRF-minio
@@ -48,12 +61,21 @@ services:
     container_name: LucidRF-grafana
     ports:
       - '3100:3000'
+    environment:
+      # Allow embedding the dashboard in the frontend monitoring page.
+      GF_SECURITY_ALLOW_EMBEDDING: 'true'
+      # Local dev convenience to avoid clickjacking checks breaking iframe.
+      GF_SECURITY_COOKIE_SAMESITE: 'lax'
+      # Anonymous read-only dashboard access for local embedded monitoring.
+      GF_AUTH_ANONYMOUS_ENABLED: 'true'
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_AUTH_DISABLE_LOGIN_FORM: 'true'
     depends_on:
       - prometheus
     volumes:
-      # 1. Mount the provisioning config
+      # Mount the provisioning config
       - ./grafana/provisioning:/etc/grafana/provisioning
-      # 2. Mount the actual dashboard JSON files
+      # Mount the actual dashboard JSON files
       - ./grafana/dashboards:/etc/grafana/dashboards
     networks:
       - lucid-network

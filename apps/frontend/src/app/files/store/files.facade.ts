@@ -48,8 +48,8 @@ export class FilesFacade {
     this.store.dispatch(FilesActions.deleteFolder({ folderId }));
   }
 
-  getDownloadUrl(fileId: string) {
-    this.store.dispatch(FilesActions.getDownloadUrl({ fileId }));
+  getDownloadUrl(fileId: string, originalFileName?: string) {
+    this.store.dispatch(FilesActions.getDownloadUrl({ fileId, originalFileName }));
   }
 
   uploadFile(request: InitUploadRequest, file: File) {

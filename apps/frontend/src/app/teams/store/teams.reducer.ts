@@ -15,13 +15,31 @@ export const teamsReducer = createReducer(
     loading: true,
     error: null,
   })),
+  on(TeamsActions.loadTeam, (state) => ({
+    ...state,
+    loading: true,
+    error: null,
+  })),
   on(TeamsActions.loadTeamsSuccess, (state, { teams }) => ({
     ...state,
     teams,
     loaded: true,
     loading: false,
   })),
+  on(TeamsActions.loadTeamSuccess, (state, { team }) => ({
+    ...state,
+    teams: state.teams.some((existing) => existing.id === team.id)
+      ? state.teams.map((existing) => (existing.id === team.id ? team : existing))
+      : [...state.teams, team],
+    loaded: true,
+    loading: false,
+  })),
   on(TeamsActions.loadTeamsFailure, (state, { error }) => ({
+    ...state,
+    loading: false,
+    error,
+  })),
+  on(TeamsActions.loadTeamFailure, (state, { error }) => ({
     ...state,
     loading: false,
     error,

@@ -3,7 +3,7 @@ import { Dialog, DialogModule } from '@angular/cdk/dialog';
 import { Component, effect, inject, OnDestroy } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
-import { FolderDto, TeamDto, TeamRole } from '@LucidRF/common';
+import { FolderDto, TeamColor, TeamDto, TeamRole, UpdateTeamRequest } from '@LucidRF/common';
 import {
   BreadcrumbItem,
   DialogAction,
@@ -84,14 +84,23 @@ export class TeamDetailComponent implements OnDestroy {
   }
 
   openSettings(team: TeamDto) {
-    const dialogRef = this.dialog.open<DialogResult<Partial<TeamDto>>>(TeamFormComponent, {
-      data: { team, showDangerZone: true },
-    });
+    const dialogRef = this.dialog.open<DialogResult<{ name: string; description: string; color: TeamColor }>>(
+      TeamFormComponent,
+      {
+        data: { team, showDangerZone: true },
+      }
+    );
 
-    dialogRef.closed.subscribe((result: DialogResult | undefined) => {
+    dialogRef.closed.subscribe((result: DialogResult<{ name: string; description: string; color: TeamColor }> | undefined) => {
       if (!result) return;
       if (result.action === DialogAction.SUBMIT && result.data) {
-        this.store.updateTeam(team.id, result.data as Partial<TeamDto>);
+        const d = result.data;
+        const update: UpdateTeamRequest = {
+          name: d.name,
+          description: d.description,
+          color: d.color,
+        };
+        this.store.updateTeam(team.id, update);
       } else if (result.action === DialogAction.DELETE) {
         this.store.deleteTeam(team.id);
         this.store.goHome();
