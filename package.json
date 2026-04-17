@@ -14,7 +14,6 @@
     "@angular/platform-browser": "21.1.6",
     "@angular/platform-browser-dynamic": "21.1.6",
     "@angular/router": "21.1.6",
-    "@nestjs/axios": "^4.0.1",
     "@nestjs/cache-manager": "^3.0.1",
     "@nestjs/common": "^11.0.0",
     "@nestjs/config": "^4.0.2",
