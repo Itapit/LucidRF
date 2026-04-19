@@ -1,4 +1,5 @@
 import { FileStatus } from '../enums/file-status.enum';
+import { FileMetadata } from '../interfaces/file-metadata.interface';
 
 export class FileDto {
   resourceId!: string;
@@ -7,6 +8,7 @@ export class FileDto {
   size!: number;
   mimeType!: string;
   status!: FileStatus;
+  metadata?: FileMetadata;
   parentFolderId?: string | null;
   uploadedBy!: string;
   createdAt!: Date;
