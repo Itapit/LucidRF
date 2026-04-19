@@ -1,7 +1,13 @@
+import { FileMetadata } from '@LucidRF/common';
 import { CreateFileRepoDto } from '../dtos/create-file-repo.dto';
 import { FileEntity } from '../entities';
 
 export abstract class FileRepository {
+  /**
+   * Updates the metadata of an existing file record.
+   */
+  abstract updateMetadata(id: string, metadata: FileMetadata, status: string): Promise<FileEntity | null>;
+
   /**
    * Persists a new file metadata record to the database.
    */
@@ -45,7 +51,7 @@ export abstract class FileRepository {
   /**
    * Updates the lifecycle status of a file (e.g., PENDING -> UPLOADED).
    */
-  abstract updateStatus(id: string, status: string): Promise<FileEntity>;
+  abstract updateStatus(id: string, status: string): Promise<FileEntity | null>;
 
   /**
    * Permanently deletes a single file record by its ID.

@@ -1,4 +1,4 @@
-import { FileStatus, FileUploadedEvent } from '@LucidRF/common';
+import { FileMetadata, FileStatus, FileUploadedEvent } from '@LucidRF/common';
 import {
   ConfirmUploadPayload,
   DeleteResourcePayload,
@@ -114,6 +114,22 @@ export class FileService {
     await this.validateTeamAccess(payload.userId, file.teamId);
 
     return this.storageService.getPresignedGetUrl(file.storageKey);
+  }
+
+  async updateFileMetadata(fileId: string, metadata: FileMetadata, status: FileStatus) {
+    // Validate file exists
+    const file = await this.fileRepository.findById(fileId);
+    if (!file) throw new ResourceNotFoundException(fileId);
+
+    // Update repository
+    const updatedFile = await this.fileRepository.updateMetadata(fileId, metadata, status);
+    if (!updatedFile) {
+      throw new ResourceNotFoundException(fileId);
+    }
+
+    this.logger.log(`Updated metadata and status to ${status} for file ${fileId}`);
+
+    return toFileDto(updatedFile);
   }
 
   // =================================================================================================

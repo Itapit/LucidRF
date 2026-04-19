@@ -18,7 +18,9 @@ export class MongoFolderRepository implements FolderRepository {
     const session = this.dbContext.getSession();
     const created = new this.folderModel(dto);
     const saved = await created.save({ session });
-    return toFolderEntity(saved);
+    const entity = toFolderEntity(saved);
+    if (!entity) throw new Error('Failed to map created folder document to entity');
+    return entity;
   }
 
   async findById(id: string): Promise<FolderEntity | null> {
@@ -37,7 +39,7 @@ export class MongoFolderRepository implements FolderRepository {
       teamId: { $in: teamIds },
     };
     const docs = await this.folderModel.find(query).session(session).exec();
-    return docs.map(toFolderEntity);
+    return docs.map(toFolderEntity).filter((e): e is FolderEntity => e !== null);
   }
 
   /**
@@ -47,7 +49,7 @@ export class MongoFolderRepository implements FolderRepository {
   async findSubFoldersByParentIdSystem(parentFolderId: string): Promise<FolderEntity[]> {
     const session = this.dbContext.getSession();
     const docs = await this.folderModel.find({ parentFolderId: parentFolderId }).session(session).exec();
-    return docs.map(toFolderEntity);
+    return docs.map(toFolderEntity).filter((e): e is FolderEntity => e !== null);
   }
 
   async delete(id: string): Promise<boolean> {

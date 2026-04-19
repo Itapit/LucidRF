@@ -1,3 +1,4 @@
+import { FileMetadata } from '@LucidRF/common';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -18,7 +19,9 @@ export class MongoFileRepository implements FileRepository {
     const session = this.dbContext.getSession();
     const created = new this.fileModel(dto);
     const saved = await created.save({ session });
-    return toFileEntity(saved);
+    const entity = toFileEntity(saved);
+    if (!entity) throw new Error('Failed to map created file document to entity');
+    return entity;
   }
 
   async findById(id: string): Promise<FileEntity | null> {
@@ -37,7 +40,7 @@ export class MongoFileRepository implements FileRepository {
       teamId: { $in: teamIds },
     };
     const docs = await this.fileModel.find(query).session(session).exec();
-    return docs.map(toFileEntity);
+    return docs.map(toFileEntity).filter((e): e is FileEntity => e !== null);
   }
 
   /**
@@ -47,12 +50,22 @@ export class MongoFileRepository implements FileRepository {
   async findByFolderIdSystem(folderId: string): Promise<FileEntity[]> {
     const session = this.dbContext.getSession();
     const docs = await this.fileModel.find({ parentFolderId: folderId }).session(session).exec();
-    return docs.map(toFileEntity);
+    return docs.map(toFileEntity).filter((e): e is FileEntity => e !== null);
   }
 
-  async updateStatus(id: string, status: string): Promise<FileEntity> {
+  async updateStatus(id: string, status: string): Promise<FileEntity | null> {
     const session = this.dbContext.getSession();
     const doc = await this.fileModel.findByIdAndUpdate(id, { status }, { new: true }).session(session).exec();
+    return toFileEntity(doc);
+  }
+
+  async updateMetadata(id: string, metadata: FileMetadata, status: string): Promise<FileEntity | null> {
+    const session = this.dbContext.getSession();
+    const doc = await this.fileModel
+      .findByIdAndUpdate(id, { $set: { metadata, status } }, { new: true })
+      .session(session)
+      .exec();
+
     return toFileEntity(doc);
   }
 
@@ -74,7 +87,7 @@ export class MongoFileRepository implements FileRepository {
   async findByTeamIdSystem(teamId: string): Promise<FileEntity[]> {
     const session = this.dbContext.getSession();
     const docs = await this.fileModel.find({ teamId }).session(session).exec();
-    return docs.map(toFileEntity);
+    return docs.map(toFileEntity).filter((e): e is FileEntity => e !== null);
   }
 
   async deleteManyByTeamId(teamId: string): Promise<void> {

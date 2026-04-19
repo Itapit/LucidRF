@@ -47,7 +47,7 @@ export class FileSchema extends Document {
 export const FileSchemaFactory = SchemaFactory.createForClass(FileSchema);
 
 // --- The Mapper is where we ensure "Compatibility" ---
-export function toFileEntity(doc: FileDocument): FileEntity | null {
+export function toFileEntity(doc: FileDocument | null | undefined): FileEntity | null {
   if (!doc) return null;
   const obj = doc.toObject();
 

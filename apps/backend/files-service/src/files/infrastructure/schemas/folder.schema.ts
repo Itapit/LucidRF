@@ -7,27 +7,27 @@ export type FolderDocument = FolderSchema & Document;
 @Schema({ collection: 'folders', timestamps: true })
 export class FolderSchema extends Document {
   @Prop({ required: true, trim: true })
-  name: string;
+  name!: string;
 
   @Prop({ required: true, index: true })
-  teamId: string;
+  teamId!: string;
 
   @Prop({ required: true, index: true })
-  createdBy: string;
+  createdBy!: string;
 
   // Hierarchy
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Folder', default: null, index: true })
-  parentFolderId: MongooseSchema.Types.ObjectId;
+  parentFolderId!: MongooseSchema.Types.ObjectId;
 
   // Timestamps
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt!: Date;
+  updatedAt!: Date;
 }
 
 export const FolderSchemaFactory = SchemaFactory.createForClass(FolderSchema);
 
 // --- Mapper ---
-export function toFolderEntity(doc: FolderDocument): FolderEntity {
+export function toFolderEntity(doc: FolderDocument | null | undefined): FolderEntity | null {
   if (!doc) return null;
   const obj = doc.toObject();
 
