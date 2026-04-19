@@ -1,4 +1,4 @@
-import { FileStatus } from '@LucidRF/common';
+import { FileStatus, FileUploadedEvent } from '@LucidRF/common';
 import {
   ConfirmUploadPayload,
   DeleteResourcePayload,
@@ -7,6 +7,7 @@ import {
   InitializeUploadPayload,
 } from '@LucidRF/files-contracts';
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { randomUUID } from 'crypto';
 import { basename } from 'path';
 import { StorageUploadException } from '../../storage/exceptions';
@@ -26,6 +27,7 @@ export class FileService {
     private readonly folderRepository: FolderRepository,
     private readonly storageService: StorageService,
     private readonly teamsService: TeamsService,
+    private readonly eventEmitter: EventEmitter2,
     @Inject(STORAGE_BUCKET_NAME) private readonly bucketName: string
   ) {}
 
@@ -171,7 +173,10 @@ export class FileService {
       throw new ResourceNotFoundException(file.id);
     }
 
-    return toFileDto(updatedFile);
+    const dto = toFileDto(updatedFile);
+    this.eventEmitter.emit('file.uploaded', new FileUploadedEvent(dto));
+
+    return dto;
   }
 
   private async handleFailedUpload(file: FileEntity) {
