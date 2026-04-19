@@ -8,6 +8,7 @@ export function toFileDto(entity: FileEntity): FileDto {
     mimeType: entity.mimeType,
     size: entity.size,
     status: entity.status,
+    metadata: entity.metadata,
     teamId: entity.teamId,
     parentFolderId: entity.parentFolderId,
     uploadedBy: entity.uploadedBy,

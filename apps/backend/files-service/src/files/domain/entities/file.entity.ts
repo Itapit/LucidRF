@@ -18,8 +18,8 @@ export class FileEntity {
 
   uploadedBy!: string;
 
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt!: Date;
+  updatedAt!: Date;
 
   constructor(partial: Partial<FileEntity>) {
     Object.assign(this, partial);
