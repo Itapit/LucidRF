@@ -17,6 +17,20 @@ export abstract class StorageService {
   abstract getPresignedGetUrl(key: string, expiry?: number): Promise<string>;
 
   /**
+   * Generates an internal presigned URL for uploading a file directly to storage from within the Docker network.
+   * @param key The unique key (filename) for the object.
+   * @param expiry Expiration time in seconds (default: 3600).
+   */
+  abstract getInternalPresignedPutUrl(key: string, expiry?: number): Promise<string>;
+
+  /**
+   * Generates an internal presigned URL for downloading/viewing a file from within the Docker network.
+   * @param key The unique key (filename) for the object.
+   * @param expiry Expiration time in seconds (default: 3600).
+   */
+  abstract getInternalPresignedGetUrl(key: string, expiry?: number): Promise<string>;
+
+  /**
    * Deletes a file from the storage bucket.
    * @param key The unique key of the object to delete.
    */
