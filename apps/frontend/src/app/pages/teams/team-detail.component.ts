@@ -14,6 +14,8 @@ import {
 } from '@LucidRF/ui';
 import { map } from 'rxjs/operators';
 import { TeamDetailStore } from './team-detail.store';
+import { NavigationService } from '../../core/navigation/navigation.service';
+import { TeamType } from '@LucidRF/common';
 
 @Component({
   selector: 'app-team-detail',
@@ -26,6 +28,7 @@ import { TeamDetailStore } from './team-detail.store';
 export class TeamDetailComponent implements OnDestroy {
   private route = inject(ActivatedRoute);
   private dialog = inject(Dialog);
+  private navigationService = inject(NavigationService);
 
   // Inject our local store
   readonly store = inject(TeamDetailStore);
@@ -38,6 +41,13 @@ export class TeamDetailComponent implements OnDestroy {
       const id = this.teamIdParam();
       if (id) {
         this.store.setTeamId(id);
+      }
+    });
+
+    effect(() => {
+      const team = this.store.team();
+      if (team && team.type === TeamType.PERSONAL) {
+        this.navigationService.toWorkspace();
       }
     });
   }
