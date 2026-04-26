@@ -11,7 +11,7 @@
     <!-- Active Teams Strip -->
     <section class="mb-16 mt-4 animate-fade-in-delayed">
       <h2 class="text-sm font-bold uppercase tracking-widest text-gray-400 font-sans mb-6">Workspaces & Teams</h2>
-      <div class="flex gap-4 overflow-x-auto pb-4 hide-scrollbar">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-4">
         <!-- Personal Workspace -->
         @if (personalTeam(); as pTeam) {
           <ui-team-card [team]="pTeam" (teamClick)="goToWorkspace()"></ui-team-card>
@@ -30,7 +30,7 @@
           (click)="openCreateTeam()"
           (keydown.enter)="openCreateTeam()"
           tabindex="0"
-          class="min-w-[300px] bg-transparent p-6 rounded-2xl border-2 border-dashed border-gray-300 hover:border-black hover:bg-black/5 hover:shadow-md transition-all cursor-pointer flex flex-col items-center justify-center text-gray-400 hover:text-black team active:scale-95"
+          class="bg-transparent p-6 rounded-2xl border-2 border-dashed border-gray-300 hover:border-black hover:bg-black/5 hover:shadow-md transition-all cursor-pointer flex flex-col items-center justify-center text-gray-400 hover:text-black team active:scale-95 min-h-[160px]"
           >
           <div
             class="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center mb-4 team-hover:scale-110 team-hover:bg-black team-hover:text-white transition-all"
