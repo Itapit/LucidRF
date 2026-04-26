@@ -1,16 +1,9 @@
 import { ConnectedPosition } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-  output,
-  QueryList,
-  ViewChildren,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output, QueryList, ViewChildren } from '@angular/core';
 import { FileDto, FolderDto } from '@LucidRF/common';
 
+import { FileIconComponent } from '../../../atoms/file-icon/file-icon.component';
 import { DropdownComponent } from '../../../molecules/dropdown/dropdown.component';
 import { UnifiedResource } from './unified-resource.type';
 
@@ -23,7 +16,7 @@ const FILE_ACTIONS_MENU_POSITIONS: ConnectedPosition[] = [
 @Component({
   selector: 'ui-file-table',
   standalone: true,
-  imports: [CommonModule, DropdownComponent],
+  imports: [CommonModule, DropdownComponent, FileIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './file-table.component.html',
 })

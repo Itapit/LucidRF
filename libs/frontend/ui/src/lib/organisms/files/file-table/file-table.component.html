@@ -18,32 +18,10 @@
         <!-- Name -->
         <td class="py-4 px-4 flex items-center gap-3">
           @if (item.isFolder) {
-          <!-- Folder Icon -->
-          <svg
-            class="w-6 h-6 team-hover:scale-110 transition-transform text-gray-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
-            />
-          </svg>
+          <ui-file-icon [isFolder]="true" [fileName]="item.name"></ui-file-icon>
           <span class="font-medium text-black transition-colors">{{ item.name }}</span>
           } @else {
-          <!-- File Icon -->
-          <svg
-            class="w-6 h-6 team-hover:scale-110 transition-transform text-gray-400"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path
-              d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
-            />
-          </svg>
+          <ui-file-icon [isFolder]="false" [fileName]="item.originalFileName || ''"></ui-file-icon>
           <span class="font-medium text-black transition-colors">{{ item.originalFileName }}</span>
           }
         </td>
