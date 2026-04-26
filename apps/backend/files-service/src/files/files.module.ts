@@ -5,7 +5,7 @@ import { TcpTeamsService } from '../integrations/teams/tcp-teams.service';
 import { TeamsIntegrationModule } from '../integrations/teams/teams-integration.module';
 import { STORAGE_BUCKET_NAME } from '../storage/storage.constants';
 import { StorageModule } from '../storage/storage.module';
-import { FileService, FolderService } from './application';
+import { FileService, FolderService, FileProcessorService } from './application';
 import { FileRepository, FolderRepository, TeamsService } from './domain/interfaces';
 import { TransactionManager } from './domain/transaction.manager';
 import { FilesController } from './files.controller';
@@ -13,6 +13,7 @@ import { DatabaseContext } from './infrastructure/persistence/database.context';
 import { MongoTransactionManager } from './infrastructure/persistence/mongo-transaction.manager';
 import { MongoFileRepository, MongoFolderRepository } from './infrastructure/repositories';
 import { FileSchema, FileSchemaFactory, FolderSchema, FolderSchemaFactory } from './infrastructure/schemas';
+import { MlInferenceModule } from '../integrations/ml-inference/ml-inference.module';
 
 @Module({
   imports: [
@@ -23,11 +24,13 @@ import { FileSchema, FileSchemaFactory, FolderSchema, FolderSchemaFactory } from
       { name: FolderSchema.name, schema: FolderSchemaFactory },
     ]),
     TeamsIntegrationModule,
+    MlInferenceModule,
   ],
   controllers: [FilesController],
   providers: [
     FileService,
     FolderService,
+    FileProcessorService,
     DatabaseContext,
     {
       provide: TransactionManager,

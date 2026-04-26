@@ -1,7 +1,7 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { StorageModule } from '../storage/storage.module';
+import { StorageModule } from '../../storage/storage.module';
 import { ML_DENOISE_THRESHOLD_TOKEN, ML_INFERENCE_URL_TOKEN } from './ml-inference.constants';
 import { MlInferenceService } from './ml-inference.service';
 

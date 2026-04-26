@@ -16,6 +16,7 @@ import { INTERNAL_MINIO_CLIENT, MINIO_CLIENT, STORAGE_BUCKET_NAME } from './stor
           useSSL: configService.get('MINIO_USE_SSL') === 'true',
           accessKey: configService.getOrThrow('MINIO_ACCESS_KEY'),
           secretKey: configService.getOrThrow('MINIO_SECRET_KEY'),
+          region: 'us-east-1', // Force offline signing
         });
       },
       inject: [ConfigService],
@@ -29,6 +30,7 @@ import { INTERNAL_MINIO_CLIENT, MINIO_CLIENT, STORAGE_BUCKET_NAME } from './stor
           useSSL: configService.get('MINIO_USE_SSL') === 'true',
           accessKey: configService.getOrThrow('MINIO_ACCESS_KEY'),
           secretKey: configService.getOrThrow('MINIO_SECRET_KEY'),
+          region: 'us-east-1', // Force offline signing
         });
       },
       inject: [ConfigService],
