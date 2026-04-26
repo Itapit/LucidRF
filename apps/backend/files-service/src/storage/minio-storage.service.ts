@@ -110,4 +110,14 @@ export class MinioStorageService implements StorageService, OnModuleInit {
       throw new StorageConnectionException('MinIO', error.message);
     }
   }
+
+  async statObject(key: string): Promise<Minio.BucketItemStat> {
+    try {
+      return await this.minioClient.statObject(this.bucketName, key);
+    } catch (e) {
+      const error = e as MinioError;
+      this.logger.error(`Error getting stats for object ${key}: ${error.message}`);
+      throw new StorageConnectionException('MinIO', error.message);
+    }
+  }
 }

@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { BucketItemStat } from 'minio';
 
 @Injectable()
 export abstract class StorageService {
@@ -48,4 +49,11 @@ export abstract class StorageService {
    * @returns True if the file exists, false otherwise.
    */
   abstract fileExists(key: string): Promise<boolean>;
+
+  /**
+   * Retrieves the object metadata and stats from the storage bucket.
+   * @param key The unique key of the object to stat.
+   * @returns Object stats containing size, last modified, etc.
+   */
+  abstract statObject(key: string): Promise<BucketItemStat>;
 }
