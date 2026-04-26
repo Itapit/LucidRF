@@ -22,7 +22,9 @@
           <span class="font-medium text-black transition-colors">{{ item.name }}</span>
           } @else {
           <ui-file-icon [isFolder]="false" [fileName]="item.originalFileName || ''"></ui-file-icon>
-          <span class="font-medium text-black transition-colors">{{ item.originalFileName }}</span>
+          <div class="flex items-center gap-2">
+            <span class="font-medium text-black transition-colors">{{ item.originalFileName }}</span>
+          </div>
           }
         </td>
 
@@ -68,6 +70,16 @@
 
             <div dropdown-menu class="py-1 w-48">
               @if (!item.isFolder) {
+                @if (item.metadata?.['denoise_applied'] !== undefined) {
+                <button
+                  type="button"
+                  class="w-full text-left px-4 py-2 text-sm text-purple-700 font-medium hover:bg-purple-50 flex items-center gap-2"
+                  (click)="closeActionMenus(); viewAnalysis.emit(item)"
+                >
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                  View ML Analysis
+                </button>
+                }
               <button
                 type="button"
                 class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"

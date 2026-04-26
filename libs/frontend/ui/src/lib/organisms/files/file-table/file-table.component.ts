@@ -33,10 +33,13 @@ export class FileTableComponent {
   download = output<FileDto>();
   delete = output<FileDto>();
   deleteFolder = output<FolderDto>();
+  viewAnalysis = output<FileDto>();
 
   unifiedResources = computed<UnifiedResource[]>(() => {
     const mappedFolders = (this.folders() || []).map((folder) => ({ ...folder, isFolder: true } as const));
-    const mappedFiles = (this.files() || []).map((file) => ({ ...file, isFolder: false } as const));
+    const mappedFiles = (this.files() || [])
+      .filter((file) => file.uploadedBy !== 'SYSTEM')
+      .map((file) => ({ ...file, isFolder: false } as const));
 
     // Sort folders recursively before files, maybe just a simple sort is enough for now,
     // or assume they arrive pre-sorted from the store. We'll show all folders, then all files.

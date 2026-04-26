@@ -35,6 +35,7 @@ export class WorkspaceShellComponent {
   @Output() deleteFile = new EventEmitter<FileDto>();
   @Output() deleteFolder = new EventEmitter<FolderDto>();
   @Output() breadcrumbClick = new EventEmitter<BreadcrumbItem>();
+  @Output() viewAnalysis = new EventEmitter<FileDto>();
 
   @Input() showNewFolder = true;
   @Input() showUpload = true;
