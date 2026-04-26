@@ -1,9 +1,8 @@
-import { FileMetadata } from '@LucidRF/common';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
 import { StorageService } from '../../storage/interfaces';
-import { DenoiseJobResponse, DetectJobResponse } from './interfaces';
+import { DenoiseJobResponse, DetectJobResponse, MlInferenceResult } from './interfaces';
 import { ML_DENOISE_THRESHOLD_TOKEN, ML_INFERENCE_URL_TOKEN } from './ml-inference.constants';
 
 @Injectable()
@@ -17,7 +16,7 @@ export class MlInferenceService {
     @Inject(ML_DENOISE_THRESHOLD_TOKEN) private readonly threshold: number
   ) {}
 
-  async processSdrFile(storageKey: string): Promise<FileMetadata> {
+  async processSdrFile(storageKey: string): Promise<MlInferenceResult> {
     this.logger.log(`Starting ML inference pipeline for file: ${storageKey}`);
 
     try {
@@ -33,7 +32,7 @@ export class MlInferenceService {
         return {
           average_probability: averageProbability,
           denoise_applied: false,
-        } as FileMetadata;
+        };
       }
 
       // Denoising
@@ -48,14 +47,14 @@ export class MlInferenceService {
       const sinrGainDb = await this.denoiseSignal(getUrl, cleanPutUrl, spectrogramPutUrl);
       this.logger.log(`Denoise complete for ${storageKey}. SINR Gain: ${sinrGainDb}dB`);
 
-      // Return FileMetadata
+      // Return MlInferenceResult
       return {
         average_probability: averageProbability,
         denoise_applied: true,
         sinr_gain_db: sinrGainDb,
         clean_storage_key: cleanStorageKey,
         spectrogram_key: spectrogramKey,
-      } as FileMetadata;
+      };
     } catch (error) {
       this.logger.error(
         `ML inference pipeline failed for file ${storageKey}`,

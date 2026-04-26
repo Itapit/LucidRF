@@ -3,23 +3,22 @@ import { Dialog, DialogModule } from '@angular/cdk/dialog';
 import { Component, effect, inject, OnDestroy } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
-import { FileDto, FolderDto, TeamColor, TeamDto, TeamRole, UpdateTeamRequest } from '@LucidRF/common';
+import { FileDto, FolderDto, TeamColor, TeamDto, TeamRole, TeamType, UpdateTeamRequest } from '@LucidRF/common';
 import {
   BreadcrumbItem,
   DialogAction,
   DialogResult,
   MemberListComponent,
-  TeamFormComponent,
-  WorkspaceShellComponent,
   MlAnalysisModalComponent,
   MlAnalysisModalData,
+  TeamFormComponent,
+  WorkspaceShellComponent,
 } from '@LucidRF/ui';
-import { map } from 'rxjs/operators';
 import { firstValueFrom } from 'rxjs';
-import { TeamDetailStore } from './team-detail.store';
+import { map } from 'rxjs/operators';
 import { NavigationService } from '../../core/navigation/navigation.service';
 import { FilesService } from '../../files/services/files.service';
-import { TeamType } from '@LucidRF/common';
+import { TeamDetailStore } from './team-detail.store';
 
 @Component({
   selector: 'app-team-detail',
@@ -106,21 +105,23 @@ export class TeamDetailComponent implements OnDestroy {
       }
     );
 
-    dialogRef.closed.subscribe((result: DialogResult<{ name: string; description: string; color: TeamColor }> | undefined) => {
-      if (!result) return;
-      if (result.action === DialogAction.SUBMIT && result.data) {
-        const d = result.data;
-        const update: UpdateTeamRequest = {
-          name: d.name,
-          description: d.description,
-          color: d.color,
-        };
-        this.store.updateTeam(team.id, update);
-      } else if (result.action === DialogAction.DELETE) {
-        this.store.deleteTeam(team.id);
-        this.store.goHome();
+    dialogRef.closed.subscribe(
+      (result: DialogResult<{ name: string; description: string; color: TeamColor }> | undefined) => {
+        if (!result) return;
+        if (result.action === DialogAction.SUBMIT && result.data) {
+          const d = result.data;
+          const update: UpdateTeamRequest = {
+            name: d.name,
+            description: d.description,
+            color: d.color,
+          };
+          this.store.updateTeam(team.id, update);
+        } else if (result.action === DialogAction.DELETE) {
+          this.store.deleteTeam(team.id);
+          this.store.goHome();
+        }
       }
-    });
+    );
   }
 
   openMembers(team: TeamDto) {
@@ -147,10 +148,10 @@ export class TeamDetailComponent implements OnDestroy {
 
   onViewAnalysis(file: FileDto) {
     const allFiles = this.store.files() || [];
-    
-    // Find the associated system files
-    const cleanFile = allFiles.find(f => f.uploadedBy === 'SYSTEM' && f.originalFileName === `Clean_${file.originalFileName}`);
-    const spectrogramFile = allFiles.find(f => f.uploadedBy === 'SYSTEM' && f.originalFileName === `${file.originalFileName}_Spectrogram.png`);
+
+    // Find the associated system files using their database IDs stored in metadata
+    const cleanFile = allFiles.find((f) => f.resourceId === file.metadata?.['clean_file_id']);
+    const spectrogramFile = allFiles.find((f) => f.resourceId === file.metadata?.['spectrogram_file_id']);
 
     this.dialog.open<void, MlAnalysisModalData>(MlAnalysisModalComponent, {
       width: '900px',
@@ -164,8 +165,8 @@ export class TeamDetailComponent implements OnDestroy {
         },
         onDownloadFile: (f: FileDto) => {
           this.store.onDownloadFile(f);
-        }
-      }
+        },
+      },
     });
   }
 }

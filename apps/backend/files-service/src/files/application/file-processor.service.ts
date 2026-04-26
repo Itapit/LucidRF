@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
-import { FileUploadedEvent, FileStatus, SdrFileExtension } from '@LucidRF/common';
+import { FileUploadedEvent, FileStatus, SdrFileExtension, FileMetadata } from '@LucidRF/common';
 import { FileRepository } from '../domain/interfaces/file.repository.interface';
 import { MlInferenceService } from '../../integrations/ml-inference/ml-inference.service';
 import { StorageService } from '../../storage/interfaces/storage.service.interface';
@@ -38,43 +38,51 @@ export class FileProcessorService {
         return;
       }
 
-      const metadata = await this.mlInferenceService.processSdrFile(fileEntity.storageKey);
+      const inferenceResult = await this.mlInferenceService.processSdrFile(fileEntity.storageKey);
+
+      const metadata: FileMetadata = {
+        average_probability: inferenceResult.average_probability,
+        denoise_applied: inferenceResult.denoise_applied,
+      };
 
       // Create new documents for the clean file and spectrogram if they were generated
-      if (metadata.denoise_applied && metadata.clean_storage_key && metadata.spectrogram_key) {
+      if (inferenceResult.denoise_applied && inferenceResult.clean_storage_key && inferenceResult.spectrogram_key) {
         this.logger.log(`Creating database records for clean SDR file and spectrogram.`);
+        metadata.sinr_gain_db = inferenceResult.sinr_gain_db;
 
         // Clean SDR File
-        const cleanFileStats = await this.storageService.statObject(metadata.clean_storage_key);
+        const cleanFileStats = await this.storageService.statObject(inferenceResult.clean_storage_key);
         const cleanFileName = `Clean_${fileEntity.originalFileName}`;
         
-        await this.fileRepository.create({
+        const cleanFileEntity = await this.fileRepository.create({
           originalFileName: cleanFileName,
           teamId: fileEntity.teamId,
           size: cleanFileStats.size,
           mimeType: fileEntity.mimeType,
           status: FileStatus.AVAILABLE,
-          storageKey: metadata.clean_storage_key,
+          storageKey: inferenceResult.clean_storage_key,
           bucket: fileEntity.bucket,
           parentFolderId: fileEntity.parentFolderId ?? null,
           uploadedBy: 'SYSTEM', // ML Pipeline
         });
+        metadata.clean_file_id = cleanFileEntity.id;
 
         // Spectrogram Image
-        const spectrogramStats = await this.storageService.statObject(metadata.spectrogram_key);
+        const spectrogramStats = await this.storageService.statObject(inferenceResult.spectrogram_key);
         const spectrogramFileName = `${fileEntity.originalFileName}_Spectrogram.png`;
 
-        await this.fileRepository.create({
+        const spectrogramEntity = await this.fileRepository.create({
           originalFileName: spectrogramFileName,
           teamId: fileEntity.teamId,
           size: spectrogramStats.size,
           mimeType: 'image/png',
           status: FileStatus.AVAILABLE,
-          storageKey: metadata.spectrogram_key,
+          storageKey: inferenceResult.spectrogram_key,
           bucket: fileEntity.bucket,
           parentFolderId: fileEntity.parentFolderId ?? null,
           uploadedBy: 'SYSTEM', // ML Pipeline
         });
+        metadata.spectrogram_file_id = spectrogramEntity.id;
       }
 
       this.logger.log(`ML processing completed for file ${resourceId}. Updating metadata and status.`);

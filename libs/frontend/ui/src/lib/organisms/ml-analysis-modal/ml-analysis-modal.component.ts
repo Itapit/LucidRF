@@ -1,7 +1,7 @@
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { FileDto, FileMetadata } from '@LucidRF/common';
+import { FileDto } from '@LucidRF/common';
 import { ButtonComponent } from '../../atoms/button/button.component';
 import { ModalWrapperComponent } from '../../molecules/modal-wrapper/modal-wrapper.component';
 

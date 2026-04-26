@@ -1,11 +1,10 @@
-
-import { Component, effect, inject, OnDestroy } from '@angular/core';
 import { Dialog, DialogModule } from '@angular/cdk/dialog';
+import { Component, effect, inject, OnDestroy } from '@angular/core';
 import { FileDto, FolderDto, TeamColor } from '@LucidRF/common';
-import { BreadcrumbItem, WorkspaceShellComponent, MlAnalysisModalComponent, MlAnalysisModalData } from '@LucidRF/ui';
-import { MyWorkspaceStore } from './my-workspace.store';
-import { FilesService } from '../../files/services/files.service';
+import { BreadcrumbItem, MlAnalysisModalComponent, MlAnalysisModalData, WorkspaceShellComponent } from '@LucidRF/ui';
 import { firstValueFrom } from 'rxjs';
+import { FilesService } from '../../files/services/files.service';
+import { MyWorkspaceStore } from './my-workspace.store';
 
 @Component({
   selector: 'app-my-workspace',
@@ -71,10 +70,10 @@ export class MyWorkspaceComponent implements OnDestroy {
 
   onViewAnalysis(file: FileDto) {
     const allFiles = this.store.files() || [];
-    
-    // Find the associated system files
-    const cleanFile = allFiles.find(f => f.uploadedBy === 'SYSTEM' && f.originalFileName === `Clean_${file.originalFileName}`);
-    const spectrogramFile = allFiles.find(f => f.uploadedBy === 'SYSTEM' && f.originalFileName === `${file.originalFileName}_Spectrogram.png`);
+
+    // Find the associated system files using their database IDs stored in metadata
+    const cleanFile = allFiles.find((f) => f.resourceId === file.metadata?.['clean_file_id']);
+    const spectrogramFile = allFiles.find((f) => f.resourceId === file.metadata?.['spectrogram_file_id']);
 
     this.dialog.open<void, MlAnalysisModalData>(MlAnalysisModalComponent, {
       width: '900px',
@@ -88,8 +87,8 @@ export class MyWorkspaceComponent implements OnDestroy {
         },
         onDownloadFile: (f: FileDto) => {
           this.store.onDownloadFile(f);
-        }
-      }
+        },
+      },
     });
   }
 }
