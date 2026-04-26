@@ -70,7 +70,7 @@
 
             <div dropdown-menu class="py-1 w-48">
               @if (!item.isFolder) {
-                @if (item.metadata?.['denoise_applied'] !== undefined) {
+                @if (isSdrFile(item.originalFileName) && item.status === 'AVAILABLE') {
                 <button
                   type="button"
                   class="w-full text-left px-4 py-2 text-sm text-purple-700 font-medium hover:bg-purple-50 flex items-center gap-2"

@@ -1,7 +1,7 @@
 import { ConnectedPosition } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input, output, QueryList, ViewChildren } from '@angular/core';
-import { FileDto, FolderDto } from '@LucidRF/common';
+import { FileDto, FolderDto, isSdrFile } from '@LucidRF/common';
 
 import { FileIconComponent } from '../../../atoms/file-icon/file-icon.component';
 import { DropdownComponent } from '../../../molecules/dropdown/dropdown.component';
@@ -94,4 +94,6 @@ export class FileTableComponent {
         return 'bg-gray-400';
     }
   }
+
+  isSdrFile = isSdrFile;
 }
