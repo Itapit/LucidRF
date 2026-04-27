@@ -5,8 +5,6 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
-from .constants.constants import SpectrogramConstants
-
 def generate_spectrogram_comparison(noisy_iq: np.ndarray, clean_iq: np.ndarray) -> bytes:
     """
     Generates a side-by-side waterfall spectrogram image comparing noisy vs clean data.
@@ -18,8 +16,8 @@ def generate_spectrogram_comparison(noisy_iq: np.ndarray, clean_iq: np.ndarray) 
     # Define parameters for the spectrogram
     # NFFT dictates the frequency resolution (vertical bins)
     # Fs=1.0 normalizes frequency since we don't know the original sample rate
-    NFFT = SpectrogramConstants.DEFAULT_NFFT
-    Fs = SpectrogramConstants.DEFAULT_FS 
+    NFFT = 256
+    Fs = 1.0 
     
     # Plot the noisy data (Before)
     Pxx1, freqs1, bins1, im1 = ax1.specgram(
