@@ -23,11 +23,13 @@ logger = logging.getLogger("ml_inference")
 
 # Global pipeline instance
 pipeline: InferencePipeline | None = None
+http_client: httpx.AsyncClient | None = None
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global pipeline
+    global http_client
     
     base_dir = Path(__file__).parent.parent.parent
     
@@ -41,6 +43,8 @@ async def lifespan(app: FastAPI):
         denoiser_checkpoint_path=denoiser_path
     )
     
+    http_client = httpx.AsyncClient()
+    
     logger.info(f"Loading ML models on device '{device}'. This might take a few seconds...")
     try:
         pipeline = InferencePipeline(config, device=device)
@@ -53,6 +57,9 @@ async def lifespan(app: FastAPI):
     
     # Cleanup if necessary
     pipeline = None
+    if http_client is not None:
+        await http_client.aclose()
+        http_client = None
 
 app = FastAPI(title="LucidRF ML Inference API", lifespan=lifespan)
 
@@ -75,14 +82,13 @@ async def health_check():
 
 @app.post("/api/v1/jobs/detect")
 async def run_detection(req: DetectRequest) -> Dict[str, Any]:
-    if pipeline is None:
+    if pipeline is None or http_client is None:
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=ErrorMessages.MODEL_NOT_LOADED.value)
         
     try:
-        async with httpx.AsyncClient() as client:
-            resp = await client.get(req.file_url, timeout=ConfigConstants.DEFAULT_HTTP_TIMEOUT)
-            resp.raise_for_status()
-            raw_bytes = resp.content
+        resp = await http_client.get(req.file_url, timeout=ConfigConstants.DEFAULT_HTTP_TIMEOUT)
+        resp.raise_for_status()
+        raw_bytes = resp.content
             
         iq_data = cf32_le_from_bytes(raw_bytes)
         
@@ -104,15 +110,14 @@ async def run_detection(req: DetectRequest) -> Dict[str, Any]:
 
 @app.post("/api/v1/jobs/denoise")
 async def run_denoising(req: DenoiseRequest):
-    if pipeline is None:
+    if pipeline is None or http_client is None:
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=ErrorMessages.MODEL_NOT_LOADED.value)
         
     try:
         # 1. Download noisy file
-        async with httpx.AsyncClient() as client:
-            resp = await client.get(req.input_url, timeout=ConfigConstants.DEFAULT_HTTP_TIMEOUT)
-            resp.raise_for_status()
-            raw_bytes = resp.content
+        resp = await http_client.get(req.input_url, timeout=ConfigConstants.DEFAULT_HTTP_TIMEOUT)
+        resp.raise_for_status()
+        raw_bytes = resp.content
             
         iq_data = cf32_le_from_bytes(raw_bytes)
         
@@ -141,19 +146,18 @@ async def run_denoising(req: DenoiseRequest):
         spectrogram_bytes = generate_spectrogram_comparison(iq_data, complex_data)
         
         # 6. Upload outputs to Minio using presigned PUT URLs
-        async with httpx.AsyncClient() as client:
-            # Upload clean binary
-            put_resp = await client.put(req.output_url, content=out_bytes, timeout=ConfigConstants.DEFAULT_HTTP_TIMEOUT)
-            put_resp.raise_for_status()
-            
-            # Upload spectrogram image
-            spec_resp = await client.put(
-                req.spectrogram_url, 
-                content=spectrogram_bytes, 
-                timeout=ConfigConstants.DEFAULT_HTTP_TIMEOUT,
-                headers={"Content-Type": "image/png"}
-            )
-            spec_resp.raise_for_status()
+        # Upload clean binary
+        put_resp = await http_client.put(req.output_url, content=out_bytes, timeout=ConfigConstants.DEFAULT_HTTP_TIMEOUT)
+        put_resp.raise_for_status()
+        
+        # Upload spectrogram image
+        spec_resp = await http_client.put(
+            req.spectrogram_url, 
+            content=spectrogram_bytes, 
+            timeout=ConfigConstants.DEFAULT_HTTP_TIMEOUT,
+            headers={"Content-Type": "image/png"}
+        )
+        spec_resp.raise_for_status()
             
         return {
             "status": "success",
