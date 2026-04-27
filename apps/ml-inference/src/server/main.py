@@ -11,6 +11,7 @@ import numpy as np
 
 from lucidrf_inference.pipeline import InferencePipeline, InferencePipelineConfig
 from lucidrf_inference.cf32_le import cf32_le_from_bytes
+from .metrics import calculate_denoising_metrics
 from .visualization import generate_spectrogram_comparison
 from .constants.constants import ModelPaths, ErrorMessages, ConfigConstants
 
@@ -130,17 +131,9 @@ async def run_denoising(req: DenoiseRequest):
         complex_data = denoised_iq[0, :] + 1j * denoised_iq[1, :]
         out_bytes = complex_data.astype("<c8").tobytes()
         
-        # 4. Calculate Noise Reduction (dB)
-        # Using 10*log10(P_in / P_out) as a simple approximation of SNR improvement
-        # provided the signal amplitude is roughly preserved
-        p_in = float(np.mean(np.abs(iq_data)**2))
-        p_out = float(np.mean(np.abs(complex_data)**2))
+        # 4. Calculate Denoising Metrics
+        metrics = calculate_denoising_metrics(iq_data, complex_data)
         
-        if p_out > 0 and p_in > p_out:
-            noise_reduction_db = 10 * np.log10(p_in / p_out)
-        else:
-            noise_reduction_db = 0.0
-            
         # 5. Generate Spectrogram Image
         logger.info("Generating before/after spectrogram comparison...")
         spectrogram_bytes = generate_spectrogram_comparison(iq_data, complex_data)
@@ -161,9 +154,7 @@ async def run_denoising(req: DenoiseRequest):
             
         return {
             "status": "success",
-            "metrics": {
-                "noise_reduction_db": round(noise_reduction_db, 2)
-            }
+            "metrics": metrics
         }
     except httpx.HTTPError as e:
         logger.error(f"HTTP error during file fetch/upload: {e}")
