@@ -1,0 +1,85 @@
+<ui-modal-wrapper
+  title="ML Signal Analysis"
+  (closeModal)="onClose()"
+  [showFooter]="false"
+  maxWidthClass="max-w-4xl"
+>
+  <div modal-body class="p-6 flex flex-col gap-6 bg-slate-50/50 rounded-b-xl border-t border-slate-100">
+    
+    <!-- Analysis State Viewer -->
+    <div class="flex flex-col gap-2">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest">
+          @if (metadata?.denoise_applied) { Spectrogram Visualization } @else { Analysis Result }
+        </h3>
+      </div>
+      
+      <div class="w-full min-h-[250px] bg-white rounded-xl overflow-hidden shadow-sm flex items-center justify-center border border-slate-200 relative group p-1">
+        @if (metadata?.denoise_applied) {
+          @if (spectrogramUrl()) {
+            <img [src]="spectrogramUrl()" class="w-full h-auto max-h-[600px] object-contain transition-transform duration-700 group-hover:scale-[1.02] rounded-lg" alt="Spectrogram" />
+          } @else {
+            <div class="animate-pulse flex flex-col items-center gap-3 text-slate-400">
+              <svg class="w-8 h-8 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <span class="text-sm font-medium tracking-wide">Loading visualizer...</span>
+            </div>
+          }
+        } @else {
+          <!-- Clean Signal State -->
+          <div class="flex flex-col items-center justify-center py-12 px-6 text-center animate-in fade-in zoom-in duration-500">
+            <div class="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mb-6 relative">
+              <div class="absolute inset-0 bg-emerald-100 rounded-full animate-ping opacity-20"></div>
+              <svg class="w-10 h-10 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h4 class="text-xl font-bold text-slate-800 mb-2 tracking-tight">Clean Signal Detected</h4>
+            <p class="text-slate-500 max-w-md mx-auto text-sm leading-relaxed">
+              The original signal quality is excellent. The noise probability was below the intervention threshold, so no artificial denoising was required.
+            </p>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Metrics Grid -->
+    <div class="grid gap-4 transition-all duration-500 ease-in-out" [class.grid-cols-2]="metadata?.denoise_applied" [class.grid-cols-1]="!metadata?.denoise_applied">
+      <div class="bg-white rounded-xl p-5 shadow-[0_2px_8px_-4px_rgba(0,0,0,0.1)] border border-slate-200 flex flex-col gap-1 relative overflow-hidden">
+        <div class="absolute -right-4 -top-4 w-16 h-16 bg-indigo-50 rounded-full blur-xl opacity-50"></div>
+        <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Signal Probability</span>
+        <div class="flex items-end gap-2 mt-1">
+          <span class="text-3xl font-black text-slate-800">{{ ((metadata?.average_probability || 0) * 100) | number:'1.0-1' }}%</span>
+        </div>
+        <div class="w-full bg-slate-100 rounded-full h-1.5 mt-3 overflow-hidden">
+          <div class="bg-indigo-500 h-1.5 rounded-full transition-all duration-1000 ease-out" [style.width.%]="(metadata?.average_probability || 0) * 100"></div>
+        </div>
+      </div>
+
+      @if (metadata?.denoise_applied) {
+        <div class="bg-white rounded-xl p-5 shadow-[0_2px_8px_-4px_rgba(0,0,0,0.1)] border border-slate-200 flex flex-col gap-1 relative overflow-hidden">
+          <div class="absolute -right-4 -top-4 w-16 h-16 bg-emerald-50 rounded-full blur-xl opacity-50"></div>
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">SINR Gain</span>
+          <div class="flex items-end gap-1 mt-1">
+            <span class="text-3xl font-black text-emerald-600">+{{ (metadata?.sinr_gain_db || 0) | number:'1.0-1' }}</span>
+            <span class="text-sm font-bold text-emerald-600 mb-1.5">dB</span>
+          </div>
+          <span class="text-[10px] font-medium text-slate-400 mt-2 tracking-wide">SIGNAL-TO-INTERFERENCE RATIO</span>
+        </div>
+      }
+    </div>
+
+    <!-- Actions -->
+    <div class="flex items-center gap-3 pt-2">
+      <ui-button variant="secondary" class="flex-1 !py-2.5 font-semibold" (clicked)="downloadOriginal()">
+        Download Original File
+      </ui-button>
+      @if (data.cleanFile) {
+        <ui-button variant="secondary" class="flex-1 !py-2.5 font-semibold !text-indigo-600" (clicked)="downloadClean()">
+          Download Cleaned SDR
+        </ui-button>
+      }
+    </div>
+  </div>
+</ui-modal-wrapper>

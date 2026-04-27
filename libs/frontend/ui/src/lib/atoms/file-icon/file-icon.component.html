@@ -1,0 +1,89 @@
+@switch (category()) { @case ('folder') {
+<svg class="w-6 h-6 transition-transform team-hover:scale-110 text-amber-500" viewBox="0 0 24 24" fill="currentColor">
+  <path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" opacity="0.2" />
+  <path
+    stroke="currentColor"
+    stroke-width="1.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+    d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+  />
+</svg>
+} @case ('image') {
+<svg
+  class="w-6 h-6 transition-transform team-hover:scale-110 text-purple-500"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.5"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" opacity="0.2" fill="currentColor" />
+  <path d="M14 2v4a2 2 0 002 2h4" />
+  <circle cx="10" cy="12" r="2" />
+  <path d="M20 18l-5-5-4 4-2-2-3 3" />
+</svg>
+} @case ('sdr') {
+<svg
+  class="w-6 h-6 transition-transform team-hover:scale-110 text-emerald-600"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.5"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" opacity="0.1" fill="currentColor" />
+  <path d="M14 2v4a2 2 0 002 2h4" />
+  <!-- RF / SDR Sine Wave Pulse -->
+  <path d="M5 14h3l2-4 3 8 2-4h4" />
+</svg>
+} @case ('archive') {
+<svg
+  class="w-6 h-6 transition-transform team-hover:scale-110 text-rose-500"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.5"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M4 4h16v4H4z" opacity="0.2" fill="currentColor" />
+  <path d="M4 4h16v4H4z" />
+  <path d="M4 8v12a2 2 0 002 2h12a2 2 0 002-2V8" />
+  <path d="M10 12h4" />
+</svg>
+} @case ('code') {
+<svg
+  class="w-6 h-6 transition-transform team-hover:scale-110 text-blue-500"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.5"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" opacity="0.2" fill="currentColor" />
+  <path d="M14 2v4a2 2 0 002 2h4" />
+  <path d="M10 13l-2 2 2 2" />
+  <path d="M14 13l2 2-2 2" />
+</svg>
+} @default {
+<svg
+  class="w-6 h-6 transition-transform team-hover:scale-110 text-gray-400"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.5"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" opacity="0.2" fill="currentColor" />
+  <path d="M14 2v4a2 2 0 002 2h4" />
+  <path d="M16 13H8" />
+  <path d="M16 17H8" />
+  <path d="M10 9H8" />
+</svg>
+} }

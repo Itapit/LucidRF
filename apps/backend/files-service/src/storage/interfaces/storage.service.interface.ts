@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { BucketItemStat } from 'minio';
 
 @Injectable()
 export abstract class StorageService {
@@ -15,6 +16,20 @@ export abstract class StorageService {
    * @param expiry Expiration time in seconds (default: 3600).
    */
   abstract getPresignedGetUrl(key: string, expiry?: number): Promise<string>;
+
+  /**
+   * Generates an internal presigned URL for uploading a file directly to storage from within the Docker network.
+   * @param key The unique key (filename) for the object.
+   * @param expiry Expiration time in seconds (default: 3600).
+   */
+  abstract getInternalPresignedPutUrl(key: string, expiry?: number): Promise<string>;
+
+  /**
+   * Generates an internal presigned URL for downloading/viewing a file from within the Docker network.
+   * @param key The unique key (filename) for the object.
+   * @param expiry Expiration time in seconds (default: 3600).
+   */
+  abstract getInternalPresignedGetUrl(key: string, expiry?: number): Promise<string>;
 
   /**
    * Deletes a file from the storage bucket.
@@ -34,4 +49,11 @@ export abstract class StorageService {
    * @returns True if the file exists, false otherwise.
    */
   abstract fileExists(key: string): Promise<boolean>;
+
+  /**
+   * Retrieves the object metadata and stats from the storage bucket.
+   * @param key The unique key of the object to stat.
+   * @returns Object stats containing size, last modified, etc.
+   */
+  abstract statObject(key: string): Promise<BucketItemStat>;
 }

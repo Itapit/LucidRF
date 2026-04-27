@@ -126,7 +126,10 @@ export class FolderService {
   private async validateTeamAccess(userId: string, teamId: string): Promise<void> {
     const teamIds = await this.teamsService.getUserTeamIds(userId);
     if (!teamIds.includes(teamId)) {
-      throw new UserDoesntHaveAccessToTeamException(userId, teamId);
+      const freshTeamIds = await this.teamsService.getUserTeamIds(userId, true);
+      if (!freshTeamIds.includes(teamId)) {
+        throw new UserDoesntHaveAccessToTeamException(userId, teamId);
+      }
     }
   }
 }

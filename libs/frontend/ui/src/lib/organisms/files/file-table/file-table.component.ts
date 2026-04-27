@@ -1,16 +1,9 @@
 import { ConnectedPosition } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-  output,
-  QueryList,
-  ViewChildren,
-} from '@angular/core';
-import { FileDto, FolderDto } from '@LucidRF/common';
+import { ChangeDetectionStrategy, Component, computed, input, output, QueryList, ViewChildren } from '@angular/core';
+import { FileDto, FolderDto, isSdrFile, FileStatus } from '@LucidRF/common';
 
+import { FileIconComponent } from '../../../atoms/file-icon/file-icon.component';
 import { DropdownComponent } from '../../../molecules/dropdown/dropdown.component';
 import { UnifiedResource } from './unified-resource.type';
 
@@ -23,7 +16,7 @@ const FILE_ACTIONS_MENU_POSITIONS: ConnectedPosition[] = [
 @Component({
   selector: 'ui-file-table',
   standalone: true,
-  imports: [CommonModule, DropdownComponent],
+  imports: [CommonModule, DropdownComponent, FileIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './file-table.component.html',
 })
@@ -40,10 +33,13 @@ export class FileTableComponent {
   download = output<FileDto>();
   delete = output<FileDto>();
   deleteFolder = output<FolderDto>();
+  viewAnalysis = output<FileDto>();
 
   unifiedResources = computed<UnifiedResource[]>(() => {
     const mappedFolders = (this.folders() || []).map((folder) => ({ ...folder, isFolder: true } as const));
-    const mappedFiles = (this.files() || []).map((file) => ({ ...file, isFolder: false } as const));
+    const mappedFiles = (this.files() || [])
+      .filter((file) => file.uploadedBy !== 'SYSTEM')
+      .map((file) => ({ ...file, isFolder: false } as const));
 
     // Sort folders recursively before files, maybe just a simple sort is enough for now,
     // or assume they arrive pre-sorted from the store. We'll show all folders, then all files.
@@ -73,29 +69,32 @@ export class FileTableComponent {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
   }
 
-  getStatusClasses(status: string) {
+  getStatusClasses(status: FileStatus | string) {
     switch (status) {
-      case 'AVAILABLE':
+      case FileStatus.AVAILABLE:
         return 'bg-emerald-50 text-emerald-700 border-emerald-100';
-      case 'PROCESSING':
+      case FileStatus.PROCESSING:
         return 'bg-blue-50 text-blue-700 border-blue-100';
-      case 'FAILED':
+      case FileStatus.FAILED:
         return 'bg-red-50 text-red-700 border-red-100';
       default:
         return 'bg-gray-100 text-gray-700 border-gray-200';
     }
   }
 
-  getDotClasses(status: string) {
+  getDotClasses(status: FileStatus | string) {
     switch (status) {
-      case 'AVAILABLE':
+      case FileStatus.AVAILABLE:
         return 'bg-emerald-500';
-      case 'PROCESSING':
+      case FileStatus.PROCESSING:
         return 'bg-blue-500 animate-pulse';
-      case 'FAILED':
+      case FileStatus.FAILED:
         return 'bg-red-500';
       default:
         return 'bg-gray-400';
     }
   }
+
+  isSdrFile = isSdrFile;
+  FileStatus = FileStatus;
 }

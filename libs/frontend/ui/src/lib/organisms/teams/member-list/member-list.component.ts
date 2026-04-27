@@ -38,6 +38,8 @@ export class MemberListComponent implements OnInit {
 
   identifierInput = new FormControl('', { nonNullable: true, validators: [Validators.required] });
 
+  TeamRole = TeamRole;
+
   dialogRef = inject<DialogRef<DialogResult>>(DialogRef, { optional: true });
   data: { team: TeamDto | null; currentUserRole: TeamRole | null; currentUserId: string } | null = inject(DIALOG_DATA, {
     optional: true,

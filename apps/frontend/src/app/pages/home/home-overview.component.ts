@@ -36,6 +36,10 @@ export class HomeOverviewComponent {
     this.navigationService.toTeam(teamId);
   }
 
+  goToWorkspace() {
+    this.navigationService.toWorkspace();
+  }
+
   openCreateTeam() {
     const dialogRef = this.dialog.open<DialogResult<{ name: string; description: string }>>(TeamFormComponent, {
       data: { team: null, showDangerZone: false },

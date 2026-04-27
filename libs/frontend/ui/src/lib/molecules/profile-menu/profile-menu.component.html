@@ -24,7 +24,7 @@
           <span class="text-sm text-gray-500 truncate">{{ user()?.email }}</span>
         </div>
       </div>
-      @if ($any(user()?.role) === 'ADMIN') {
+      @if ($any(user()?.role) === SystemRole.ADMIN) {
       <div
         class="mt-4 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-black text-white uppercase"
       >

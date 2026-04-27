@@ -7,6 +7,7 @@ export * from './workspace-header/workspace-header.component';
 // Files
 export * from './files/file-table/file-table.component';
 export * from './files/folder-form/folder-form.component';
+export * from './ml-analysis-modal/ml-analysis-modal.component';
 
 // Teams
 export * from './teams/member-list/member-list.component';

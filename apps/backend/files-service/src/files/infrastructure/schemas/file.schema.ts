@@ -8,43 +8,46 @@ export type FileDocument = FileSchema & Document;
 @Schema({ collection: 'files', timestamps: true })
 export class FileSchema extends Document {
   @Prop({ required: true })
-  originalFileName: string;
+  originalFileName!: string;
 
   @Prop({ required: true, index: true })
-  teamId: string;
+  teamId!: string;
 
   @Prop({ required: true })
-  size: number;
+  size!: number;
 
   @Prop({ required: true })
-  mimeType: string;
+  mimeType!: string;
 
   @Prop({ required: true, enum: FileStatus, type: String, default: FileStatus.PENDING })
-  status: FileStatus;
+  status!: FileStatus;
+
+  @Prop({ type: MongooseSchema.Types.Mixed })
+  metadata?: Record<string, unknown>;
 
   @Prop({ required: true, index: true })
-  uploadedBy: string;
+  uploadedBy!: string;
 
   // Infrastructure
   @Prop({ required: true, unique: true })
-  storageKey: string;
+  storageKey!: string;
 
   @Prop({ required: true })
-  bucket: string;
+  bucket!: string;
 
   // Hierarchy, Internal Reference uses ObjectId
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Folder', default: null, index: true })
-  parentFolderId: MongooseSchema.Types.ObjectId;
+  parentFolderId?: MongooseSchema.Types.ObjectId;
 
   // Timestamps
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt!: Date;
+  updatedAt!: Date;
 }
 
 export const FileSchemaFactory = SchemaFactory.createForClass(FileSchema);
 
 // --- The Mapper is where we ensure "Compatibility" ---
-export function toFileEntity(doc: FileDocument): FileEntity {
+export function toFileEntity(doc: FileDocument | null | undefined): FileEntity | null {
   if (!doc) return null;
   const obj = doc.toObject();
 

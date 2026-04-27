@@ -1,4 +1,4 @@
-import { FileStatus } from '@LucidRF/common';
+import { FileMetadata, FileStatus, FileUploadedEvent } from '@LucidRF/common';
 import {
   ConfirmUploadPayload,
   DeleteResourcePayload,
@@ -7,6 +7,7 @@ import {
   InitializeUploadPayload,
 } from '@LucidRF/files-contracts';
 import { Inject, Injectable, Logger } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { randomUUID } from 'crypto';
 import { basename } from 'path';
 import { StorageUploadException } from '../../storage/exceptions';
@@ -26,6 +27,7 @@ export class FileService {
     private readonly folderRepository: FolderRepository,
     private readonly storageService: StorageService,
     private readonly teamsService: TeamsService,
+    private readonly eventEmitter: EventEmitter2,
     @Inject(STORAGE_BUCKET_NAME) private readonly bucketName: string
   ) {}
 
@@ -114,6 +116,22 @@ export class FileService {
     return this.storageService.getPresignedGetUrl(file.storageKey);
   }
 
+  async updateFileMetadata(fileId: string, metadata: FileMetadata, status: FileStatus) {
+    // Validate file exists
+    const file = await this.fileRepository.findById(fileId);
+    if (!file) throw new ResourceNotFoundException(fileId);
+
+    // Update repository
+    const updatedFile = await this.fileRepository.updateMetadata(fileId, metadata, status);
+    if (!updatedFile) {
+      throw new ResourceNotFoundException(fileId);
+    }
+
+    this.logger.log(`Updated metadata and status to ${status} for file ${fileId}`);
+
+    return toFileDto(updatedFile);
+  }
+
   // =================================================================================================
   //  Helpers
   // =================================================================================================
@@ -121,7 +139,10 @@ export class FileService {
   private async validateTeamAccess(userId: string, teamId: string): Promise<void> {
     const teamIds = await this.teamsService.getUserTeamIds(userId);
     if (!teamIds.includes(teamId)) {
-      throw new UserDoesntHaveAccessToTeamException(userId, teamId);
+      const freshTeamIds = await this.teamsService.getUserTeamIds(userId, true);
+      if (!freshTeamIds.includes(teamId)) {
+        throw new UserDoesntHaveAccessToTeamException(userId, teamId);
+      }
     }
   }
 
@@ -171,7 +192,10 @@ export class FileService {
       throw new ResourceNotFoundException(file.id);
     }
 
-    return toFileDto(updatedFile);
+    const dto = toFileDto(updatedFile);
+    this.eventEmitter.emit('file.uploaded', new FileUploadedEvent(dto));
+
+    return dto;
   }
 
   private async handleFailedUpload(file: FileEntity) {

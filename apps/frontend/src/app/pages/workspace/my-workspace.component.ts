@@ -1,19 +1,23 @@
-
+import { Dialog, DialogModule } from '@angular/cdk/dialog';
 import { Component, effect, inject, OnDestroy } from '@angular/core';
-import { FolderDto, TeamColor } from '@LucidRF/common';
-import { BreadcrumbItem, WorkspaceShellComponent } from '@LucidRF/ui';
+import { FileDto, FolderDto, TeamColor } from '@LucidRF/common';
+import { BreadcrumbItem, MlAnalysisModalComponent, MlAnalysisModalData, WorkspaceShellComponent } from '@LucidRF/ui';
+import { firstValueFrom } from 'rxjs';
+import { FilesService } from '../../files/services/files.service';
 import { MyWorkspaceStore } from './my-workspace.store';
 
 @Component({
   selector: 'app-my-workspace',
   standalone: true,
-  imports: [WorkspaceShellComponent],
+  imports: [WorkspaceShellComponent, DialogModule],
   templateUrl: './my-workspace.component.html',
   host: { class: 'flex-1 flex overflow-hidden w-full h-full' },
   providers: [MyWorkspaceStore],
 })
 export class MyWorkspaceComponent implements OnDestroy {
   readonly store = inject(MyWorkspaceStore);
+  private dialog = inject(Dialog);
+  private filesService = inject(FilesService);
 
   defaultColor = TeamColor.SIGNAL_BLUE;
 
@@ -62,5 +66,29 @@ export class MyWorkspaceComponent implements OnDestroy {
 
   ngOnDestroy() {
     this.store.clearWorkspaceContent();
+  }
+
+  onViewAnalysis(file: FileDto) {
+    const allFiles = this.store.files() || [];
+
+    // Find the associated system files using their database IDs stored in metadata
+    const cleanFile = allFiles.find((f) => f.resourceId === file.metadata?.['clean_file_id']);
+    const spectrogramFile = allFiles.find((f) => f.resourceId === file.metadata?.['spectrogram_file_id']);
+
+    this.dialog.open<void, MlAnalysisModalData>(MlAnalysisModalComponent, {
+      width: '900px',
+      data: {
+        originalFile: file,
+        cleanFile,
+        spectrogramFile,
+        getDownloadUrl: async (fileId: string) => {
+          const res = await firstValueFrom(this.filesService.getDownloadUrl(fileId));
+          return res.url;
+        },
+        onDownloadFile: (f: FileDto) => {
+          this.store.onDownloadFile(f);
+        },
+      },
+    });
   }
 }

@@ -17,12 +17,14 @@ export class TcpTeamsService implements TeamsService {
     @Inject(TEAMS_SERVICE) private readonly client: ClientProxy
   ) {}
 
-  async getUserTeamIds(userId: string): Promise<string[]> {
+  async getUserTeamIds(userId: string, bypassCache = false): Promise<string[]> {
     const cacheKey = `${TEAMS_CACHE_PREFIX}:${userId}`;
 
-    const cached = await this.cacheManager.get<string[]>(cacheKey);
-    if (cached) {
-      return cached;
+    if (!bypassCache) {
+      const cached = await this.cacheManager.get<string[]>(cacheKey);
+      if (cached) {
+        return cached;
+      }
     }
 
     try {

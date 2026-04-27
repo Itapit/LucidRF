@@ -15,14 +15,14 @@ services:
 
   notifications-service:
     build:
-      context: ./services/notifications-service
+      context: ./apps/backend/notifications-service
       dockerfile: Dockerfile
     container_name: LucidRF-notifications
     restart: unless-stopped
     ports:
       - '8090:8090'
     env_file:
-      - ./services/notifications-service/.env
+      - ./apps/backend/notifications-service/.env
     networks:
       - lucid-network
 
