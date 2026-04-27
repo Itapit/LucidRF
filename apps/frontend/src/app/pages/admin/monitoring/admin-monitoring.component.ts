@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { AdminSidebarComponent, DashboardLayoutComponent } from '@LucidRF/ui';
-import { environment } from '../../../environments/environment';
+import { AdminSidebarComponent, AdminTab, DashboardLayoutComponent } from '@LucidRF/ui';
 import { NavigationService } from '../../../core/navigation/navigation.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-admin-monitoring',
@@ -15,18 +15,19 @@ export class AdminMonitoringComponent {
   private navigationService = inject(NavigationService);
   private sanitizer = inject(DomSanitizer);
   readonly grafanaUrl = environment.GRAFANA_DASHBOARD_EMBED_URL;
+  AdminTab = AdminTab;
 
   /** Grafana dashboard embed (Prometheus-backed metrics from the gateway). */
   readonly grafanaEmbedUrl: SafeResourceUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
     environment.GRAFANA_DASHBOARD_EMBED_URL
   );
 
-  get activeTab(): 'users' | 'monitoring' {
-    return 'monitoring';
+  get activeTab(): AdminTab {
+    return AdminTab.Monitoring;
   }
 
-  onTabClick(tab: 'users' | 'monitoring') {
-    if (tab === 'users') {
+  onTabClick(tab: AdminTab) {
+    if (tab === AdminTab.Users) {
       this.navigationService.toAdminUsers();
     } else {
       this.navigationService.toAdminMonitoring();
