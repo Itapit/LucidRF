@@ -2,29 +2,23 @@ import { Dialog, DialogModule, DialogRef } from '@angular/cdk/dialog';
 
 import { Component, effect, inject, OnInit } from '@angular/core';
 import {
-  AdminSidebarComponent,
-  AdminTab,
   AdminUsersTableComponent,
-  DashboardLayoutComponent,
   UserCreateModalComponent,
   UserCreateModalData,
 } from '@LucidRF/ui';
-import { NavigationService } from '../../../core/navigation/navigation.service';
 import { AdminUsersStore } from './admin-users.store';
 
 @Component({
   selector: 'app-admin-users',
   standalone: true,
-  imports: [DialogModule, DashboardLayoutComponent, AdminSidebarComponent, AdminUsersTableComponent],
+  imports: [DialogModule, AdminUsersTableComponent],
   providers: [AdminUsersStore],
   templateUrl: './admin-users.component.html',
   host: { class: 'flex-1 flex overflow-hidden w-full h-full' },
 })
 export class AdminUsersComponent implements OnInit {
-  private navigationService = inject(NavigationService);
   private dialog = inject(Dialog);
   store = inject(AdminUsersStore);
-  AdminTab = AdminTab;
 
   private dialogRef: DialogRef<void> | null = null;
 
@@ -39,18 +33,6 @@ export class AdminUsersComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.loadUsers();
-  }
-
-  get activeTab(): AdminTab {
-    return this.navigationService.isActiveAdminTab('monitoring') ? AdminTab.Monitoring : AdminTab.Users;
-  }
-
-  onTabClick(tab: AdminTab) {
-    if (tab === AdminTab.Users) {
-      this.navigationService.toAdminUsers();
-    } else {
-      this.navigationService.toAdminMonitoring();
-    }
   }
 
   openCreateUserModal() {
