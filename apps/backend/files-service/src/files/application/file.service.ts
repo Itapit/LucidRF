@@ -1,4 +1,4 @@
-import { FileMetadata, FileStatus, FileUploadedEvent } from '@LucidRF/common';
+import { FileMetadata, FileStatus, FileUploadedEvent, ResourceDeleteStatus } from '@LucidRF/common';
 import {
   ConfirmUploadPayload,
   DeleteResourcePayload,
@@ -210,6 +210,6 @@ export class FileService {
       this.logger.debug(`Storage cleanup note: ${error.message}`);
     }
 
-    return { status: 'deleted' };
+    return { status: ResourceDeleteStatus.Deleted };
   }
 }
