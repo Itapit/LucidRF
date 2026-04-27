@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, input } from '@angular/core';
+import { ComponentSize } from '../../types';
 
 @Component({
   selector: 'ui-avatar',
@@ -12,7 +13,7 @@ export class AvatarComponent {
   alt = input<string>('');
   initials = input<string | null>(null);
   color = input<string | null>(null);
-  size = input<'sm' | 'md' | 'lg' | 'xl'>('md');
+  size = input<ComponentSize>(ComponentSize.Medium);
   bordered = input<boolean>(false);
 
   imageError = false;
@@ -22,10 +23,10 @@ export class AvatarComponent {
     const borderClasses = this.bordered() ? 'border-2 border-white shadow-sm' : '';
 
     const sizeClasses = {
-      sm: 'w-8 h-8',
-      md: 'w-10 h-10',
-      lg: 'w-12 h-12',
-      xl: 'w-16 h-16',
+      [ComponentSize.Small]: 'w-8 h-8',
+      [ComponentSize.Medium]: 'w-10 h-10',
+      [ComponentSize.Large]: 'w-12 h-12',
+      [ComponentSize.ExtraLarge]: 'w-16 h-16',
     }[this.size()];
 
     return `${baseClasses} ${borderClasses} ${sizeClasses}`;
@@ -33,10 +34,10 @@ export class AvatarComponent {
 
   get textClasses() {
     return {
-      sm: 'text-xs',
-      md: 'text-sm',
-      lg: 'text-base',
-      xl: 'text-xl',
+      [ComponentSize.Small]: 'text-xs',
+      [ComponentSize.Medium]: 'text-sm',
+      [ComponentSize.Large]: 'text-base',
+      [ComponentSize.ExtraLarge]: 'text-xl',
     }[this.size()];
   }
 

@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, input, output } from '@angular/core';
+import { ComponentSize } from '../../types';
 import { SpinnerComponent } from '../spinner/spinner.component';
 
 @Component({
@@ -10,7 +11,7 @@ import { SpinnerComponent } from '../spinner/spinner.component';
 })
 export class ButtonComponent {
   variant = input<'primary' | 'secondary' | 'ghost' | 'danger'>('primary');
-  size = input<'sm' | 'md' | 'lg'>('md');
+  size = input<ComponentSize>(ComponentSize.Medium);
   disabled = input<boolean>(false);
   loading = input<boolean>(false);
   loadingText = input<string>('Loading...');
@@ -18,15 +19,18 @@ export class ButtonComponent {
   fullWidth = input<boolean>(false);
   form = input<string>();
 
+  ComponentSize = ComponentSize;
+
   clicked = output<MouseEvent>();
 
   get classes() {
     const baseClasses =
       'transition-colors font-medium outline-none disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center';
     const sizeClasses = {
-      sm: 'px-3 py-1.5 text-xs rounded',
-      md: 'px-4 py-2 text-sm rounded-lg',
-      lg: 'px-5 py-2.5 text-base rounded-xl',
+      [ComponentSize.Small]: 'px-3 py-1.5 text-xs rounded',
+      [ComponentSize.Medium]: 'px-4 py-2 text-sm rounded-lg',
+      [ComponentSize.Large]: 'px-5 py-2.5 text-base rounded-xl',
+      [ComponentSize.ExtraLarge]: 'px-6 py-3 text-lg rounded-xl',
     }[this.size()];
 
     const variantClasses = {

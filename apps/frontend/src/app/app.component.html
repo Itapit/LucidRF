@@ -1,6 +1,6 @@
 @if (isAppLoading()) {
 <div class="flex items-center justify-center fixed inset-0 z-50 bg-white/80">
-  <ui-spinner size="lg" variant="default"></ui-spinner>
+  <ui-spinner [size]="ComponentSize.Large" variant="default"></ui-spinner>
 </div>
 } @else { @if (globalError(); as error) {
 <ui-global-error [error]="error" (retry)="reloadApp()"></ui-global-error>

@@ -1,8 +1,9 @@
 import { ConnectedPosition } from '@angular/cdk/overlay';
 
 import { ChangeDetectionStrategy, Component, input, output, ViewChild } from '@angular/core';
-import { UserDto, SystemRole } from '@LucidRF/common';
+import { SystemRole, UserDto } from '@LucidRF/common';
 import { AvatarComponent } from '../../atoms/avatar/avatar.component';
+import { ComponentSize } from '../../types';
 import { DropdownItemComponent } from '../dropdown-item/dropdown-item.component';
 import { DropdownComponent } from '../dropdown/dropdown.component';
 
@@ -26,6 +27,7 @@ export class ProfileMenuComponent {
   ];
 
   SystemRole = SystemRole;
+  ComponentSize = ComponentSize;
 
   handleEditProfile() {
     this.editProfile.emit();
