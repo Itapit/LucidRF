@@ -35,6 +35,23 @@ export const filesReducer = createReducer(
     error,
   })),
 
+  // --- POLL CONTENT ---
+  on(FilesActions.pollContent, (state) => ({
+    ...state,
+    // Do not set loading to true, do not clear files/folders
+  })),
+  on(FilesActions.pollContentSuccess, (state, { response }) => ({
+    ...state,
+    files: response.files,
+    folders: response.folders,
+    ancestors: response.ancestors || [],
+    currentFolder: response.currentFolder || null,
+  })),
+  on(FilesActions.pollContentFailure, (state) => ({
+    ...state,
+    // Optionally ignore the error to avoid flashing errors on temporary network drops
+  })),
+
   // --- CREATE FOLDER ---
   on(FilesActions.createFolder, (state) => ({
     ...state,

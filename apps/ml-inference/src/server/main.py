@@ -115,30 +115,30 @@ async def run_denoising(req: DenoiseRequest):
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=ErrorMessages.MODEL_NOT_LOADED.value)
         
     try:
-        # 1. Download noisy file
+        # Download noisy file
         resp = await http_client.get(req.input_url, timeout=ConfigConstants.DEFAULT_HTTP_TIMEOUT)
         resp.raise_for_status()
         raw_bytes = resp.content
             
         iq_data = cf32_le_from_bytes(raw_bytes)
         
-        # 2. Denoise
+        # Denoise
         result = pipeline.denoise(iq_data)
         denoised_iq = result.denoised_iq
         
-        # 3. Convert back to little-endian complex64 bytes
+        # Convert back to little-endian complex64 bytes
         # denoised_iq is shape (2, N) float32, where row 0 is I and row 1 is Q
         complex_data = denoised_iq[0, :] + 1j * denoised_iq[1, :]
         out_bytes = complex_data.astype("<c8").tobytes()
         
-        # 4. Calculate Denoising Metrics
+        # Calculate Denoising Metrics
         metrics = calculate_denoising_metrics(iq_data, complex_data)
         
-        # 5. Generate Spectrogram Image
+        # Generate Spectrogram Image
         logger.info("Generating before/after spectrogram comparison...")
         spectrogram_bytes = generate_spectrogram_comparison(iq_data, complex_data)
         
-        # 6. Upload outputs to Minio using presigned PUT URLs
+        # Upload outputs to Minio using presigned PUT URLs
         # Upload clean binary
         put_resp = await http_client.put(req.output_url, content=out_bytes, timeout=ConfigConstants.DEFAULT_HTTP_TIMEOUT)
         put_resp.raise_for_status()

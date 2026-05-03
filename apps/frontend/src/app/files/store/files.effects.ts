@@ -32,6 +32,27 @@ export class FilesEffects {
     )
   );
 
+  pollContent$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(FilesActions.pollContent),
+      concatMap(({ teamId, folderId }) =>
+        this.filesService.loadContent(teamId, folderId).pipe(
+          map((response) => FilesActions.pollContentSuccess({ response })),
+          catchError((error: HttpErrorResponse) =>
+            of(
+              FilesActions.pollContentFailure({
+                error: {
+                  source: FilesErrorSource.LOAD_CONTENT,
+                  message: error.error?.message || 'Failed to poll content',
+                },
+              })
+            )
+          )
+        )
+      )
+    )
+  );
+
   createFolder$ = createEffect(() =>
     this.actions$.pipe(
       ofType(FilesActions.createFolder),

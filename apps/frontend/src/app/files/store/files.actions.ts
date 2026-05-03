@@ -21,6 +21,11 @@ export const FilesActions = createActionGroup({
     'Load Content Success': props<{ response: ListContentResponse }>(),
     'Load Content Failure': props<{ error: ActionError<FilesErrorSource> }>(),
 
+    // --- POLL CONTENT ---
+    'Poll Content': props<{ teamId: string; folderId?: string }>(),
+    'Poll Content Success': props<{ response: ListContentResponse }>(),
+    'Poll Content Failure': props<{ error: ActionError<FilesErrorSource> }>(),
+
     // --- CREATE FOLDER ---
     'Create Folder': props<{ request: CreateFolderRequest }>(),
     'Create Folder Success': props<{ folder: FolderDto }>(),

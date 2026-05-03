@@ -28,6 +28,9 @@ export function withWorkspace() {
         loadWorkspaceContent: (ownerId: string, folderId?: string) => {
           filesFacade.loadContent(ownerId, folderId);
         },
+        pollWorkspaceContent: (ownerId: string, folderId?: string) => {
+          filesFacade.pollContent(ownerId, folderId);
+        },
         clearWorkspaceContent: () => {
           filesFacade.clearContent();
         },

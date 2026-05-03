@@ -1,7 +1,7 @@
-import { computed, inject } from '@angular/core';
+import { computed, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { TeamDto, TeamRole, UpdateTeamRequest } from '@LucidRF/common';
-import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
+import { FileStatus, TeamDto, TeamRole, UpdateTeamRequest } from '@LucidRF/common';
+import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals';
 import { AuthFacade } from '../../auth/store/auth.facade';
 import { withWorkspace } from '../../core/features/with-workspace.feature';
 import { TeamsFacade } from '../../teams/store/teams.facade';
@@ -81,5 +81,29 @@ export const TeamDetailStore = signalStore(
         teamsFacade.removeMember(teamId, { targetUserId: userId });
       },
     };
+  }),
+  withHooks({
+    onInit(store) {
+      effect((onCleanup) => {
+        const files = store.files();
+        const team = store.team();
+        const currentFolderId = store.currentFolder()?.resourceId;
+
+        const hasProcessingFiles = files.some(
+          (f) =>
+            f.status === FileStatus.PROCESSING || f.status === FileStatus.UPLOADED || f.status === FileStatus.PENDING
+        );
+
+        if (hasProcessingFiles && team?.id) {
+          const intervalId = setInterval(() => {
+            store.pollWorkspaceContent(team.id, currentFolderId);
+          }, 4000);
+
+          onCleanup(() => {
+            clearInterval(intervalId);
+          });
+        }
+      });
+    },
   })
 );

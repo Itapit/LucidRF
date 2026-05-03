@@ -36,6 +36,10 @@ export class FilesFacade {
     this.store.dispatch(FilesActions.loadContent({ teamId, folderId }));
   }
 
+  pollContent(teamId: string, folderId?: string) {
+    this.store.dispatch(FilesActions.pollContent({ teamId, folderId }));
+  }
+
   createFolder(request: CreateFolderRequest) {
     this.store.dispatch(FilesActions.createFolder({ request }));
   }
