@@ -3,7 +3,17 @@ import { Dialog, DialogModule } from '@angular/cdk/dialog';
 import { Component, effect, inject, OnDestroy } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
-import { FileDto, FolderDto, TeamColor, TeamDto, TeamRole, TeamType, UpdateTeamRequest } from '@LucidRF/common';
+import {
+  FileDto,
+  FileStatus,
+  FolderDto,
+  isSdrFile,
+  TeamColor,
+  TeamDto,
+  TeamRole,
+  TeamType,
+  UpdateTeamRequest,
+} from '@LucidRF/common';
 import {
   BreadcrumbItem,
   DialogAction,
@@ -12,6 +22,7 @@ import {
   MlAnalysisModalComponent,
   MlAnalysisModalData,
   TeamFormComponent,
+  ToastService,
   WorkspaceShellComponent,
 } from '@LucidRF/ui';
 import { firstValueFrom } from 'rxjs';
@@ -33,9 +44,12 @@ export class TeamDetailComponent implements OnDestroy {
   private dialog = inject(Dialog);
   private navigationService = inject(NavigationService);
   private filesService = inject(FilesService);
+  private toastService = inject(ToastService);
 
   // Inject our local store
   readonly store = inject(TeamDetailStore);
+  private readonly previousFileStatuses = new Map<string, FileStatus | string>();
+  private readonly openedAnalysisFileIds = new Set<string>();
 
   // Convert Route Param to Signal
   private teamIdParam = toSignal(this.route.params.pipe(map((params) => params['id'])));
@@ -52,6 +66,46 @@ export class TeamDetailComponent implements OnDestroy {
       const team = this.store.team();
       if (team && team.type === TeamType.PERSONAL) {
         this.navigationService.toWorkspace();
+      }
+    });
+
+    effect(() => {
+      const files = this.store.files() || [];
+      const availableNow: FileDto[] = [];
+      const activeFileIds = new Set<string>();
+
+      for (const file of files) {
+        if (file.uploadedBy === 'SYSTEM') {
+          continue;
+        }
+
+        activeFileIds.add(file.resourceId);
+        const previousStatus = this.previousFileStatuses.get(file.resourceId);
+
+        if (
+          (previousStatus === FileStatus.PROCESSING ||
+            previousStatus === FileStatus.UPLOADED ||
+            previousStatus === FileStatus.PENDING) &&
+          file.status === FileStatus.AVAILABLE &&
+          !this.openedAnalysisFileIds.has(file.resourceId)
+        ) {
+          availableNow.push(file);
+          this.openedAnalysisFileIds.add(file.resourceId);
+          this.toastService.success('ML analysis ready', `${file.originalFileName} has finished processing.`);
+        }
+
+        this.previousFileStatuses.set(file.resourceId, file.status);
+      }
+
+      for (const trackedFileId of this.previousFileStatuses.keys()) {
+        if (!activeFileIds.has(trackedFileId)) {
+          this.previousFileStatuses.delete(trackedFileId);
+        }
+      }
+
+      const analysisCandidate = availableNow.find((file) => isSdrFile(file.originalFileName));
+      if (analysisCandidate && this.dialog.openDialogs.length === 0) {
+        this.onViewAnalysis(analysisCandidate);
       }
     });
   }

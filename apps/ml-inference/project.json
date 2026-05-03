@@ -21,7 +21,7 @@
     "serve": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "echo \"TODO: add FastAPI/Flask and set this to e.g. poetry run uvicorn lucidrf_inference.api:app --host 0.0.0.0 --reload\"",
+        "command": "echo \"TODO: add FastAPI and set this to e.g. poetry run uvicorn lucidrf_inference.api:app --host 0.0.0.0 --reload\"",
         "cwd": "apps/ml-inference"
       }
     }

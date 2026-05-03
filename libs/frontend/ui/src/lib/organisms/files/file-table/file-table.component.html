@@ -41,7 +41,19 @@
             [ngClass]="getStatusClasses(item.status)"
           >
             <span class="w-1.5 h-1.5 rounded-full" [ngClass]="getDotClasses(item.status)"></span>
+            @if (item.status === FileStatus.PROCESSING || item.status === FileStatus.UPLOADED || item.status ===
+            FileStatus.PENDING) {
+            <span class="inline-flex items-baseline">
+              Processing
+              <span class="ml-0.5 inline-flex">
+                <span class="animate-bounce [animation-delay:0ms]">.</span>
+                <span class="animate-bounce [animation-delay:160ms]">.</span>
+                <span class="animate-bounce [animation-delay:320ms]">.</span>
+              </span>
+            </span>
+            } @else {
             {{ item.status | titlecase }}
+            }
           </span>
           } @else {
           <span class="text-gray-400">-</span>
@@ -69,17 +81,20 @@
             </button>
 
             <div dropdown-menu class="py-1 w-48">
-              @if (!item.isFolder) {
-                @if (isSdrFile(item.originalFileName) && item.status === FileStatus.AVAILABLE) {
-                <button
-                  type="button"
-                  class="w-full text-left px-4 py-2 text-sm text-purple-700 font-medium hover:bg-purple-50 flex items-center gap-2"
-                  (click)="closeActionMenus(); viewAnalysis.emit(item)"
-                >
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
-                  View ML Analysis
-                </button>
-                }
+              @if (!item.isFolder) { @if (isSdrFile(item.originalFileName) && item.status === FileStatus.AVAILABLE) {
+              <button
+                type="button"
+                class="w-full text-left px-4 py-2 text-sm text-purple-700 font-medium hover:bg-purple-50 flex items-center gap-2"
+                (click)="closeActionMenus(); viewAnalysis.emit(item)"
+              >
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path
+                    d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"
+                  />
+                </svg>
+                View ML Analysis
+              </button>
+              }
               <button
                 type="button"
                 class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"

@@ -1,10 +1,11 @@
 import { Dialog, DialogModule } from '@angular/cdk/dialog';
 import { Component, effect, inject, OnDestroy } from '@angular/core';
-import { FileDto, FolderDto, TeamColor } from '@LucidRF/common';
+import { FileDto, FileStatus, FolderDto, isSdrFile, TeamColor } from '@LucidRF/common';
 import {
   BreadcrumbItem,
   MlAnalysisModalComponent,
   MlAnalysisModalData,
+  ToastService,
   WorkspaceNavigationId,
   WorkspaceShellComponent,
 } from '@LucidRF/ui';
@@ -24,6 +25,10 @@ export class MyWorkspaceComponent implements OnDestroy {
   readonly store = inject(MyWorkspaceStore);
   private dialog = inject(Dialog);
   private filesService = inject(FilesService);
+  private toastService = inject(ToastService);
+
+  private readonly previousFileStatuses = new Map<string, FileStatus | string>();
+  private readonly openedAnalysisFileIds = new Set<string>();
 
   defaultColor = TeamColor.SIGNAL_BLUE;
 
@@ -51,6 +56,46 @@ export class MyWorkspaceComponent implements OnDestroy {
   constructor() {
     effect(() => {
       this.store.initWorkspace();
+    });
+
+    effect(() => {
+      const files = this.store.files() || [];
+      const availableNow: FileDto[] = [];
+      const activeFileIds = new Set<string>();
+
+      for (const file of files) {
+        if (file.uploadedBy === 'SYSTEM') {
+          continue;
+        }
+
+        activeFileIds.add(file.resourceId);
+        const previousStatus = this.previousFileStatuses.get(file.resourceId);
+
+        if (
+          (previousStatus === FileStatus.PROCESSING ||
+            previousStatus === FileStatus.UPLOADED ||
+            previousStatus === FileStatus.PENDING) &&
+          file.status === FileStatus.AVAILABLE &&
+          !this.openedAnalysisFileIds.has(file.resourceId)
+        ) {
+          availableNow.push(file);
+          this.openedAnalysisFileIds.add(file.resourceId);
+          this.toastService.success('ML analysis ready', `${file.originalFileName} has finished processing.`);
+        }
+
+        this.previousFileStatuses.set(file.resourceId, file.status);
+      }
+
+      for (const trackedFileId of this.previousFileStatuses.keys()) {
+        if (!activeFileIds.has(trackedFileId)) {
+          this.previousFileStatuses.delete(trackedFileId);
+        }
+      }
+
+      const analysisCandidate = availableNow.find((file) => isSdrFile(file.originalFileName));
+      if (analysisCandidate && this.dialog.openDialogs.length === 0) {
+        this.onViewAnalysis(analysisCandidate);
+      }
     });
   }
 
