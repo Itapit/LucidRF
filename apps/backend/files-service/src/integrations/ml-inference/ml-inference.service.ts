@@ -44,14 +44,16 @@ export class MlInferenceService {
       const cleanPutUrl = await this.storageService.getInternalPresignedPutUrl(cleanStorageKey);
       const spectrogramPutUrl = await this.storageService.getInternalPresignedPutUrl(spectrogramKey);
 
-      const sinrGainDb = await this.denoiseSignal(getUrl, cleanPutUrl, spectrogramPutUrl);
-      this.logger.log(`Denoise complete for ${storageKey}. SINR Gain: ${sinrGainDb}dB`);
+      const metrics = await this.denoiseSignal(getUrl, cleanPutUrl, spectrogramPutUrl);
+      this.logger.log(`Denoise complete for ${storageKey}. Attenuation: ${metrics.total_attenuation_db}dB, PAPR Impr: ${metrics.papr_improvement_db}dB, Flatness Red: ${metrics.flatness_reduction}`);
 
       // Return MlInferenceResult
       return {
         average_probability: averageProbability,
         denoise_applied: true,
-        sinr_gain_db: sinrGainDb,
+        total_attenuation_db: metrics.total_attenuation_db,
+        papr_improvement_db: metrics.papr_improvement_db,
+        flatness_reduction: metrics.flatness_reduction,
         clean_storage_key: cleanStorageKey,
         spectrogram_key: spectrogramKey,
       };
@@ -76,7 +78,7 @@ export class MlInferenceService {
     return probs.length > 0 ? probs.reduce((sum, p) => sum + p, 0) / probs.length : 0;
   }
 
-  private async denoiseSignal(inputUrl: string, outputUrl: string, spectrogramUrl: string): Promise<number> {
+  private async denoiseSignal(inputUrl: string, outputUrl: string, spectrogramUrl: string): Promise<{ total_attenuation_db: number, papr_improvement_db: number, flatness_reduction: number }> {
     this.logger.debug(`Calling denoise endpoint`);
     const response = await firstValueFrom(
       this.httpService.post<DenoiseJobResponse>(`${this.mlUrl}/api/v1/jobs/denoise`, {
@@ -86,6 +88,6 @@ export class MlInferenceService {
       })
     );
 
-    return response.data.metrics.noise_reduction_db;
+    return response.data.metrics;
   }
 }

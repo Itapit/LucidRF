@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { SystemRole } from '@LucidRF/common';
+import { ComponentSize } from '@LucidRF/ui';
 import { AuthFacade } from './auth/store/auth.facade';
 import { NavigationService } from './core/navigation/navigation.service';
 import { CoreFacade } from './core/store/core.facade';
@@ -25,6 +26,7 @@ export class AppComponent {
   teams = toSignal(this.teamsFacade.collaborativeTeams$, { initialValue: [] });
 
   SystemRole = SystemRole;
+  ComponentSize = ComponentSize;
 
   reloadApp(): void {
     window.location.reload();

@@ -1,7 +1,13 @@
 import { Dialog, DialogModule } from '@angular/cdk/dialog';
 import { Component, effect, inject, OnDestroy } from '@angular/core';
 import { FileDto, FolderDto, TeamColor } from '@LucidRF/common';
-import { BreadcrumbItem, MlAnalysisModalComponent, MlAnalysisModalData, WorkspaceShellComponent } from '@LucidRF/ui';
+import {
+  BreadcrumbItem,
+  MlAnalysisModalComponent,
+  MlAnalysisModalData,
+  WorkspaceNavigationId,
+  WorkspaceShellComponent,
+} from '@LucidRF/ui';
 import { firstValueFrom } from 'rxjs';
 import { FilesService } from '../../files/services/files.service';
 import { MyWorkspaceStore } from './my-workspace.store';
@@ -23,8 +29,8 @@ export class MyWorkspaceComponent implements OnDestroy {
 
   get breadcrumbs(): BreadcrumbItem[] {
     const baseBreadcrumbs: BreadcrumbItem[] = [
-      { id: 'home', label: 'Home', icon: 'home' },
-      { id: 'workspace-root', label: 'My Workspace' },
+      { id: WorkspaceNavigationId.Home, label: 'Home', icon: 'home' },
+      { id: WorkspaceNavigationId.WorkspaceRoot, label: 'My Workspace' },
     ];
 
     const ancestors = this.store.ancestors?.() || [];
@@ -49,9 +55,9 @@ export class MyWorkspaceComponent implements OnDestroy {
   }
 
   onBreadcrumbClick(item: BreadcrumbItem) {
-    if (item.id === 'home') {
+    if (item.id === WorkspaceNavigationId.Home) {
       this.store.goHome();
-    } else if (item.id === 'workspace-root') {
+    } else if (item.id === WorkspaceNavigationId.WorkspaceRoot) {
       const teamId = this.store.team()?.id;
       if (teamId) {
         this.store.loadWorkspaceContent(teamId, undefined);

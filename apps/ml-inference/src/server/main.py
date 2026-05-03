@@ -11,7 +11,9 @@ import numpy as np
 
 from lucidrf_inference.pipeline import InferencePipeline, InferencePipelineConfig
 from lucidrf_inference.cf32_le import cf32_le_from_bytes
+from .metrics import calculate_denoising_metrics
 from .visualization import generate_spectrogram_comparison
+from .constants.constants import ModelPaths, ErrorMessages, ConfigConstants
 
 # Configure logging
 logging.basicConfig(
@@ -22,23 +24,27 @@ logger = logging.getLogger("ml_inference")
 
 # Global pipeline instance
 pipeline: InferencePipeline | None = None
+http_client: httpx.AsyncClient | None = None
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global pipeline
+    global http_client
     
     base_dir = Path(__file__).parent.parent.parent
     
     # Read configuration from environment variables with sensible defaults
-    detector_path = Path(os.getenv("DETECTOR_MODEL_PATH", base_dir / "models" / "machine_a_logistic_v1.pkl"))
-    denoiser_path = Path(os.getenv("DENOISER_MODEL_PATH", base_dir / "models" / "lucidrf_unet_checkpoint.pth"))
-    device = os.getenv("INFERENCE_DEVICE", "cpu")
+    detector_path = Path(os.getenv("DETECTOR_MODEL_PATH", base_dir / "models" / ModelPaths.DETECTOR.value))
+    denoiser_path = Path(os.getenv("DENOISER_MODEL_PATH", base_dir / "models" / ModelPaths.DENOISER.value))
+    device = os.getenv("INFERENCE_DEVICE", ConfigConstants.DEFAULT_INFERENCE_DEVICE)
 
     config = InferencePipelineConfig(
         detector_model_path=detector_path,
         denoiser_checkpoint_path=denoiser_path
     )
+    
+    http_client = httpx.AsyncClient()
     
     logger.info(f"Loading ML models on device '{device}'. This might take a few seconds...")
     try:
@@ -52,6 +58,9 @@ async def lifespan(app: FastAPI):
     
     # Cleanup if necessary
     pipeline = None
+    if http_client is not None:
+        await http_client.aclose()
+        http_client = None
 
 app = FastAPI(title="LucidRF ML Inference API", lifespan=lifespan)
 
@@ -74,14 +83,13 @@ async def health_check():
 
 @app.post("/api/v1/jobs/detect")
 async def run_detection(req: DetectRequest) -> Dict[str, Any]:
-    if pipeline is None:
-        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Model not loaded")
+    if pipeline is None or http_client is None:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=ErrorMessages.MODEL_NOT_LOADED.value)
         
     try:
-        async with httpx.AsyncClient() as client:
-            resp = await client.get(req.file_url, timeout=60.0)
-            resp.raise_for_status()
-            raw_bytes = resp.content
+        resp = await http_client.get(req.file_url, timeout=ConfigConstants.DEFAULT_HTTP_TIMEOUT)
+        resp.raise_for_status()
+        raw_bytes = resp.content
             
         iq_data = cf32_le_from_bytes(raw_bytes)
         
@@ -95,23 +103,22 @@ async def run_detection(req: DetectRequest) -> Dict[str, Any]:
         }
     except httpx.HTTPError as e:
         logger.error(f"HTTP error during file fetch: {e}")
-        raise HTTPException(status_code=400, detail=f"Failed to fetch file: {str(e)}")
+        raise HTTPException(status_code=400, detail=ErrorMessages.FAILED_FETCH_FILE.value.format(str(e)))
     except Exception as e:
         logger.exception("Unexpected error during detection job")
-        raise HTTPException(status_code=500, detail="Internal server error during detection")
+        raise HTTPException(status_code=500, detail=ErrorMessages.INTERNAL_DETECTION_ERROR.value)
 
 
 @app.post("/api/v1/jobs/denoise")
 async def run_denoising(req: DenoiseRequest):
-    if pipeline is None:
-        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Model not loaded")
+    if pipeline is None or http_client is None:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=ErrorMessages.MODEL_NOT_LOADED.value)
         
     try:
         # 1. Download noisy file
-        async with httpx.AsyncClient() as client:
-            resp = await client.get(req.input_url, timeout=60.0)
-            resp.raise_for_status()
-            raw_bytes = resp.content
+        resp = await http_client.get(req.input_url, timeout=ConfigConstants.DEFAULT_HTTP_TIMEOUT)
+        resp.raise_for_status()
+        raw_bytes = resp.content
             
         iq_data = cf32_le_from_bytes(raw_bytes)
         
@@ -124,45 +131,34 @@ async def run_denoising(req: DenoiseRequest):
         complex_data = denoised_iq[0, :] + 1j * denoised_iq[1, :]
         out_bytes = complex_data.astype("<c8").tobytes()
         
-        # 4. Calculate Noise Reduction (dB)
-        # Using 10*log10(P_in / P_out) as a simple approximation of SNR improvement
-        # provided the signal amplitude is roughly preserved
-        p_in = float(np.mean(np.abs(iq_data)**2))
-        p_out = float(np.mean(np.abs(complex_data)**2))
+        # 4. Calculate Denoising Metrics
+        metrics = calculate_denoising_metrics(iq_data, complex_data)
         
-        if p_out > 0 and p_in > p_out:
-            noise_reduction_db = 10 * np.log10(p_in / p_out)
-        else:
-            noise_reduction_db = 0.0
-            
         # 5. Generate Spectrogram Image
         logger.info("Generating before/after spectrogram comparison...")
         spectrogram_bytes = generate_spectrogram_comparison(iq_data, complex_data)
         
         # 6. Upload outputs to Minio using presigned PUT URLs
-        async with httpx.AsyncClient() as client:
-            # Upload clean binary
-            put_resp = await client.put(req.output_url, content=out_bytes, timeout=60.0)
-            put_resp.raise_for_status()
-            
-            # Upload spectrogram image
-            spec_resp = await client.put(
-                req.spectrogram_url, 
-                content=spectrogram_bytes, 
-                timeout=60.0,
-                headers={"Content-Type": "image/png"}
-            )
-            spec_resp.raise_for_status()
+        # Upload clean binary
+        put_resp = await http_client.put(req.output_url, content=out_bytes, timeout=ConfigConstants.DEFAULT_HTTP_TIMEOUT)
+        put_resp.raise_for_status()
+        
+        # Upload spectrogram image
+        spec_resp = await http_client.put(
+            req.spectrogram_url, 
+            content=spectrogram_bytes, 
+            timeout=ConfigConstants.DEFAULT_HTTP_TIMEOUT,
+            headers={"Content-Type": "image/png"}
+        )
+        spec_resp.raise_for_status()
             
         return {
             "status": "success",
-            "metrics": {
-                "noise_reduction_db": round(noise_reduction_db, 2)
-            }
+            "metrics": metrics
         }
     except httpx.HTTPError as e:
         logger.error(f"HTTP error during file fetch/upload: {e}")
-        raise HTTPException(status_code=400, detail=f"HTTP error during download/upload: {str(e)}")
+        raise HTTPException(status_code=400, detail=ErrorMessages.HTTP_ERROR_DOWNLOAD_UPLOAD.value.format(str(e)))
     except Exception as e:
         logger.exception("Unexpected error during denoising job")
-        raise HTTPException(status_code=500, detail="Internal server error during denoising")
+        raise HTTPException(status_code=500, detail=ErrorMessages.INTERNAL_DENOISING_ERROR.value)

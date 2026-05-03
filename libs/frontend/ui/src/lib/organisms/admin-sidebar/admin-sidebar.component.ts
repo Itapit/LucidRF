@@ -1,5 +1,5 @@
-
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { AdminTab } from '../../types';
 
 @Component({
   selector: 'ui-admin-sidebar',
@@ -9,6 +9,7 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
   templateUrl: './admin-sidebar.component.html',
 })
 export class AdminSidebarComponent {
-  activeTab = input<'users' | 'monitoring'>('users');
-  tabClick = output<'users' | 'monitoring'>();
+  AdminTab = AdminTab;
+  activeTab = input<AdminTab>(AdminTab.Users);
+  tabClick = output<AdminTab>();
 }

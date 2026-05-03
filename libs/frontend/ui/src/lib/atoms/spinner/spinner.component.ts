@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, input } from '@angular/core';
+import { ComponentSize } from '../../types';
 
 @Component({
   selector: 'ui-spinner',
@@ -9,16 +10,18 @@ import { Component, input } from '@angular/core';
 })
 export class SpinnerComponent {
   variant = input<'default' | 'svg'>('svg');
-  size = input<'sm' | 'md' | 'lg'>('sm');
+  size = input<ComponentSize>(ComponentSize.Small);
 
   sizeClasses() {
     switch (this.size()) {
-      case 'sm':
+      case ComponentSize.Small:
         return 'w-4 h-4 border-2 border-current';
-      case 'md':
+      case ComponentSize.Medium:
         return 'w-8 h-8 border-4 border-current';
-      case 'lg':
+      case ComponentSize.Large:
         return 'w-16 h-16 border-4 border-blue-500';
+      case ComponentSize.ExtraLarge:
+        return 'w-24 h-24 border-4 border-blue-500';
       default:
         return 'w-4 h-4 border-2 border-current';
     }
@@ -26,12 +29,14 @@ export class SpinnerComponent {
 
   svgSizeClasses() {
     switch (this.size()) {
-      case 'sm':
+      case ComponentSize.Small:
         return 'h-4 w-4';
-      case 'md':
+      case ComponentSize.Medium:
         return 'h-5 w-5';
-      case 'lg':
+      case ComponentSize.Large:
         return 'h-8 w-8';
+      case ComponentSize.ExtraLarge:
+        return 'h-12 w-12';
       default:
         return 'h-4 w-4';
     }

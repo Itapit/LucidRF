@@ -96,8 +96,12 @@ def test_run_denoising(mock_async_client_class, sample_cf32_data):
         res_data = response.json()
         assert res_data["status"] == "success"
         assert "metrics" in res_data
-        assert "noise_reduction_db" in res_data["metrics"]
-        assert isinstance(res_data["metrics"]["noise_reduction_db"], float)
+        assert "total_attenuation_db" in res_data["metrics"]
+        assert "papr_improvement_db" in res_data["metrics"]
+        assert "flatness_reduction" in res_data["metrics"]
+        assert isinstance(res_data["metrics"]["total_attenuation_db"], float)
+        assert isinstance(res_data["metrics"]["papr_improvement_db"], float)
+        assert isinstance(res_data["metrics"]["flatness_reduction"], float)
         
         # Verify GET was called for the input_url
         mock_client_instance.get.assert_called_once_with(payload["input_url"], timeout=60.0)

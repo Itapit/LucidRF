@@ -46,7 +46,9 @@ export class FileProcessorService {
       // Create new documents for the clean file and spectrogram if they were generated
       if (inferenceResult.denoise_applied && inferenceResult.clean_storage_key && inferenceResult.spectrogram_key) {
         this.logger.log(`Creating database records for clean SDR file and spectrogram.`);
-        metadata.sinr_gain_db = inferenceResult.sinr_gain_db;
+        metadata.total_attenuation_db = inferenceResult.total_attenuation_db;
+        metadata.papr_improvement_db = inferenceResult.papr_improvement_db;
+        metadata.flatness_reduction = inferenceResult.flatness_reduction;
 
         // Clean SDR File
         const cleanFileStats = await this.storageService.statObject(inferenceResult.clean_storage_key);

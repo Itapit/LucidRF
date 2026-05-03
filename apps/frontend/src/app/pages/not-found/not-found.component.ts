@@ -1,6 +1,5 @@
-
 import { Component, inject } from '@angular/core';
-import { ButtonComponent } from '@LucidRF/ui';
+import { ButtonComponent, ComponentSize } from '@LucidRF/ui';
 import { NavigationService } from '../../core/navigation/navigation.service';
 
 @Component({
@@ -11,6 +10,7 @@ import { NavigationService } from '../../core/navigation/navigation.service';
 })
 export class NotFoundComponent {
   private navigationService = inject(NavigationService);
+  ComponentSize = ComponentSize;
 
   goHome() {
     this.navigationService.toHome();

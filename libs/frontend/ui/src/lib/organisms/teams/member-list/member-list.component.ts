@@ -6,6 +6,8 @@ import { RolePermissions, TeamDto, TeamPermission, TeamRole } from '@LucidRF/com
 import { ButtonComponent, InputDirective, SelectDirective } from '../../../atoms';
 import { DialogResult, ModalWrapperComponent } from '../../../molecules';
 
+import { ComponentSize } from '../../../types';
+
 @Component({
   selector: 'ui-member-list',
   standalone: true,
@@ -39,6 +41,7 @@ export class MemberListComponent implements OnInit {
   identifierInput = new FormControl('', { nonNullable: true, validators: [Validators.required] });
 
   TeamRole = TeamRole;
+  ComponentSize = ComponentSize;
 
   dialogRef = inject<DialogRef<DialogResult>>(DialogRef, { optional: true });
   data: { team: TeamDto | null; currentUserRole: TeamRole | null; currentUserId: string } | null = inject(DIALOG_DATA, {

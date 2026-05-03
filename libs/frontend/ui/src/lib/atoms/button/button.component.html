@@ -7,7 +7,7 @@
   [ngClass]="classes"
 >
   @if (loading()) {
-  <ui-spinner size="sm" class="mr-2"></ui-spinner>
+  <ui-spinner [size]="ComponentSize.Small" class="mr-2"></ui-spinner>
   <span>{{ loadingText() }}</span>
   } @else {
   <ng-content></ng-content>

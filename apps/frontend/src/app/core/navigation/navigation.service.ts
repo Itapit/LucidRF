@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Router, UrlTree } from '@angular/router';
+import { AdminTab } from '@LucidRF/ui';
 import { AppPaths } from './app-routes.enum';
 
 @Injectable({ providedIn: 'root' })
@@ -30,8 +31,9 @@ export class NavigationService {
     this.router.navigate([AppPaths.admin.monitoring]);
   }
 
-  isActiveAdminTab(tab: 'users' | 'monitoring'): boolean {
-    return this.router.url.includes(AppPaths.admin[tab]);
+  isActiveAdminTab(tab: AdminTab): boolean {
+    const path = tab === AdminTab.Monitoring ? AppPaths.admin.monitoring : AppPaths.admin.users;
+    return this.router.url.includes(path);
   }
 
   toLogin(): void {
