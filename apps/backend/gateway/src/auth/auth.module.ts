@@ -22,6 +22,9 @@ import { AccessJwtStrategy, PendingJwtStrategy, RefreshJwtStrategy } from './str
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         secret: configService.getOrThrow<string>('JWT_SECRET'),
+        signOptions: {
+          algorithm: 'HS256',
+        },
       }),
       inject: [ConfigService],
     }),
