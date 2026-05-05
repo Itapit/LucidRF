@@ -35,8 +35,8 @@ async def lifespan(app: FastAPI):
     base_dir = Path(__file__).parent.parent.parent
     
     # Read configuration from environment variables with sensible defaults
-    detector_path = Path(os.getenv("DETECTOR_MODEL_PATH", base_dir / "models" / ModelPaths.DETECTOR.value))
-    denoiser_path = Path(os.getenv("DENOISER_MODEL_PATH", base_dir / "models" / ModelPaths.DENOISER.value))
+    detector_path = Path(os.getenv("DETECTOR_MODEL_PATH", base_dir / "models" / ModelPaths.DETECTOR_PATH.value))
+    denoiser_path = Path(os.getenv("DENOISER_MODEL_PATH", base_dir / "models" / ModelPaths.DENOISER_PATH.value))
     device = os.getenv("INFERENCE_DEVICE", ConfigConstants.DEFAULT_INFERENCE_DEVICE)
 
     config = InferencePipelineConfig(

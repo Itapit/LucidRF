@@ -8,7 +8,6 @@ dependencies = [
   "scipy>=1.14.0,<2.0.0",
   "scikit-learn>=1.5.0,<2.0.0",
   "pandas>=2.2.0,<3.0.0",
-  "joblib>=1.4.0,<2.0.0",
   "torch==2.5.1",
   "fastapi[standard] (>=0.100)",
   "uvicorn (>=0.30)",

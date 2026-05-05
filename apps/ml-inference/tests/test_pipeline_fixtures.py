@@ -23,6 +23,7 @@ if _SRC.is_dir() and str(_SRC) not in sys.path:
 from lucidrf_inference.cf32_le import cf32_le_from_file
 from lucidrf_inference.constants import DETECTOR_CHUNK_SIZE, U_NET_GLOBAL_SCALE
 from lucidrf_inference.pipeline import InferencePipeline, InferencePipelineConfig
+from server.constants.constants import ModelPaths
 
 
 def _repo_root() -> Path:
@@ -46,8 +47,8 @@ class TestFullPipelineOnFixtures(unittest.TestCase):
                 f"No .bin files under {bin_dir}; add cf32 fixtures to presentation_demo/ at repo root."
             )
 
-        detector_path = _models_dir() / "machine_a_logistic_v1.pkl"
-        unet_path = _models_dir() / "lucidrf_unet_checkpoint.pth"
+        detector_path = _models_dir() / ModelPaths.DETECTOR_PATH.value
+        unet_path = _models_dir() / ModelPaths.DENOISER_PATH.value
         if not detector_path.exists():
             self.skipTest(f"Detector model missing: {detector_path}")
         if not unet_path.exists():
