@@ -19,11 +19,14 @@ async function bootstrap() {
     },
   });
 
+  // transform: Automatically parses payloads to DTO instance types and primitives.
+  // whitelist: Strips out any properties from the request that do not have decorators.
+  // forbidNonWhitelisted: Throws a BadRequestException if extra properties are sent.
   app.useGlobalPipes(
     new ValidationPipe({
-      transform: true, // Converts plain objects to DTO instances so validation runs
-      whitelist: true, // Strips away properties not defined in the DTO
-      forbidNonWhitelisted: true, // Throws an error if extra properties are sent
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
     })
   );
   app.useGlobalFilters(new RpcDomainExceptionFilter());

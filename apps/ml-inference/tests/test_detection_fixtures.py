@@ -21,6 +21,7 @@ if _SRC.is_dir() and str(_SRC) not in sys.path:
 from lucidrf_inference.barrage_detector import BarrageDetector
 from lucidrf_inference.cf32_le import cf32_le_from_file
 from lucidrf_inference.constants import DETECTOR_CHUNK_SIZE
+from server.constants.constants import ModelPaths
 
 
 def _preview_floats(values, max_items: int = 8) -> str:
@@ -48,7 +49,7 @@ def _presentation_demo_bins() -> Path:
 
 
 def _model_path() -> Path:
-    return Path(__file__).resolve().parent.parent / "models" / "machine_a_logistic_v1.pkl"
+    return Path(__file__).resolve().parent.parent / "models" / ModelPaths.DETECTOR_PATH.value
 
 
 class TestDetectionOnFixtures(unittest.TestCase):

@@ -8,6 +8,7 @@ import { PasswordService } from '../interfaces';
 export class BcryptPasswordService implements PasswordService {
   /**
    * Hashes a plain text password.
+   * Note: bcrypt.hash automatically generates and includes the salt in the resulting hash string.
    */
   async hash(plain: string): Promise<string> {
     return bcrypt.hash(plain, HASH_ROUNDS);

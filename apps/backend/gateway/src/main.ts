@@ -27,6 +27,10 @@ async function bootstrap() {
   SwaggerModule.setup(`${globalPrefix}/docs`, app, document);
 
   app.useGlobalFilters(new HttpGlobalExceptionFilter());
+
+  // transform: Automatically parses payloads to DTO instance types and primitives.
+  // whitelist: Strips out any properties from the request that do not have decorators.
+  // forbidNonWhitelisted: Throws a BadRequestException if extra properties are sent.
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
@@ -34,15 +38,15 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     })
   );
+  // cookieParser is required to read HttpOnly cookies (refreshToken) from incoming requests.
   app.use(cookieParser());
   // Browsers send Origin as the page URL (e.g. Angular on :4200), not the API host (:3000).
   const corsOriginsEnv = process.env.CORS_ORIGINS?.split(',')
     .map((s) => s.trim())
     .filter(Boolean);
   const corsOrigins =
-    corsOriginsEnv && corsOriginsEnv.length > 0
-      ? corsOriginsEnv
-      : ['http://localhost:4200', 'http://127.0.0.1:4200'];
+    corsOriginsEnv && corsOriginsEnv.length > 0 ? corsOriginsEnv : ['http://localhost:4200', 'http://127.0.0.1:4200'];
+
   app.enableCors({
     origin: corsOrigins,
     credentials: true,

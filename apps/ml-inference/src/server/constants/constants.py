@@ -1,8 +1,8 @@
 from enum import Enum
 
 class ModelPaths(str, Enum):
-    DETECTOR = "machine_a_logistic_v1.pkl"
-    DENOISER = "lucidrf_unet_checkpoint.pth"
+    DETECTOR_PATH = "machine_a_logistic_v1.json"
+    DENOISER_PATH = "lucidrf_unet_checkpoint.pth"
 
 class ErrorMessages(str, Enum):
     MODEL_NOT_LOADED = "Model not loaded"
